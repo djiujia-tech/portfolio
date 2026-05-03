@@ -502,13 +502,15 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
+  text-align: left;
+  padding: 16px;
 }
 @media (min-width: 768px) {
   .top-works__txt-wrapper {
     width: 50%;
-    align-items: flex-start; /* テキストを左寄せ */
+    align-items: center; 
     text-align: left;
+    padding: 0;
   }
 }
 
@@ -972,10 +974,9 @@ body {
 .works-list__txt-wrapper {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 8px;
   margin-top: 16px;
-  text-align: center;
+  align-items: flex-start;
 }
 @media (min-width: 768px) {
   .works-list__txt-wrapper {
