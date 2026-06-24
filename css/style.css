@@ -1074,6 +1074,34 @@ body {
   border-color: var(--primary-color);
 }
 
+.contact__line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: 48px;
+  padding-top: 40px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.contact__line-text {
+  font-size: 14px;
+  color: #666;
+}
+
+.m_button__line {
+  min-width: 200px;
+  background-color: #06C755;
+  color: #fff;
+  border-color: #06C755;
+}
+
+.m_button__line:hover {
+  background-color: #05b04c;
+  border-color: #05b04c;
+  color: #fff;
+}
+
 /*---------- works detail ----------*/
 
 .works-detail__kv {
