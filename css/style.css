@@ -1106,13 +1106,12 @@ body {
 
 .works-detail__kv {
   width: 100%;
-  height: 100vh;
 }
 
 .works-detail__kv-img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  display: block;
 }
 
 .works-detail__title {
