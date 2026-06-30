@@ -13,11 +13,11 @@
     <link rel="apple-touch-icon" href="" />
     <!-- ogp -->
     <meta property="og:site_name" content="Gaku portfolio" />
-    <meta property="og:url" content="" />
+    <meta property="og:url" content="https://portfolio-t8fp.vercel.app/contact.html" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Contact | Gaku portfolio" />
     <meta property="og:description" content="Gakuへのお問い合わせ" />
-    <meta property="og:image" content="" />
+    <meta property="og:image" content="https://portfolio-t8fp.vercel.app/img/nail-fullpage.jpg" />
     <meta property="og:locale" content="ja_JP" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:description" content="Gakuへのお問い合わせ" />
@@ -52,7 +52,7 @@
         <ul class="l-header__nav-list">
           <li><a href="works.html">Works</a></li>
           <li><a href="about.html">About</a></li>
-          <li><a href="https://lin.ee/YFcY1R5" target="_blank" rel="noopener noreferrer">Contact</a></li>
+          <li><a href="contact.html">Contact</a></li>
         </ul>
       </nav>
 
@@ -75,10 +75,15 @@
             <h2 class="m_section-title__main">お問い合わせ</h2>
           </div>
 
-          <form class="contact__form" action="" method="post">
+          <p class="contact__lead">
+            Web制作・予約システムの導入など、お気軽にご相談ください。<br />
+            通常2〜3営業日以内にご返信いたします。
+          </p>
+
+          <form class="contact__form" action="https://formspree.io/f/mojongdz" method="POST">
             <div class="contact__field">
               <label class="contact__label" for="name">
-                氏名／会社名
+                お名前
                 <span class="contact__required">（必須）</span>
               </label>
               <input
@@ -86,22 +91,7 @@
                 type="text"
                 id="name"
                 name="name"
-                placeholder="〇〇　〇〇会社"
-                required
-              />
-            </div>
-
-            <div class="contact__field">
-              <label class="contact__label" for="tel">
-                電話番号
-                <span class="contact__required">（必須）</span>
-              </label>
-              <input
-                class="contact__input"
-                type="tel"
-                id="tel"
-                name="tel"
-                placeholder="ハイフンなし"
+                placeholder="山田 太郎"
                 required
               />
             </div>
@@ -116,28 +106,39 @@
                 type="email"
                 id="email"
                 name="email"
-                placeholder="mail@mail.com"
+                placeholder="example@email.com"
                 required
               />
             </div>
 
             <div class="contact__field">
+              <label class="contact__label" for="subject">お問い合わせ種別</label>
+              <select class="contact__input contact__select" id="subject" name="subject">
+                <option value="">選択してください</option>
+                <option value="web">Web制作について</option>
+                <option value="cue">予約システム（CUE）について</option>
+                <option value="both">Web制作＋予約システムのセットについて</option>
+                <option value="other">その他</option>
+              </select>
+            </div>
+
+            <div class="contact__field">
               <label class="contact__label" for="message">
-                お問い合わせ内容
+                メッセージ
                 <span class="contact__required">（必須）</span>
               </label>
               <textarea
                 class="contact__textarea"
                 id="message"
                 name="message"
-                placeholder="フリーテキスト"
+                placeholder="ご依頼内容やご質問をご記入ください"
                 rows="6"
                 required
               ></textarea>
             </div>
 
             <div class="contact__submit">
-              <button type="submit" class="m_button">送信</button>
+              <button type="submit" class="m_button">送信する</button>
             </div>
           </form>
 
@@ -167,7 +168,7 @@
             <a href="about.html" class="l-footer__nav-link">About</a>
           </li>
           <li class="l-footer__nav-item">
-            <a href="https://lin.ee/YFcY1R5" target="_blank" rel="noopener noreferrer" class="l-footer__nav-link">Contact</a>
+            <a href="contact.html" class="l-footer__nav-link">Contact</a>
           </li>
         </ul>
       </nav>
