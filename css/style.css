@@ -1205,6 +1205,27 @@ body {
   display: block;
 }
 
+/* collage style KV */
+.works-detail__kv--collage {
+  background-color: #f8f4f0;
+  overflow-x: auto;
+  padding: 24px 0;
+}
+
+.works-detail__kv--collage .works-detail__kv-img {
+  width: auto;
+  max-width: none;
+  height: 360px;
+  margin: 0 auto;
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .works-detail__kv--collage .works-detail__kv-img {
+    height: 480px;
+  }
+}
+
 .works-detail__title-wrapper {
   display: flex;
   align-items: center;
