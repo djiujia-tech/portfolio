@@ -485,6 +485,22 @@ body {
   width: 100%;
   height: auto;
   background-color: #707070;
+  position: relative;
+}
+
+/* wip badge */
+.m_wip-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 10px;
+  background: var(--accent-color);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  z-index: 1;
 }
 @media (min-width: 768px) {
   .top-works__item-img-box {
@@ -1187,6 +1203,18 @@ body {
   width: 100%;
   height: auto;
   display: block;
+}
+
+.works-detail__title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.works-detail__wip-badge {
+  position: static;
+  flex-shrink: 0;
 }
 
 .works-detail__title {
