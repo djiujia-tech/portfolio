@@ -8,4 +8,6 @@
   <url><loc>https://gaku-web.com/deers.html</loc><priority>0.6</priority></url>
   <url><loc>https://gaku-web.com/about.html</loc><priority>0.6</priority></url>
   <url><loc>https://gaku-web.com/contact.html</loc><priority>0.8</priority></url>
+  <url><loc>https://gaku-web.com/blog.html</loc><priority>0.8</priority></url>
+  <url><loc>https://gaku-web.com/blog/line-reservation-guide.html</loc><priority>0.7</priority></url>
 </urlset>
