@@ -1954,3 +1954,14 @@ body {
   color: var(--black-color);
   border-color: var(--black-color);
 }
+
+/* CUE料金カード内のシミュレーターリンク */
+.top-plans__sim-link {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--primary-color);
+  text-decoration: none;
+}
+.top-plans__sim-link:hover {
+  text-decoration: underline;
+}
