@@ -80,6 +80,36 @@ window.addEventListener("scroll", () => {
   }
 });
 
+/*---------- スクロールで各セクションをふわっと表示 ----------*/
+const revealEls = document.querySelectorAll(
+  ".m_section-title, .top-plans__item, .top-service__item, .top-works__item, .top-flow__item, .top-about__content, .top-contact__content"
+);
+
+if ("IntersectionObserver" in window && revealEls.length) {
+  // 同じ親の中の要素(カード群など)には時間差をつける
+  const groups = new Map();
+  revealEls.forEach((el) => {
+    const siblings = groups.get(el.parentElement) ?? [];
+    el.style.setProperty("--reveal-delay", `${Math.min(siblings.length, 4) * 0.09}s`);
+    siblings.push(el);
+    groups.set(el.parentElement, siblings);
+    el.classList.add("js-reveal");
+  });
+
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-revealed");
+          io.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.12, rootMargin: "0px 0px -8% 0px" }
+  );
+  revealEls.forEach((el) => io.observe(el));
+}
+
 // スキル詳細の開閉
 const skillTrigger = document.querySelector(".about-skill__trigger");
 const skillDetail = document.querySelector(".about-skill__detail");
