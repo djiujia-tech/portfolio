@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /service.html
+Disallow: /graduation.html
+
+Sitemap: https://gaku-web.com/sitemap.xml

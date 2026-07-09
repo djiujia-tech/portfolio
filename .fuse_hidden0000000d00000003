@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>CUE 予約システム | Works | Gaku portfolio</title>
+    <meta name="description" content="LINEで完結する予約管理システム CUE の制作詳細" />
+
+    <link rel="icon" href="" type="image/ico" />
+    <link rel="icon" href="" type="image/png" />
+    <link rel="icon" href="" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="" />
+
+    <meta property="og:site_name" content="Gaku portfolio" />
+    <meta property="og:url" content="" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="CUE 予約システム | Works | Gaku portfolio" />
+    <meta property="og:description" content="LINEで完結する予約管理システム CUE の制作詳細" />
+    <meta property="og:image" content="" />
+    <meta property="og:locale" content="ja_JP" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/style.css" />
+
+    <style>
+      .cue-kv {
+        width: 100%;
+        height: 280px;
+        background: linear-gradient(135deg, #e91e8c 0%, #f48fb1 50%, #fce4ec 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 12px;
+      }
+      @media screen and (min-width: 768px) {
+        .cue-kv { height: 400px; }
+      }
+      .cue-kv__logo {
+        font-size: 64px;
+        font-weight: 900;
+        color: #fff;
+        letter-spacing: 0.05em;
+        font-family: "Roboto", sans-serif;
+        text-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      }
+      .cue-kv__sub {
+        font-size: 14px;
+        color: rgba(255,255,255,0.9);
+        font-weight: 500;
+        letter-spacing: 0.1em;
+      }
+      .works-detail__features {
+        display: grid;
+        gap: 8px;
+      }
+      .works-detail__feature-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #fce4ec;
+        color: #c2185b;
+        font-size: 13px;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 100vh;
+        margin: 2px 4px 2px 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="l-header">
+      <h1 class="header-logo">
+        <a href="index.html" class="u-nav-link">
+          <div class="header-logo-img-box">
+            <img
+              src="img/portfolio_logo.png"
+              alt="logo"
+              height="1312"
+              width="816"
+              class="l-header-logo_img"
+            />
+          </div>
+        </a>
+      </h1>
+      <nav class="l-header__nav">
+        <ul class="l-header__nav-list">
+          <li><a href="works.html">Works</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+      <button
+        class="m-header-hamburger"
+        aria-label="メニューを開く"
+        aria-expanded="false"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </header>
+
+    <main class="l_main">
+      <div class="cue-kv">
+        <p class="cue-kv__logo">CUE</p>
+        <p class="cue-kv__sub">LINE予約システム</p>
+      </div>
+
+      <div class="l_container">
+        <h2 class="works-detail__title">
+          <a
+            href="https://line-reservation-system-six.vercel.app/?demo=true"
+            target="_blank"
+            rel="noopener noreferrer"
+            >CUE 予約システム</a
+          >
+        </h2>
+
+        <dl class="works-detail__list">
+          <div class="works-detail__item">
+            <dt class="works-detail__label">デモURL（顧客画面）</dt>
+            <dd class="works-detail__text">
+              <a
+                href="https://line-reservation-system-six.vercel.app/?demo=true"
+                target="_blank"
+                rel="noopener noreferrer"
+                >https://line-reservation-system-six.vercel.app/?demo=true</a
+              >
+            </dd>
+          </div>
+
+          <div class="works-detail__item">
+            <dt class="works-detail__label">デモURL（管理画面）</dt>
+            <dd class="works-detail__text">
+              <a
+                href="https://line-reservation-system-six.vercel.app/admin/login"
+                target="_blank"
+                rel="noopener noreferrer"
+                >https://line-reservation-system-six.vercel.app/admin/login</a
+              ><br />
+              ID：demo@example.com　PW：demo1Z345
+            </dd>
+          </div>
+
+          <div class="works-detail__item">
+            <dt class="works-detail__label">概要</dt>
+            <dd class="works-detail__text">
+              LINEアプリを離れずに予約が完結する、美容・サービス業向けの予約管理システム。顧客はLINE LIFF上でメニュー選択・日時指定・情報入力をステップ形式で行い、オーナーは専用の管理画面で予約・顧客・売上をすべて一元管理できます。
+            </dd>
+          </div>
+
+          <div class="works-detail__item">
+            <dt class="works-detail__label">顧客側の機能</dt>
+            <dd class="works-detail__text">
+              <ul class="works-detail__bullet">
+                <li>メニュー選択・日付・時間・情報入力のステップ式予約フロー</li>
+                <li>LINEアプリ内で完結（外部ブラウザに飛ばない）</li>
+                <li>予約確認・変更・キャンセル</li>
+              </ul>
+            </dd>
+          </div>
+
+          <div class="works-detail__item">
+            <dt class="works-detail__label">管理側の機能</dt>
+            <dd class="works-detail__text">
+              <span class="works-detail__feature-tag">📋 予約管理</span>
+              <span class="works-detail__feature-tag">📅 タイムテーブル表示</span>
+              <span class="works-detail__feature-tag">📊 集計・分析</span>
+              <span class="works-detail__feature-tag">🗂 顧客カルテ</span>
+              <span class="works-detail__feature-tag">🍽 メニュー管理</span>
+              <span class="works-detail__feature-tag">🎟 クーポン発行</span>
+              <span class="works-detail__feature-tag">📣 一括メッセージ送信</span>
+              <span class="works-detail__feature-tag">🗓 スケジュール管理</span>
+              <span class="works-detail__feature-tag">🖼 ギャラリー</span>
+              <span class="works-detail__feature-tag">⬇ CSVエクスポート</span>
+              <span class="works-detail__feature-tag">⚙ 設定</span>
+            </dd>
+          </div>
+
+          <div class="works-detail__item">
+            <dt class="works-detail__label">使用技術</dt>
+            <dd class="works-detail__text">
+              Next.js / Supabase (DB・Auth) / LINE LIFF SDK / Vercel
+            </dd>
+          </div>
+        </dl>
+
+        <div class="works-detail__back">
+          <a href="works.html" class="m_button">← 一覧に戻る</a>
+        </div>
+      </div>
+    </main>
+
+    <footer class="l-footer">
+      <nav class="l-footer__nav">
+        <ul class="l-footer__nav-list">
+          <li class="l-footer__nav-item">
+            <a href="index.html" class="l-footer__nav-link">Top</a>
+          </li>
+          <li class="l-footer__nav-item">
+            <a href="works.html" class="l-footer__nav-link">Works</a>
+          </li>
+          <li class="l-footer__nav-item">
+            <a href="about.html" class="l-footer__nav-link">About</a>
+          </li>
+          <li class="l-footer__nav-item">
+            <a href="contact.html" class="l-footer__nav-link">Contact</a>
+          </li>
+        </ul>
+      </nav>
+      <p class="l-footer__copyright">
+        <small>© 2026 Gaku</small>
+      </p>
+    </footer>
+
+    <script src="js/main.js" defer></script>
+  </body>
+</html>

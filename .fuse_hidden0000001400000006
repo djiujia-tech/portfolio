@@ -3,26 +3,25 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>SatoCafe|Web制作事例|Gaku</title>
-    <link rel="canonical" href="https://gaku-web.com/SatoCafe.html" />
-    <meta name="description" content="カフェサイトのデモ制作事例。情報整理と導線設計を重視し、WordPressテーマとして納品できる形で実装しました。" />
+    <title>Nail Atelier RÊVE | Works | Gaku portfolio</title>
+    <meta name="description" content="Nail Atelier RÊVEの制作実績詳細" />
 
     <!-- google fonts -->
     <!-- favicon/web-clip-icon -->
-    <link rel="icon" href="img/favicon-32.png" type="image/png" sizes="32x32" />
-    <link rel="icon" href="img/favicon-192.png" type="image/png" sizes="192x192" />
-    <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
+    <link rel="icon" href="" type="image/ico" />
+    <link rel="icon" href="" type="image/png" />
+    <link rel="icon" href="" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="" />
     <!-- ogp -->
     <meta property="og:site_name" content="Gaku portfolio" />
-    <meta property="og:url" content="https://gaku-web.com/SatoCafe.html" />
+    <meta property="og:url" content="" />
     <meta property="og:type" content="article" />
-    <meta property="og:title" content="SatoCafe|Web制作事例|Gaku" />
-    <meta property="og:description" content="カフェサイトのデモ制作事例。情報整理と導線設計を重視し、WordPressテーマとして納品できる形で実装しました。" />
-    <meta property="og:image" content="https://gaku-web.com/img/ogp.png" />
+    <meta property="og:title" content="Nail Atelier RÊVE | Works | Gaku portfolio" />
+    <meta property="og:description" content="Nail Atelier RÊVEの制作実績詳細" />
+    <meta property="og:image" content="" />
     <meta property="og:locale" content="ja_JP" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="https://gaku-web.com/img/ogp.png" />
-    <meta name="twitter:description" content="カフェサイトのデモ制作事例。情報整理と導線設計を重視し、WordPressテーマとして納品できる形で実装しました。" />
+    <meta name="twitter:description" content="Nail Atelier RÊVEの制作実績詳細" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -38,7 +37,7 @@
 
   <body>
     <header class="l-header">
-      <div class="header-logo">
+      <h1 class="header-logo">
         <a href="index.html" class="u-nav-link">
           <div class="header-logo-img-box">
             <img
@@ -50,11 +49,10 @@
             />
           </div>
         </a>
-      </div>
+      </h1>
       <nav class="l-header__nav">
         <ul class="l-header__nav-list">
           <li><a href="works.html">Works</a></li>
-          <li><a href="CUE.html">Product</a></li>
           <li><a href="about.html">About</a></li>
           <li><a href="contact.html">Contact</a></li>
         </ul>
@@ -74,46 +72,55 @@
     <main class="l_main">
       <div class="works-detail__kv">
         <img
-          src="img/works-graduation.jpg"
-          alt="SatoCafe"
+          src="img/nail-fullpage.jpg"
+          alt="Nail Atelier RÊVE"
           width="1200"
-          height="800"
+          height="675"
           class="works-detail__kv-img"
         />
       </div>
 
       <div class="l_container">
-        <h1 class="works-detail__title">
+        <h2 class="works-detail__title">
           <a
-            href="https://sato-cafe.vercel.app"
+            href="https://nail-atelier-reve.vercel.app"
             target="_blank"
             rel="noopener noreferrer"
-            >SatoCafe</a
+            >Nail Atelier RÊVE</a
           >
-        </h1>
+        </h2>
 
         <dl class="works-detail__list">
           <div class="works-detail__item">
             <dt class="works-detail__label">URL</dt>
             <dd class="works-detail__text">
               <a
-                href="https://sato-cafe.vercel.app"
+                href="https://nail-atelier-reve.vercel.app"
                 target="_blank"
                 rel="noopener noreferrer"
-                >https://sato-cafe.vercel.app</a
+                >https://nail-atelier-reve.vercel.app</a
               >
             </dd>
           </div>
           <div class="works-detail__item">
+            <dt class="works-detail__label">制作背景</dt>
+            <dd class="works-detail__text">
+              ネイルサロン業界向けに、サロンオーナー様への提案を想定して自主制作したデモサイトです。<br />
+              特定の店舗の実在サイトではなく、業界の課題を想定して企画・デザイン・実装まで一人で行いました。
+            </dd>
+          </div>
+          <div class="works-detail__item">
             <dt class="works-detail__label">ターゲット</dt>
-            <dd class="works-detail__text">周辺で働く20代から30代の女性</dd>
+            <dd class="works-detail__text">
+              ネイルサロンを利用する20代〜40代女性（自分へのご褒美・特別な体験を求める層）
+            </dd>
           </div>
 
           <div class="works-detail__item">
-            <dt class="works-detail__label">課題</dt>
+            <dt class="works-detail__label">想定する課題</dt>
             <dd class="works-detail__text">
-            ・ホームページがない<br />
-            ・店舗を新規オープンするにあたって集客<br />
+              ・予約や問い合わせがInstagramのDMや電話中心で、対応の手間が大きい<br />
+              ・既存の予約掲載サービスは掲載料・手数料が高く、サロン独自の世界観を表現しにくい
             </dd>
           </div>
 
@@ -121,8 +128,9 @@
             <dt class="works-detail__label">目的</dt>
             <dd class="works-detail__text">
               <ul class="works-detail__bullet">
-                <li>SEO対策し、認知度アップ</li>
-                <li>メニューやニュースなど自身で更新できる</li>
+                <li>サロンのブランドイメージを伝えるデザイン</li>
+                <li>MENU・GALLERY・SHOPを通じて来店前の期待値を高める導線</li>
+                <li>予約への動線をシンプルに設計し、離脱を減らす</li>
               </ul>
             </dd>
           </div>
@@ -130,8 +138,8 @@
           <div class="works-detail__item">
             <dt class="works-detail__label">デザイン</dt>
             <dd class="works-detail__text">
-              カフェの所在地がオフィス街であるため、店内の植物や雰囲気を活かし落ち着いたデザイン。<br />
-              カフェの強みがしっかり伝わるように、フォントや写真を工夫した
+              ゴールド×アイボリーを基調に、上質感・特別感を演出。<br />
+              ネイルアートのクローズアップ写真を主役にし、繊細なセリフ体のロゴ・タイトルで世界観を統一した。
             </dd>
           </div>
 
@@ -141,27 +149,26 @@
               <ul class="works-detail__schedule">
                 <li>
                   <span>企画・情報設計</span>
-                  <span>2週間</span>
+                  <span>1週間</span>
                 </li>
                 <li>
                   <span>デザイン</span>
-                  <span>4週間</span>
+                  <span>2週間</span>
                 </li>
                 <li>
                   <span>コーディング</span>
                   <span>2週間</span>
-                </li>
-                <li>
-                  <span>CMS化</span>
-                  <span>1週間</span>
                 </li>
               </ul>
             </dd>
           </div>
 
           <div class="works-detail__item">
-            <dt class="works-detail__label">使用ツール</dt>
-            <dd class="works-detail__text">Figma/ VSCode/ html/ css/ JavaScript</dd>
+            <dt class="works-detail__label">使用技術</dt>
+            <dd class="works-detail__text">
+              Figma / Vite / HTML / SCSS / JavaScript（Vanilla JS）<br />
+              レスポンシブ対応（SP・PC）/ カート機能実装 / スクロールアニメーション / Vercelデプロイ
+            </dd>
           </div>
         </dl>
 

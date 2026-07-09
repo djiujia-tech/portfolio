@@ -57,14 +57,17 @@ nav.addEventListener("click", (e) => {
 // スクロールでヘッダー背景・ハンバーガーの色を切り替え
 const header = document.querySelector(".l-header");
 
-// FVがないページは最初から白背景
-if (!document.querySelector(".top-kv")) {
+// FVがないページは最初から白背景（.cue-kvがあるページは除外）
+if (!document.querySelector(".top-kv") && !document.querySelector(".cue-kv")) {
   header.classList.add("is-scrolled");
 }
 window.addEventListener("scroll", () => {
-  const mvHeight = document.querySelector(".top-kv")?.offsetHeight ?? 0;
+  const mvHeight = (document.querySelector(".top-kv") ?? document.querySelector(".cue-kv"))?.offsetHeight ?? 0;
 
-  if (window.scrollY > mvHeight) {
+  // ヘッダーがKVを抜ける前に白背景へ切り替え、コンテンツとの重なりを防ぐ
+  const threshold = Math.max(mvHeight - header.offsetHeight, 0);
+
+  if (window.scrollY > threshold) {
     header.classList.add("is-scrolled");
     hamburger.querySelectorAll("span").forEach((span) => {
       span.style.background = "var(--black-color)";

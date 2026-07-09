@@ -3,26 +3,25 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Web制作事例|岡山のWebデザイナー Gaku</title>
-    <link rel="canonical" href="https://gaku-web.com/works.html" />
-    <meta name="description" content="岡山のフリーランスWebデザイナーGakuの制作事例一覧。ネイルサロン・カフェ・スポーツチームのサイトなど、すべて触れるデモを公開中。" />
+    <title>Works | Gaku portfolio</title>
+    <meta name="description" content="Gakuの制作実績一覧" />
 
     <!-- google fonts -->
     <!-- favicon/web-clip-icon -->
-    <link rel="icon" href="img/favicon-32.png" type="image/png" sizes="32x32" />
-    <link rel="icon" href="img/favicon-192.png" type="image/png" sizes="192x192" />
-    <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
+    <link rel="icon" href="" type="image/ico" />
+    <link rel="icon" href="" type="image/png" />
+    <link rel="icon" href="" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="" />
     <!-- ogp -->
     <meta property="og:site_name" content="Gaku portfolio" />
-    <meta property="og:url" content="https://gaku-web.com/works.html" />
+    <meta property="og:url" content="" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Web制作事例|岡山のWebデザイナー Gaku" />
-    <meta property="og:description" content="岡山のフリーランスWebデザイナーGakuの制作事例一覧。ネイルサロン・カフェ・スポーツチームのサイトなど、すべて触れるデモを公開中。" />
-    <meta property="og:image" content="https://gaku-web.com/img/ogp.png" />
+    <meta property="og:title" content="Works | Gaku portfolio" />
+    <meta property="og:description" content="Gakuの制作実績一覧" />
+    <meta property="og:image" content="" />
     <meta property="og:locale" content="ja_JP" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="https://gaku-web.com/img/ogp.png" />
-    <meta name="twitter:description" content="岡山のフリーランスWebデザイナーGakuの制作事例一覧。ネイルサロン・カフェ・スポーツチームのサイトなど、すべて触れるデモを公開中。" />
+    <meta name="twitter:description" content="Gakuの制作実績一覧" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -38,7 +37,7 @@
 
   <body>
     <header class="l-header">
-      <div class="header-logo">
+      <h1 class="header-logo">
         <a href="index.html" class="u-nav-link">
           <div class="header-logo-img-box">
             <img
@@ -50,11 +49,10 @@
             />
           </div>
         </a>
-      </div>
+      </h1>
       <nav class="l-header__nav">
         <ul class="l-header__nav-list">
           <li><a href="works.html">Works</a></li>
-          <li><a href="CUE.html">Product</a></li>
           <li><a href="about.html">About</a></li>
           <li><a href="contact.html">Contact</a></li>
         </ul>
@@ -76,7 +74,7 @@
         <div class="l_container">
           <div class="m_section-title">
             <span class="m_section-title__sub">Works</span>
-            <h1 class="m_section-title__main">制作事例</h1>
+            <h2 class="m_section-title__main">制作実績</h2>
           </div>
         </div>
       </div>
@@ -84,6 +82,28 @@
       <section class="works-list">
         <div class="l_container">
           <ul class="works-list__items">
+            <li class="top-works__item">
+              <div class="top-works__item-img-box">
+                <img
+                  src="img/works-deers.jpg"
+                  alt="OITA DEERS U15"
+                  width="600"
+                  height="400"
+                  loading="lazy"
+                  class="top-works__item-img"
+                />
+                <span class="m_wip-badge">作成中</span>
+              </div>
+              <div class="top-works__txt-wrapper">
+                <h3 class="top-works__name">OITA DEERS U15</h3>
+                <p class="top-works__text">
+                  大分市の中学生バスケットボールチームを想定したデモサイトです。<br />
+                  部員獲得・スポンサー募集・試合結果発信を目的に、スコアボード風ナビや体験申込フォームなどを実装しています。
+                </p>
+                <a href="deers.html" class="m_button">詳しく見る</a>
+              </div>
+            </li>
+
             <li class="top-works__item">
               <div class="top-works__item-img-box">
                 <img
@@ -124,28 +144,6 @@
                   HTML/CSS・JavaScriptでレスポンシブ対応を実装し、WordPressテーマとして納品できる形で仕上げています。
                 </p>
                 <a href="SatoCafe.html" class="m_button">詳しく見る</a>
-              </div>
-            </li>
-
-            <li class="top-works__item">
-              <div class="top-works__item-img-box">
-                <img
-                  src="img/works-deers-pc.jpg"
-                  alt="OITA DEERS U15"
-                  width="1200"
-                  height="934"
-                  loading="lazy"
-                  class="top-works__item-img"
-                />
-                <span class="m_wip-badge">作成中</span>
-              </div>
-              <div class="top-works__txt-wrapper">
-                <h3 class="top-works__name">OITA DEERS U15</h3>
-                <p class="top-works__text">
-                  大分市の中学生バスケットボールチームを想定したデモサイトです。<br />
-                  部員獲得・スポンサー募集・試合結果発信を目的に、スコアボード風ナビや体験申込フォームなどを実装しています。
-                </p>
-                <a href="deers.html" class="m_button">詳しく見る</a>
               </div>
             </li>
           </ul>

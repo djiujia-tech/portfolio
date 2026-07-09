@@ -3,26 +3,24 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>SatoCafe|Web制作事例|Gaku</title>
-    <link rel="canonical" href="https://gaku-web.com/SatoCafe.html" />
-    <meta name="description" content="カフェサイトのデモ制作事例。情報整理と導線設計を重視し、WordPressテーマとして納品できる形で実装しました。" />
+    <title>OITA DEERS U15 | Works | Gaku portfolio</title>
+    <meta name="description" content="OITA DEERS U15の制作実績詳細" />
 
-    <!-- google fonts -->
     <!-- favicon/web-clip-icon -->
-    <link rel="icon" href="img/favicon-32.png" type="image/png" sizes="32x32" />
-    <link rel="icon" href="img/favicon-192.png" type="image/png" sizes="192x192" />
-    <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
+    <link rel="icon" href="" type="image/ico" />
+    <link rel="icon" href="" type="image/png" />
+    <link rel="icon" href="" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="" />
     <!-- ogp -->
     <meta property="og:site_name" content="Gaku portfolio" />
-    <meta property="og:url" content="https://gaku-web.com/SatoCafe.html" />
+    <meta property="og:url" content="https://portfolio-t8fp.vercel.app/deers.html" />
     <meta property="og:type" content="article" />
-    <meta property="og:title" content="SatoCafe|Web制作事例|Gaku" />
-    <meta property="og:description" content="カフェサイトのデモ制作事例。情報整理と導線設計を重視し、WordPressテーマとして納品できる形で実装しました。" />
-    <meta property="og:image" content="https://gaku-web.com/img/ogp.png" />
+    <meta property="og:title" content="OITA DEERS U15 | Works | Gaku portfolio" />
+    <meta property="og:description" content="OITA DEERS U15の制作実績詳細" />
+    <meta property="og:image" content="" />
     <meta property="og:locale" content="ja_JP" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="https://gaku-web.com/img/ogp.png" />
-    <meta name="twitter:description" content="カフェサイトのデモ制作事例。情報整理と導線設計を重視し、WordPressテーマとして納品できる形で実装しました。" />
+    <meta name="twitter:description" content="OITA DEERS U15の制作実績詳細" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -38,7 +36,7 @@
 
   <body>
     <header class="l-header">
-      <div class="header-logo">
+      <h1 class="header-logo">
         <a href="index.html" class="u-nav-link">
           <div class="header-logo-img-box">
             <img
@@ -50,11 +48,10 @@
             />
           </div>
         </a>
-      </div>
+      </h1>
       <nav class="l-header__nav">
         <ul class="l-header__nav-list">
           <li><a href="works.html">Works</a></li>
-          <li><a href="CUE.html">Product</a></li>
           <li><a href="about.html">About</a></li>
           <li><a href="contact.html">Contact</a></li>
         </ul>
@@ -74,46 +71,59 @@
     <main class="l_main">
       <div class="works-detail__kv">
         <img
-          src="img/works-graduation.jpg"
-          alt="SatoCafe"
+          src="img/works-deers.jpg"
+          alt="OITA DEERS U15"
           width="1200"
-          height="800"
+          height="675"
           class="works-detail__kv-img"
         />
       </div>
 
       <div class="l_container">
-        <h1 class="works-detail__title">
-          <a
-            href="https://sato-cafe.vercel.app"
-            target="_blank"
-            rel="noopener noreferrer"
-            >SatoCafe</a
-          >
-        </h1>
+        <div class="works-detail__title-wrapper">
+          <h2 class="works-detail__title">
+            <a
+              href="https://deers-demo.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              >OITA DEERS U15</a
+            >
+          </h2>
+          <span class="m_wip-badge works-detail__wip-badge">作成中</span>
+        </div>
 
         <dl class="works-detail__list">
           <div class="works-detail__item">
             <dt class="works-detail__label">URL</dt>
             <dd class="works-detail__text">
               <a
-                href="https://sato-cafe.vercel.app"
+                href="https://deers-demo.vercel.app"
                 target="_blank"
                 rel="noopener noreferrer"
-                >https://sato-cafe.vercel.app</a
+                >https://deers-demo.vercel.app</a
               >
             </dd>
           </div>
           <div class="works-detail__item">
+            <dt class="works-detail__label">制作背景</dt>
+            <dd class="works-detail__text">
+              大分市を拠点に活動する中学生世代（U15）のバスケットボールチームを想定した自主制作サイトです。<br />
+              部員獲得・スポンサー募集・試合結果の発信など、実際のスポーツチームが抱える情報発信の課題に応える構成を意識しました。
+            </dd>
+          </div>
+          <div class="works-detail__item">
             <dt class="works-detail__label">ターゲット</dt>
-            <dd class="works-detail__text">周辺で働く20代から30代の女性</dd>
+            <dd class="works-detail__text">
+              入部を検討する中学生・保護者、スポンサー候補となる地元企業
+            </dd>
           </div>
 
           <div class="works-detail__item">
-            <dt class="works-detail__label">課題</dt>
+            <dt class="works-detail__label">想定する課題</dt>
             <dd class="works-detail__text">
-            ・ホームページがない<br />
-            ・店舗を新規オープンするにあたって集客<br />
+              ・SNSのみでの情報発信では試合結果・練習日程が埋もれてしまう<br />
+              ・体験参加の申し込み窓口が整っておらず、新規部員の獲得につながりにくい<br />
+              ・スポンサー向けの説明資料が不足し、協賛依頼のハードルが高い
             </dd>
           </div>
 
@@ -121,8 +131,10 @@
             <dt class="works-detail__label">目的</dt>
             <dd class="works-detail__text">
               <ul class="works-detail__bullet">
-                <li>SEO対策し、認知度アップ</li>
-                <li>メニューやニュースなど自身で更新できる</li>
+                <li>チームの活動・雰囲気を伝えるブランディングサイトとしての役割</li>
+                <li>体験申込フォームによる新規部員獲得の導線設計</li>
+                <li>試合結果・選手紹介ページで保護者・ファンへの情報発信</li>
+                <li>スポンサーページで協賛依頼をスムーズに</li>
               </ul>
             </dd>
           </div>
@@ -130,8 +142,8 @@
           <div class="works-detail__item">
             <dt class="works-detail__label">デザイン</dt>
             <dd class="works-detail__text">
-              カフェの所在地がオフィス街であるため、店内の植物や雰囲気を活かし落ち着いたデザイン。<br />
-              カフェの強みがしっかり伝わるように、フォントや写真を工夫した
+              チームカラーのダークグリーン×イエローゴールドを基調に、スコアボード風のナビゲーションで「スポーツ感」を演出。<br />
+              エネルギッシュで力強いビジュアルと、情報の見やすさを両立することを意識した。
             </dd>
           </div>
 
@@ -141,27 +153,26 @@
               <ul class="works-detail__schedule">
                 <li>
                   <span>企画・情報設計</span>
-                  <span>2週間</span>
+                  <span>1週間</span>
                 </li>
                 <li>
                   <span>デザイン</span>
-                  <span>4週間</span>
+                  <span>1週間</span>
                 </li>
                 <li>
                   <span>コーディング</span>
                   <span>2週間</span>
-                </li>
-                <li>
-                  <span>CMS化</span>
-                  <span>1週間</span>
                 </li>
               </ul>
             </dd>
           </div>
 
           <div class="works-detail__item">
-            <dt class="works-detail__label">使用ツール</dt>
-            <dd class="works-detail__text">Figma/ VSCode/ html/ css/ JavaScript</dd>
+            <dt class="works-detail__label">使用技術</dt>
+            <dd class="works-detail__text">
+              HTML / CSS / JavaScript（Vanilla JS）<br />
+              レスポンシブ対応（SP・PC）/ スクロールアニメーション / Vercelデプロイ
+            </dd>
           </div>
         </dl>
 

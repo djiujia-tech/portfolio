@@ -3,25 +3,24 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>無料相談・お問い合わせ|岡山のWeb制作 Gaku</title>
-    <link rel="canonical" href="https://gaku-web.com/contact.html" />
-    <meta name="description" content="Web制作・LINE予約システム導入の無料相談はこちら。LINEまたはフォームから、1〜2営業日以内にご返信します。" />
+    <title>Contact | Gaku portfolio</title>
+    <meta name="description" content="Gakuへのお問い合わせ" />
 
     <!-- favicon/web-clip-icon -->
-    <link rel="icon" href="img/favicon-32.png" type="image/png" sizes="32x32" />
-    <link rel="icon" href="img/favicon-192.png" type="image/png" sizes="192x192" />
-    <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
+    <link rel="icon" href="" type="image/ico" />
+    <link rel="icon" href="" type="image/png" />
+    <link rel="icon" href="" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="" />
     <!-- ogp -->
     <meta property="og:site_name" content="Gaku portfolio" />
-    <meta property="og:url" content="https://gaku-web.com/contact.html" />
+    <meta property="og:url" content="https://portfolio-t8fp.vercel.app/contact.html" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="無料相談・お問い合わせ|岡山のWeb制作 Gaku" />
-    <meta property="og:description" content="Web制作・LINE予約システム導入の無料相談はこちら。LINEまたはフォームから、1〜2営業日以内にご返信します。" />
-    <meta property="og:image" content="https://gaku-web.com/img/ogp.png" />
+    <meta property="og:title" content="Contact | Gaku portfolio" />
+    <meta property="og:description" content="Gakuへのお問い合わせ" />
+    <meta property="og:image" content="https://portfolio-t8fp.vercel.app/img/nail-fullpage.jpg" />
     <meta property="og:locale" content="ja_JP" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="https://gaku-web.com/img/ogp.png" />
-    <meta name="twitter:description" content="Web制作・LINE予約システム導入の無料相談はこちら。LINEまたはフォームから、1〜2営業日以内にご返信します。" />
+    <meta name="twitter:description" content="Gakuへのお問い合わせ" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -36,7 +35,7 @@
 
   <body>
     <header class="l-header">
-      <div class="header-logo">
+      <h1 class="header-logo">
         <a href="index.html" class="u-nav-link">
           <div class="header-logo-img-box">
             <img
@@ -48,11 +47,10 @@
             />
           </div>
         </a>
-      </div>
+      </h1>
       <nav class="l-header__nav">
         <ul class="l-header__nav-list">
           <li><a href="works.html">Works</a></li>
-          <li><a href="CUE.html">Product</a></li>
           <li><a href="about.html">About</a></li>
           <li><a href="contact.html">Contact</a></li>
         </ul>
@@ -74,12 +72,12 @@
         <div class="l_container">
           <div class="m_section-title">
             <span class="m_section-title__sub">contact</span>
-            <h1 class="m_section-title__main">お問い合わせ</h1>
+            <h2 class="m_section-title__main">お問い合わせ</h2>
           </div>
 
           <p class="contact__lead">
             Web制作・予約システムの導入など、お気軽にご相談ください。<br />
-            通常1〜2営業日以内にご返信いたします。
+            通常2〜3営業日以内にご返信いたします。
           </p>
 
           <form class="contact__form" action="https://formspree.io/f/mojongdz" method="POST">
@@ -147,7 +145,7 @@
           <div class="contact__line">
             <p class="contact__line-text">LINEでのお問い合わせはこちら</p>
             <a
-              href="https://lin.ee/77WP6zp"
+              href="https://lin.ee/YFcY1R5"
               target="_blank"
               rel="noopener noreferrer"
               class="m_button m_button__line"

@@ -3,26 +3,25 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>SatoCafe|Web制作事例|Gaku</title>
-    <link rel="canonical" href="https://gaku-web.com/SatoCafe.html" />
-    <meta name="description" content="カフェサイトのデモ制作事例。情報整理と導線設計を重視し、WordPressテーマとして納品できる形で実装しました。" />
+    <title>SatoCafe | Works | Gaku portfolio</title>
+    <meta name="description" content="SatoCafeの制作実績詳細" />
 
     <!-- google fonts -->
     <!-- favicon/web-clip-icon -->
-    <link rel="icon" href="img/favicon-32.png" type="image/png" sizes="32x32" />
-    <link rel="icon" href="img/favicon-192.png" type="image/png" sizes="192x192" />
-    <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
+    <link rel="icon" href="" type="image/ico" />
+    <link rel="icon" href="" type="image/png" />
+    <link rel="icon" href="" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="" />
     <!-- ogp -->
     <meta property="og:site_name" content="Gaku portfolio" />
-    <meta property="og:url" content="https://gaku-web.com/SatoCafe.html" />
+    <meta property="og:url" content="" />
     <meta property="og:type" content="article" />
-    <meta property="og:title" content="SatoCafe|Web制作事例|Gaku" />
-    <meta property="og:description" content="カフェサイトのデモ制作事例。情報整理と導線設計を重視し、WordPressテーマとして納品できる形で実装しました。" />
-    <meta property="og:image" content="https://gaku-web.com/img/ogp.png" />
+    <meta property="og:title" content="SatoCafe | Works | Gaku portfolio" />
+    <meta property="og:description" content="SatoCafeの制作実績詳細" />
+    <meta property="og:image" content="" />
     <meta property="og:locale" content="ja_JP" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="https://gaku-web.com/img/ogp.png" />
-    <meta name="twitter:description" content="カフェサイトのデモ制作事例。情報整理と導線設計を重視し、WordPressテーマとして納品できる形で実装しました。" />
+    <meta name="twitter:description" content="SatoCafeの制作実績詳細" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -38,7 +37,7 @@
 
   <body>
     <header class="l-header">
-      <div class="header-logo">
+      <h1 class="header-logo">
         <a href="index.html" class="u-nav-link">
           <div class="header-logo-img-box">
             <img
@@ -50,11 +49,10 @@
             />
           </div>
         </a>
-      </div>
+      </h1>
       <nav class="l-header__nav">
         <ul class="l-header__nav-list">
           <li><a href="works.html">Works</a></li>
-          <li><a href="CUE.html">Product</a></li>
           <li><a href="about.html">About</a></li>
           <li><a href="contact.html">Contact</a></li>
         </ul>
@@ -83,14 +81,14 @@
       </div>
 
       <div class="l_container">
-        <h1 class="works-detail__title">
+        <h2 class="works-detail__title">
           <a
             href="https://sato-cafe.vercel.app"
             target="_blank"
             rel="noopener noreferrer"
             >SatoCafe</a
           >
-        </h1>
+        </h2>
 
         <dl class="works-detail__list">
           <div class="works-detail__item">
