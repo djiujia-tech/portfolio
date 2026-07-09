@@ -645,28 +645,14 @@ body {
 /* FV読み込み時のエントランスアニメーション
    コピー→奥(右から)→手前(左から)→スマホ(下から)の時間差 */
 @media (prefers-reduced-motion: no-preference) {
-  .top-kv-copy_box {
-    animation: kv-fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
   .top-kv-visual__browser {
-    animation: kv-from-left 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both;
+    animation: kv-from-left 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
   }
   .top-kv-visual__browser--back {
-    animation: kv-from-right 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+    animation: kv-from-right 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
   .top-kv-visual__phone {
-    animation: kv-phone-up 0.8s cubic-bezier(0.34, 1.3, 0.4, 1) 0.55s both;
-  }
-}
-
-@keyframes kv-fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(28px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
+    animation: kv-phone-up 0.8s cubic-bezier(0.34, 1.3, 0.4, 1) 0.4s both;
   }
 }
 
