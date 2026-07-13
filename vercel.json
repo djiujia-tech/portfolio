@@ -1,0 +1,6 @@
+{
+  "redirects": [
+    { "source": "/CUE.html", "destination": "/cue.html", "permanent": true },
+    { "source": "/SatoCafe.html", "destination": "/sato-cafe.html", "permanent": true }
+  ]
+}

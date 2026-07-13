@@ -3,11 +3,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>岡山のWeb制作・LINE予約システム開発|Gaku portfolio</title>
+    <title>医療・治療院のWeb制作｜元看護師のWebデザイナー Gaku（岡山）</title>
     <link rel="canonical" href="https://gaku-web.com/" />
     <meta
       name="description"
-      content="岡山のフリーランスWebデザイナーGaku。看護師出身。ホームページ制作からLINE予約システム「CUE」の開発・導入まで一人で一貫対応。全国リモート対応可。"
+      content="臨床8年の元看護師が手がける、医療・治療院・介護に特化したWeb制作（岡山）。クリニック・整体院・訪問看護のホームページから、LINE予約システム「CUE」の導入まで一貫対応。全国リモート可。"
     />
     <meta name="format-detection" content="telephone=no" />
 
@@ -20,17 +20,17 @@
     <meta property="og:site_name" content="Gaku portfolio" />
     <meta property="og:url" content="https://gaku-web.com/" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="岡山のWeb制作・LINE予約システム開発|Gaku portfolio" />
+    <meta property="og:title" content="医療・治療院のWeb制作｜元看護師のWebデザイナー Gaku（岡山）" />
     <meta
       property="og:description"
-      content="岡山のフリーランスWebデザイナーGaku。看護師出身。ホームページ制作からLINE予約システム「CUE」の開発・導入まで一人で一貫対応。全国リモート対応可。"
+      content="臨床8年の元看護師が手がける、医療・治療院・介護に特化したWeb制作（岡山）。クリニック・整体院・訪問看護のホームページから、LINE予約システム「CUE」の導入まで一貫対応。全国リモート可。"
     />
     <meta property="og:image" content="https://gaku-web.com/img/ogp.png" />
     <meta property="og:locale" content="ja_JP" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta
       name="twitter:description"
-      content="岡山のフリーランスWebデザイナーGaku。看護師出身。ホームページ制作からLINE予約システム「CUE」の開発・導入まで一人で一貫対応。全国リモート対応可。"
+      content="臨床8年の元看護師が手がける、医療・治療院・介護に特化したWeb制作（岡山）。クリニック・整体院・訪問看護のホームページから、LINE予約システム「CUE」の導入まで一貫対応。全国リモート可。"
     />
     <meta name="twitter:image:src" content="https://gaku-web.com/img/ogp.png" />
 
@@ -51,17 +51,31 @@
     {
       "@context": "https://schema.org",
       "@type": "ProfessionalService",
-      "name": "Gaku | Web制作・LINE予約システム開発",
+      "name": "Gaku Web",
+      "description": "臨床8年の元看護師が手がける、医療・治療院・介護に特化したWeb制作。ホームページ制作からLINE予約システム「CUE」の導入まで一貫対応。",
       "url": "https://gaku-web.com/",
       "image": "https://gaku-web.com/img/ogp.png",
-      "description": "岡山のフリーランスWebデザイナー。看護師出身。ホームページ制作からLINE予約システム「CUE」の開発・導入まで一貫対応。",
-      "areaServed": "岡山県(全国リモート対応可)",
-      "priceRange": "¥50,000〜",
+      "areaServed": [
+        { "@type": "AdministrativeArea", "name": "岡山県" },
+        { "@type": "Country", "name": "日本" }
+      ],
+      "address": {
+        "@type": "PostalAddress",
+        "addressRegion": "岡山県",
+        "addressCountry": "JP"
+      },
       "founder": {
         "@type": "Person",
         "name": "Gaku",
-        "jobTitle": "Webデザイナー"
-      }
+        "jobTitle": "Webデザイナー",
+        "description": "急性期・慢性期病棟で8年間勤務した元看護師。医療・治療院・介護分野のWeb制作を専門とする。",
+        "knowsAbout": ["Webデザイン", "Next.js", "Supabase", "LINE LIFF", "医療機関のWeb集患"]
+      },
+      "makesOffer": [
+        { "@type": "Offer", "name": "LP制作", "priceCurrency": "JPY", "price": "50000" },
+        { "@type": "Offer", "name": "Webサイト制作一式", "priceCurrency": "JPY", "price": "150000" },
+        { "@type": "Offer", "name": "LINE予約システム CUE 導入", "priceCurrency": "JPY", "price": "50000" }
+      ]
     }
     </script>
   </head>
@@ -72,19 +86,24 @@
         <a href="index.html" class="u-nav-link">
           <div class="header-logo-img-box">
             <img
-              src="img/portfolio_logo.png"
-              alt="logo"
-              height="1312"
-              width="816"
-              class="l-header-logo_img"
-            />
+              src="img/logo_yoko_white.png"
+              alt="Gaku｜医療・治療院専門のWeb制作"
+              width="800"
+              height="360"
+              class="l-header-logo_img l-header-logo_img--w" decoding="async" />
+            <img
+              src="img/logo_yoko.png"
+              alt="Gaku｜医療・治療院専門のWeb制作"
+              width="800"
+              height="360"
+              class="l-header-logo_img l-header-logo_img--d" decoding="async" />
           </div>
         </a>
       </div>
       <nav class="l-header__nav">
         <ul class="l-header__nav-list">
           <li><a href="works.html">Works</a></li>
-          <li><a href="CUE.html">Product</a></li>
+          <li><a href="cue.html">Product</a></li>
           <li><a href="blog.html">Blog</a></li>
           <li><a href="about.html">About</a></li>
           <li><a href="contact.html">Contact</a></li>
@@ -104,33 +123,33 @@
     <div class="top-kv">
       <div class="top-kv__inner">
         <div class="top-kv-copy_box">
-          <p class="top-kv-eyebrow">看護師出身のWebデザイナー / Gaku</p>
+          <p class="top-kv-eyebrow">臨床8年の元看護師 × Webデザイナー / Gaku</p>
           <h1 class="top-kv-copy-main">
-            <span>「伝わる」を</span>
-            <span class="top-kv-copy-main__justify">設計する</span>
+            <span style="text-indent: 0">医療・治療院のWebは、</span>
+            <span style="text-indent: 0">現場を知っている人に。</span>
           </h1>
           <p class="top-kv-copy-sub">
-            サイト制作からLINE予約システムの導入まで、<br />一人で一貫対応します。
+            急性期・慢性期病棟で8年。患者さんが何に不安を感じ、何で予約をやめるのかを、現場で見てきました。<br />サイト制作からLINE予約システムの導入まで、一人で一貫対応します。
           </p>
           <div class="top-kv-button-wrapper">
             <a href="#works" class="m_button m_button__brack">制作事例を見る</a>
             <a href="contact.html" class="m_button">無料相談はこちら</a>
           </div>
           <ul class="top-kv-points">
-            <li>デザイン〜実装まで一貫対応</li>
-            <li>LINE予約システムを自主開発</li>
-            <li>全作品、触れるデモ公開中</li>
+            <li>臨床経験8年／医療・治療院・介護のWebに特化</li>
+            <li>LINE予約システム「CUE」を自社開発</li>
+            <li>デザインから実装・公開後の運用まで一人で完結</li>
           </ul>
         </div>
         <div class="top-kv-visual" aria-hidden="true">
           <div class="top-kv-visual__screen top-kv-visual__browser top-kv-visual__browser--back">
-            <img src="img/cue-kv.png" alt="" width="1125" height="1115" />
+            <img src="img/cue-kv.png" alt="" width="1125" height="1115" decoding="async" />
           </div>
           <div class="top-kv-visual__screen top-kv-visual__browser">
-            <img src="img/works-reve-pc.jpg" alt="" width="1200" height="967" />
+            <img src="img/works-reve-pc.jpg" alt="" width="1200" height="967" decoding="async" />
           </div>
           <div class="top-kv-visual__phone">
-            <img src="img/cue-kv-mobile.png" alt="" width="448" height="930" />
+            <img src="img/cue-kv-mobile.png" alt="" width="448" height="930" decoding="async" />
           </div>
         </div>
       </div>
@@ -200,7 +219,7 @@
                   <li class="top-service__tag">LINE LIFF</li>
                 </ul>
                 <div class="top-service__item-btn">
-                  <a href="CUE.html" class="m_button">詳しく見る</a>
+                  <a href="cue.html" class="m_button">詳しく見る</a>
                 </div>
               </li>
             </ul>
@@ -221,12 +240,11 @@
                 <div class="top-works__item-img-box">
                   <img
                     src="img/works-nail.png"
-                    alt="Nail Atelier RÊVE"
+                    alt="Nail Atelier RÊVE｜ネイルサロンのWebサイト制作事例"
                     width="600"
                     height="400"
                     loading="lazy"
-                    class="top-works__item-img"
-                  />
+                    class="top-works__item-img" decoding="async" />
                 </div>
                 <div class="top-works__txt-wrapper">
                   <h3 class="top-works__name">Nail Atelier RÊVE</h3>
@@ -240,19 +258,18 @@
                 <div class="top-works__item-img-box">
                   <img
                     src="img/works-graduation.jpg"
-                    alt="SatoCafe"
+                    alt="SatoCafe｜カフェのWebサイト制作事例"
                     width="600"
                     height="400"
                     loading="lazy"
-                    class="top-works__item-img"
-                  />
+                    class="top-works__item-img" decoding="async" />
                 </div>
                 <div class="top-works__txt-wrapper">
                   <h3 class="top-works__name">SatoCafe</h3>
                   <p class="top-works__text">
                     カフェの認知向上を目的に、情報の整理と導線設計を重視。WordPressテーマとして納品できる形で制作しました。
                   </p>
-                  <a href="SatoCafe.html" class="m_button">詳しく見る</a>
+                  <a href="sato-cafe.html" class="m_button">詳しく見る</a>
                 </div>
               </li>
             </ul>
@@ -323,16 +340,16 @@
                   class="top-about__img"
                   width="600"
                   height="600"
-                  loading="lazy"
-                />
+                  loading="lazy" decoding="async" />
               </div>
 
               <div class="top-about__txt-wrapper">
                 <h3 class="top-about__name">Gaku</h3>
                 <p class="top-about__text">
-                  看護師として急性期・慢性期病棟で勤務しています。患者様への説明、スタッフへの情報共有を通じて「情報をわかりやすく整理して伝える」ことの重要性を実感し、それがそのままWeb制作への興味につながりました。<br />
-                  独学とスクールで半年間学習し、現在はデザインからコーディングまで一貫して対応しています。<br />
-                  自分のスタイルを押しつけるのではなく、クライアントの世界観に合わせたデザインができることを強みとしています。
+                  急性期・慢性期の病棟で、看護師として8年間勤務してきました。患者さんへの説明、スタッフ間の申し送り。現場でずっとやっていたのは「複雑な情報を、相手がわかる形に整理して伝える」ことでした。<br />
+                  Webサイトも同じだと思っています。専門的なサービスほど、伝え方ひとつで「行ってみよう」にも「よくわからないからやめよう」にも変わる。<br />
+                  だから僕は、医療・治療院・介護といった"説明がむずかしい"分野のWebを専門にしています。院内で何が起きているか、スタッフが何に困るか、患者さんが何を不安に思うか。それを現場で見てきたことが、そのまま設計に活きます。<br />
+                  デザインからコーディング、公開後の運用まで、一人で一貫して対応します。
                 </p>
               </div>
             </div>

@@ -1965,3 +1965,14 @@ body {
 .top-plans__sim-link:hover {
   text-decoration: underline;
 }
+
+/* 新ロゴ: KVの上では白、白背景ヘッダーでは紺に切り替え */
+.l-header-logo_img--d {
+  display: none;
+}
+.l-header.is-scrolled .l-header-logo_img--w {
+  display: none;
+}
+.l-header.is-scrolled .l-header-logo_img--d {
+  display: block;
+}
