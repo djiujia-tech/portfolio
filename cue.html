@@ -173,10 +173,16 @@
     <main class="l_main">
       <div class="cue-kv">
         <div class="cue-kv__screen cue-kv__screen--mobile">
-          <img src="img/cue-kv-mobile.png" alt="CUE 顧客画面" width="448" height="930" decoding="async" />
+          <picture>
+            <source srcset="img/cue-kv-mobile.webp" type="image/webp" />
+            <img src="img/cue-kv-mobile.png" alt="CUE 顧客画面" width="448" height="930" decoding="async" />
+          </picture>
         </div>
         <div class="cue-kv__screen cue-kv__screen--admin">
-          <img src="img/cue-kv.png" alt="CUE 管理画面" width="1125" height="1115" decoding="async" />
+          <picture>
+            <source srcset="img/cue-kv.webp" type="image/webp" />
+            <img src="img/cue-kv.png" alt="CUE 管理画面" width="1125" height="1115" fetchpriority="high" decoding="async" />
+          </picture>
         </div>
       </div>
 

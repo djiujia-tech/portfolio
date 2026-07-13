@@ -78,12 +78,15 @@
 
     <main class="l_main">
       <div class="works-detail__kv">
-        <img
-          src="img/works-deers.jpg"
-          alt="OITA DEERS U15｜スポーツチームのWebサイト制作事例"
-          width="1200"
-          height="675"
-          class="works-detail__kv-img" decoding="async" />
+        <picture>
+          <source srcset="img/works-deers.webp" type="image/webp" />
+          <img
+            src="img/works-deers.jpg"
+            alt="OITA DEERS U15｜スポーツチームのWebサイト制作事例"
+            width="1200"
+            height="675"
+            class="works-detail__kv-img" fetchpriority="high" decoding="async" />
+        </picture>
       </div>
 
       <div class="l_container">
