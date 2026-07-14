@@ -463,26 +463,40 @@ body {
   margin-right: -0.5em;
 }
 
-/* SPはコピー一式を中央配置。ロックアップはぶら下げなしで
-   1行目(6文字=6em)と2行目(4文字+字間)を同幅に揃えて左右対称にする */
+/* SP: コピーを絞り、実績ビジュアルをファーストビュー内(H1直下)に引き上げる。
+   copy_boxをdisplay:contentsで透過し、visualをH1とサブの間にorderで差し込む */
 @media (max-width: 767px) {
-  .top-kv-copy_box {
+  .top-kv__inner {
     align-items: center;
     text-align: center;
+    gap: 20px;
+  }
+  .top-kv-copy_box {
+    display: contents;
+  }
+  .top-kv-eyebrow {
+    order: 1;
   }
   .top-kv-copy-main {
+    order: 2;
     width: fit-content;
     margin-inline: auto;
   }
   .top-kv-copy-main span:first-child {
     text-indent: 0;
   }
-  .top-kv-copy-main__justify {
-    letter-spacing: 0.6667em;
-    margin-right: -0.6667em;
+  .top-kv-visual {
+    order: 3;
+  }
+  .top-kv-copy-sub {
+    order: 4;
   }
   .top-kv-button-wrapper {
+    order: 5;
     width: 100%;
+  }
+  .top-kv-points {
+    order: 6;
   }
 }
 
@@ -504,6 +518,15 @@ body {
 @media (min-width: 768px) {
   .u-sp-only {
     display: none;
+  }
+}
+
+.u-pc-only {
+  display: none;
+}
+@media (min-width: 768px) {
+  .u-pc-only {
+    display: inline;
   }
 }
 
