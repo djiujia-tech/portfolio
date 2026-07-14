@@ -1561,6 +1561,25 @@ body {
   opacity: 0.7;
 }
 
+/* 本文中のテキストリンクは色＋下線で明示(リンクだと一目でわかるように)。
+   ナビ・ボタン・カードリンクは別スタイルなので影響しない */
+.works-detail__text a,
+.post__lead a,
+.post__body a {
+  color: var(--primary-color);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+  transition: opacity 0.2s;
+}
+.works-detail__text a:hover,
+.post__lead a:hover,
+.post__body a:hover {
+  opacity: 0.7;
+}
+
 .works-detail__list {
   display: flex;
   flex-direction: column;
