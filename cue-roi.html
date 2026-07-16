@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LINE予約システム費用シミュレーター|CUE</title>
 <link rel="canonical" href="https://gaku-web.com/cue-roi.html" />
-<meta name="description" content="今の予約サービスの費用とLINE予約システム「CUE」を比較。月間予約数と客単価を入れるだけで、年間の削減額を試算できます。" />
+<meta name="description" content="今の予約サービスの費用とLINE予約システム「CUE」を比較。月間予約数と客単価を入れるだけで、年間の削減額を試算できます。整体・接骨院・美容など業種別に対応。" />
 <link rel="icon" href="img/favicon-32.png" type="image/png" sizes="32x32" />
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
 <meta property="og:site_name" content="Gaku portfolio" />
 <meta property="og:url" content="https://gaku-web.com/cue-roi.html" />
 <meta property="og:type" content="website" />
 <meta property="og:title" content="LINE予約システム費用シミュレーター|CUE" />
-<meta property="og:description" content="数字を入れるだけで、LINE予約システム「CUE」に切り替えた場合の年間差額を試算できます。" />
+<meta property="og:description" content="数字を入れるだけで、LINE予約システム「CUE」に切り替えた場合の年間差額を試算できます。整体・接骨院・美容など業種別に対応。" />
 <meta property="og:image" content="https://gaku-web.com/img/ogp.png" />
 <meta property="og:locale" content="ja_JP" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -51,6 +51,19 @@
   select { padding-right: 14px; appearance: none; cursor: pointer; }
   input:focus, select:focus { border-color: #EC4899; box-shadow: 0 0 0 3px rgba(236,72,153,0.1); }
 
+  /* Mode toggle */
+  .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 540px) { .mode-grid { grid-template-columns: 1fr; } }
+  .mode-btn {
+    background: #0F172A; border: 2px solid #334155; border-radius: 12px; padding: 16px;
+    cursor: pointer; transition: all 0.15s; text-align: left;
+  }
+  .mode-btn:hover { border-color: #475569; }
+  .mode-btn.active { border-color: #EC4899; background: rgba(236,72,153,0.08); }
+  .mode-btn .mname { font-size: 14px; font-weight: 800; color: #F1F5F9; }
+  .mode-btn .mdesc { font-size: 11px; color: #64748B; margin-top: 4px; line-height: 1.5; }
+  .mode-btn.active .mname { color: #EC4899; }
+
   /* Service selector */
   .service-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 4px; }
   @media (max-width: 420px) { .service-grid { grid-template-columns: 1fr; } }
@@ -82,7 +95,7 @@
   .cost-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid #0F172A; font-size: 12px; }
   .cost-row:last-child { border-bottom: none; }
   .cost-row .clabel { color: #64748B; }
-  .cost-row .cvalue { font-weight: 600; color: #CBD5E1; }
+  .cost-row .cvalue { font-weight: 600; color: #CBD5E1; text-align: right; }
   .cost-row.total { margin-top: 8px; padding-top: 12px; border-top: 1px solid #334155; border-bottom: none; }
   .cost-row.total .clabel { color: #94A3B8; font-weight: 700; font-size: 13px; }
   .cost-row.total .cvalue { font-size: 18px; font-weight: 800; color: #F1F5F9; }
@@ -98,7 +111,7 @@
   .t-bar.current { background: linear-gradient(90deg, #475569, #64748B); }
   .t-bar.cue { background: linear-gradient(90deg, #BE185D, #EC4899); }
   .t-value { font-size: 12px; font-weight: 700; color: white; white-space: nowrap; }
-  .t-legend { display: flex; gap: 16px; margin-bottom: 16px; }
+  .t-legend { display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
   .t-legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #94A3B8; }
   .t-dot { width: 10px; height: 10px; border-radius: 3px; }
   .t-dot.current { background: #64748B; }
@@ -114,8 +127,8 @@
   .cta-btn { display: block; width: 100%; background: linear-gradient(135deg, #BE185D, #EC4899); color: white; border: none; border-radius: 12px; padding: 16px; font-size: 16px; font-weight: 800; cursor: pointer; margin-top: 20px; transition: opacity 0.2s; text-align: center; letter-spacing: 0.05em; }
   .cta-btn:hover { opacity: 0.9; }
 
+  .assumption { font-size: 11px; color: #64748B; line-height: 1.6; margin-top: 14px; padding-top: 14px; border-top: 1px dashed #334155; }
   .hidden { display: none !important; }
-  .zero-case { text-align: center; padding: 32px; color: #475569; font-size: 14px; }
 
   /* サイトへの回遊バー・注記・フッター */
   .site-bar { display: flex; justify-content: space-between; align-items: center; padding: 14px 24px; background: #0F172A; border-bottom: 1px solid #1E293B; }
@@ -138,15 +151,36 @@
 
 <div class="hero">
   <div class="hero-badge">✦ ROI SIMULATOR</div>
-  <h1>今のコスト、本当に適正ですか？</h1>
-  <p>数字を入れるだけで、CUEに切り替えた場合の差額がわかります</p>
+  <h1 id="hero_title">今の予約管理、いくら損してる？</h1>
+  <p id="hero_sub">数字を入れるだけで、CUEに切り替えた場合のメリットがわかります</p>
 </div>
 
 <div class="container">
 
-  <!-- INPUTS -->
+  <!-- INDUSTRY -->
   <div class="card">
-    <div class="card-title">サロン情報を入力</div>
+    <div class="card-title">業種を選択</div>
+    <div class="mode-grid" id="industry_grid"></div>
+  </div>
+
+  <!-- MODE TOGGLE -->
+  <div class="card">
+    <div class="card-title">あなたの今の予約管理は？</div>
+    <div class="mode-grid" id="mode_grid">
+      <button class="mode-btn active" data-mode="cost" onclick="selectMode(this)">
+        <div class="mname">掲載サービスに料金を払っている</div>
+        <div class="mdesc">ホットペッパー・ネイルブック等に掲載費や手数料を払っている</div>
+      </button>
+      <button class="mode-btn" data-mode="manual" onclick="selectMode(this)">
+        <div class="mname">紙・電話・LINEで管理している</div>
+        <div class="mdesc">掲載費は払っていない。予約は電話やLINE、ノートで受けている</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- SHARED INPUTS -->
+  <div class="card">
+    <div class="card-title">お店の情報を入力</div>
     <div class="form-grid">
       <div class="form-group">
         <label>月間予約数（平均）</label>
@@ -165,53 +199,66 @@
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-title">現在使っているサービス</div>
-    <div class="service-grid">
-      <button class="service-btn active" data-service="hpb" onclick="selectService(this)">
-        <div class="sname">ホットペッパービューティー</div>
-        <div class="sdesc">掲載費＋予約手数料2%</div>
-      </button>
-      <button class="service-btn" data-service="nailbook_biz" onclick="selectService(this)">
-        <div class="sname">ネイルブック（ビジネス）</div>
-        <div class="sdesc">月額¥8,000〜 手数料なし</div>
-      </button>
-      <button class="service-btn" data-service="nailbook_lite" onclick="selectService(this)">
-        <div class="sname">ネイルブック（ライト）</div>
-        <div class="sdesc">月額¥990＋新規予約20%</div>
-      </button>
-      <button class="service-btn" data-service="lstep" onclick="selectService(this)">
-        <div class="sname">Lステップ</div>
-        <div class="sdesc">月額¥5,000〜 手数料なし</div>
-      </button>
+  <!-- ===== MODE A: COST ===== -->
+  <div id="mode_cost">
+    <div class="card">
+      <div class="card-title">現在使っているサービス</div>
+      <div class="service-grid" id="service_grid"></div>
     </div>
-    <p class="disclaimer">
-      ※ プリセットの金額・手数料率は各サービスの公開情報を元にした目安です(プラン・時期により異なります)。実際の契約内容に合わせて、下の「月額掲載費」「手数料率」を自由に書き換えてください。
-    </p>
+
+    <div class="card">
+      <div class="card-title">現在の月額掲載費</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label id="monthly_fee_label">月額掲載費</label>
+          <div class="input-wrap">
+            <input type="number" id="monthly_fee" value="30000" min="0">
+            <span class="unit">円</span>
+          </div>
+        </div>
+        <div class="form-group" id="commission_rate_group">
+          <label>手数料率</label>
+          <div class="input-wrap">
+            <input type="number" id="commission_rate" value="2" min="0" max="100" step="0.1">
+            <span class="unit">%</span>
+          </div>
+        </div>
+        <div class="form-group" id="new_customer_ratio_group" style="display:none">
+          <label>新規顧客の割合 <span style="color:#64748B;font-weight:400">（手数料は新規のみ）</span></label>
+          <div class="input-wrap">
+            <input type="number" id="new_customer_ratio" value="40" min="0" max="100">
+            <span class="unit">%</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="card" id="custom_input_card">
-    <div class="card-title">現在の月額掲載費</div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label id="monthly_fee_label">月額掲載費</label>
-        <div class="input-wrap">
-          <input type="number" id="monthly_fee" value="30000" min="0">
-          <span class="unit">円</span>
+  <!-- ===== MODE B: MANUAL ===== -->
+  <div id="mode_manual" class="hidden">
+    <div class="card">
+      <div class="card-title">今の「手間」と「取りこぼし」</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>予約1件の連絡対応時間 <span style="color:#64748B;font-weight:400">（電話・LINE往復）</span></label>
+          <div class="input-wrap">
+            <input type="number" id="minutes_per_booking" value="5" min="0">
+            <span class="unit">分</span>
+          </div>
         </div>
-      </div>
-      <div class="form-group" id="commission_rate_group">
-        <label>手数料率</label>
-        <div class="input-wrap">
-          <input type="number" id="commission_rate" value="2" min="0" max="100" step="0.1">
-          <span class="unit">%</span>
+        <div class="form-group">
+          <label>月の無断・直前キャンセル</label>
+          <div class="input-wrap">
+            <input type="number" id="monthly_noshow" value="3" min="0">
+            <span class="unit">件</span>
+          </div>
         </div>
-      </div>
-      <div class="form-group" id="new_customer_ratio_group" style="display:none">
-        <label>新規顧客の割合 <span style="color:#64748B;font-weight:400">（手数料は新規のみ）</span></label>
-        <div class="input-wrap">
-          <input type="number" id="new_customer_ratio" value="40" min="0" max="100">
-          <span class="unit">%</span>
+        <div class="form-group full">
+          <label>あなたの時給換算 <span style="color:#64748B;font-weight:400">（対応時間を金額に直すため）</span></label>
+          <div class="input-wrap">
+            <input type="number" id="hourly_wage" value="2000" min="0">
+            <span class="unit">円</span>
+          </div>
         </div>
       </div>
     </div>
@@ -220,7 +267,7 @@
   <!-- RESULTS -->
   <div id="result_section">
     <div class="result-hero">
-      <div class="result-label">CUEに切り替えると 年間</div>
+      <div class="result-label" id="result_label">CUEに切り替えると 年間</div>
       <div class="result-amount"><span>¥</span><span id="annual_saving">—</span></div>
       <div class="result-sub" id="result_sub">の削減が見込めます</div>
     </div>
@@ -229,23 +276,21 @@
       <div class="comp-card">
         <div class="comp-label">CURRENT</div>
         <div class="comp-name" id="current_service_name">ホットペッパービューティー</div>
-        <div class="cost-row"><span class="clabel">月額費用</span><span class="cvalue" id="c_monthly_fee">—</span></div>
-        <div class="cost-row"><span class="clabel">手数料</span><span class="cvalue" id="c_commission">—</span></div>
-        <div class="cost-row total"><span class="clabel">月間合計</span><span class="cvalue" id="c_total">—</span></div>
+        <div id="current_rows"></div>
+        <div class="cost-row total"><span class="clabel" id="current_total_label">月間合計</span><span class="cvalue" id="c_total">—</span></div>
       </div>
       <div class="comp-card cue">
         <div class="comp-label">CUE</div>
         <div class="comp-name">CUE（LINE予約システム）</div>
-        <div class="cost-row"><span class="clabel">月額費用</span><span class="cvalue">¥5,000</span></div>
-        <div class="cost-row"><span class="clabel">手数料</span><span class="cvalue" style="color:#EC4899">なし</span></div>
-        <div class="cost-row total"><span class="clabel">月間合計</span><span class="cvalue">¥5,000</span></div>
+        <div id="cue_rows"></div>
+        <div class="cost-row total"><span class="clabel">月額合計</span><span class="cvalue">¥5,000</span></div>
       </div>
     </div>
 
     <div class="timeline-card">
-      <div class="card-title">積み上がる差額</div>
+      <div class="card-title" id="timeline_title">積み上がる差額</div>
       <div class="t-legend">
-        <div class="t-legend-item"><div class="t-dot current"></div>現在のサービス</div>
+        <div class="t-legend-item"><div class="t-dot current"></div><span id="legend_current">現在のサービス</span></div>
         <div class="t-legend-item"><div class="t-dot cue"></div>CUE</div>
       </div>
       <div class="timeline-row">
@@ -280,6 +325,7 @@
     <div class="recommend-box">
       <h3>💡 この数字が意味すること</h3>
       <div class="point-list" id="insights"></div>
+      <div class="assumption" id="assumption_note"></div>
     </div>
 
     <a
@@ -303,110 +349,270 @@
 </footer>
 
 <script>
-const SERVICES = {
-  hpb: { name: 'ホットペッパービューティー', fee: 30000, rate: 2 },
-  nailbook_biz: { name: 'ネイルブック（ビジネス）', fee: 8000, rate: 0 },
-  nailbook_lite: { name: 'ネイルブック（ライト）', fee: 990, rate: 20 },
-  lstep: { name: 'Lステップ', fee: 5000, rate: 0 },
+// 業種ごとに「比較サービス・初期値・語彙・既定モード」を切り替える
+const INDUSTRIES = {
+  nail: {
+    label: 'ネイル・まつ毛・エステ',
+    price: 8000, bookings: 80, mode: 'cost',
+    reinvest: '機材・消耗品や集客',
+    services: {
+      hpb:          { name: 'ホットペッパービューティー', desc: '掲載費＋予約手数料2%', fee: 30000, rate: 2 },
+      nailbook_biz: { name: 'ネイルブック（ビジネス）', desc: '月額¥8,000〜 手数料なし', fee: 8000, rate: 0 },
+      nailbook_lite:{ name: 'ネイルブック（ライト）', desc: '月額¥990＋新規予約20%', fee: 990, rate: 20, newOnly: true },
+      lstep:        { name: 'Lステップ', desc: '月額¥5,000〜 手数料なし', fee: 5000, rate: 0 },
+    },
+  },
+  seitai: {
+    label: '整体・鍼灸・接骨院',
+    price: 5000, bookings: 100, mode: 'manual',
+    reinvest: '施術ベッドや勉強会・回数券施策',
+    services: {
+      hpb:   { name: 'ホットペッパー（リラク&ビューティー）', desc: '掲載費＋予約手数料', fee: 30000, rate: 2 },
+      epark: { name: 'EPARK等の掲載サービス', desc: '月額の掲載費', fee: 20000, rate: 0 },
+      lstep: { name: 'Lステップ', desc: '月額¥5,000〜 手数料なし', fee: 5000, rate: 0 },
+    },
+  },
+  hair: {
+    label: '美容室・理容室',
+    price: 7000, bookings: 120, mode: 'cost',
+    reinvest: '薬剤・設備や集客',
+    services: {
+      hpb:   { name: 'ホットペッパービューティー', desc: '掲載費＋予約手数料2%', fee: 30000, rate: 2 },
+      other: { name: 'その他の掲載サービス', desc: '月額の掲載費', fee: 15000, rate: 0 },
+      lstep: { name: 'Lステップ', desc: '月額¥5,000〜 手数料なし', fee: 5000, rate: 0 },
+    },
+  },
+  other: {
+    label: 'その他の店舗',
+    price: 6000, bookings: 80, mode: 'cost',
+    reinvest: '設備や集客',
+    services: {
+      hpb:   { name: 'ホットペッパービューティー', desc: '掲載費＋予約手数料2%', fee: 30000, rate: 2 },
+      other: { name: 'その他の掲載サービス', desc: '月額の掲載費', fee: 15000, rate: 0 },
+      lstep: { name: 'Lステップ', desc: '月額¥5,000〜 手数料なし', fee: 5000, rate: 0 },
+    },
+  },
 };
 
+const CUE_FEE = 5000;
+const NOSHOW_REDUCTION = 0.5; // リマインドによる無断キャンセル抑制率の仮定
+
+let industry = 'nail';    // INDUSTRIES のキー
+let mode = 'cost';        // 'cost' | 'manual'
 let currentService = 'hpb';
+
+// 現在の業種の services を返す
+function svcMap() { return INDUSTRIES[industry].services; }
+
+function selectMode(btn) { setMode(btn.dataset.mode); calculate(); }
+
+// モードを設定（業種切替からも呼ぶ）
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('#mode_grid .mode-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.mode === m));
+  document.getElementById('mode_cost').classList.toggle('hidden', m !== 'cost');
+  document.getElementById('mode_manual').classList.toggle('hidden', m !== 'manual');
+  if (m === 'cost') {
+    document.getElementById('hero_title').textContent = '今のコスト、本当に適正ですか？';
+    document.getElementById('hero_sub').textContent = '数字を入れるだけで、CUEに切り替えた場合の差額がわかります';
+  } else {
+    document.getElementById('hero_title').textContent = 'その手間と取りこぼし、いくら損してる？';
+    document.getElementById('hero_sub').textContent = '掲載費ゼロでも、時間と無断キャンセルは見えないコストです';
+  }
+}
+
+// 業種セレクタを描画
+function renderIndustries() {
+  document.getElementById('industry_grid').innerHTML = Object.entries(INDUSTRIES).map(([key, ind]) =>
+    `<button class="mode-btn${key === industry ? ' active' : ''}" data-industry="${key}" onclick="selectIndustry(this)">
+       <div class="mname">${ind.label}</div>
+     </button>`).join('');
+}
+
+// 業種を選ぶ → 比較サービス・初期値・語彙・既定モードを丸ごと切替
+function selectIndustry(btn) {
+  industry = btn.dataset.industry;
+  const ind = INDUSTRIES[industry];
+  document.querySelectorAll('#industry_grid .mode-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('avg_price').value = ind.price;
+  document.getElementById('monthly_bookings').value = ind.bookings;
+  renderServices();
+  currentService = Object.keys(ind.services)[0];
+  applyService(currentService);
+  setMode(ind.mode);   // 業種の既定モードに合わせる（整体・鍼灸は手間モード）
+  calculate();
+}
+
+// 現在の業種の比較サービスをボタンとして描画
+function renderServices() {
+  document.getElementById('service_grid').innerHTML = Object.entries(svcMap()).map(([key, s], i) =>
+    `<button class="service-btn${i === 0 ? ' active' : ''}" data-service="${key}" onclick="selectService(this)">
+       <div class="sname">${s.name}</div>
+       <div class="sdesc">${s.desc}</div>
+     </button>`).join('');
+}
+
+// サービス選択時に月額・手数料の初期値を反映
+function applyService(key) {
+  currentService = key;
+  const s = svcMap()[key];
+  document.getElementById('monthly_fee').value = s.fee;
+  document.getElementById('commission_rate').value = s.rate;
+  document.getElementById('commission_rate_group').style.display = s.rate === 0 ? 'none' : '';
+  document.getElementById('new_customer_ratio_group').style.display = s.newOnly ? '' : 'none';
+}
 
 function selectService(btn) {
   document.querySelectorAll('.service-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  currentService = btn.dataset.service;
-  const s = SERVICES[currentService];
-  document.getElementById('monthly_fee').value = s.fee;
-  document.getElementById('commission_rate').value = s.rate;
-  document.getElementById('commission_rate_group').style.display = s.rate === 0 ? 'none' : '';
-  document.getElementById('new_customer_ratio_group').style.display = currentService === 'nailbook_lite' ? '' : 'none';
+  applyService(btn.dataset.service);
   calculate();
 }
 
 function fmt(n) {
-  if (n >= 10000) return `¥${(n/10000).toFixed(1).replace(/\.0$/, '')}万`;
-  return `¥${n.toLocaleString()}`;
+  if (Math.abs(n) >= 10000) return `¥${(n/10000).toFixed(1).replace(/\.0$/, '')}万`;
+  return `¥${Math.round(n).toLocaleString()}`;
 }
 function fmtFull(n) { return `¥${Math.round(n).toLocaleString()}`; }
+function num(id) { return parseFloat(document.getElementById(id).value) || 0; }
+function rows(targetId, arr) {
+  document.getElementById(targetId).innerHTML = arr.map(r =>
+    `<div class="cost-row"><span class="clabel">${r[0]}</span><span class="cvalue">${r[1]}</span></div>`).join('');
+}
 
 function calculate() {
-  const bookings = parseFloat(document.getElementById('monthly_bookings').value) || 0;
-  const price = parseFloat(document.getElementById('avg_price').value) || 0;
-  const fee = parseFloat(document.getElementById('monthly_fee').value) || 0;
-  const rate = parseFloat(document.getElementById('commission_rate').value) || 0;
+  const bookings = num('monthly_bookings');
+  const price = num('avg_price');
 
-  const newRatio = currentService === 'nailbook_lite'
-    ? (parseFloat(document.getElementById('new_customer_ratio').value) || 0) / 100
-    : 1;
-  const commission = price * bookings * newRatio * (rate / 100);
-  const currentTotal = fee + commission;
-  const cueTotal = 5000;
-  const monthlyDiff = currentTotal - cueTotal;
-  const annualDiff = monthlyDiff * 12;
+  let currentTotal, currentName, currentRows, cueRows, insights = [], assumption = '';
+  let resultLabel, resultSub, timelineTitle, legendCurrent, currentTotalLabel;
 
-  // Update name
-  document.getElementById('current_service_name').textContent = SERVICES[currentService].name;
+  if (mode === 'cost') {
+    // ---- コスト削減モード ----
+    const svc = svcMap()[currentService];
+    const reinvest = INDUSTRIES[industry].reinvest;
+    const fee = num('monthly_fee');
+    const rate = num('commission_rate');
+    const newRatio = svc.newOnly ? num('new_customer_ratio') / 100 : 1;
+    const commission = price * bookings * newRatio * (rate / 100);
+    currentTotal = fee + commission;
+    currentName = svc.name;
+    const commissionLabel = rate > 0
+      ? (svc.newOnly
+          ? `${fmtFull(commission)}（新規${Math.round(newRatio*100)}%×${rate}%）`
+          : `${fmtFull(commission)}（${rate}%）`)
+      : 'なし';
+    currentRows = [['月額費用', fmtFull(fee)], ['手数料', commissionLabel]];
+    cueRows = [['月額費用', '¥5,000'], ['手数料', '<span style="color:#EC4899">なし</span>']];
 
-  // Update comparison
-  document.getElementById('c_monthly_fee').textContent = fmtFull(fee);
-  const commissionLabel = rate > 0
-    ? (currentService === 'nailbook_lite'
-        ? `${fmtFull(commission)}（新規${Math.round(newRatio*100)}%×${rate}%）`
-        : `${fmtFull(commission)}（${rate}%）`)
-    : 'なし';
-  document.getElementById('c_commission').textContent = commissionLabel;
+    resultLabel = 'CUEに切り替えると 年間';
+    timelineTitle = '積み上がる差額';
+    legendCurrent = '現在のサービス';
+    currentTotalLabel = '月間合計';
+
+    const monthlyDiff = currentTotal - CUE_FEE;
+    const annualDiff = monthlyDiff * 12;
+    if (annualDiff > 0) {
+      insights.push(`年間 <strong style="color:#F1F5F9">${fmtFull(annualDiff)}</strong> の削減で、${reinvest}に回せる予算が増えます`);
+      if (rate > 0) insights.push(`予約手数料 <strong style="color:#F1F5F9">${rate}%</strong> がなくなるため、予約が増えるほど差が広がります（月${bookings}件なら手数料だけで ${fmtFull(commission)}）`);
+      insights.push(`3年間で <strong style="color:#EC4899">${fmt(annualDiff * 3)}</strong> の差。その分を投資に回せます`);
+      resultSub = 'の削減が見込めます';
+    } else {
+      insights.push('現在のプランとCUEのコストは近い水準です');
+      insights.push('ただしCUEには顧客カルテ・自動リマインド・EC機能が含まれ、機能面での優位性があります');
+      resultSub = 'CUEに切り替えても料金面の大きな差はありません';
+    }
+    setResult(annualDiff, resultLabel, resultSub);
+    renderTimeline(currentTotal, CUE_FEE);
+
+  } else {
+    // ---- 手間・取りこぼし削減モード（掲載費ゼロの店向け） ----
+    const minutes = num('minutes_per_booking');
+    const noshow = num('monthly_noshow');
+    const wage = num('hourly_wage');
+
+    const hoursSaved = bookings * minutes / 60;
+    const timeValue = hoursSaved * wage;                       // 対応時間の金額換算
+    const noshowRecovered = noshow * price * NOSHOW_REDUCTION; // 抑制できる無断キャンセル損
+    const grossBenefit = timeValue + noshowRecovered;         // 月あたりの見込み効果（毛）
+    const netBenefit = grossBenefit - CUE_FEE;                 // 月5,000円を差し引いた実質
+    const annualNet = netBenefit * 12;
+
+    currentTotal = grossBenefit;
+    currentName = '今のやり方（手作業）';
+    currentTotalLabel = '見えない月間コスト';
+    currentRows = [
+      ['予約対応の時間', `${hoursSaved.toFixed(1)}h（${fmtFull(timeValue)}相当）`],
+      ['無断キャンセル損', `${fmtFull(noshowRecovered)}`],
+    ];
+    cueRows = [
+      ['月額費用', '¥5,000'],
+      ['予約対応', '<span style="color:#EC4899">自動</span>'],
+      ['前日リマインド', '<span style="color:#EC4899">自動</span>'],
+    ];
+
+    resultLabel = 'CUE導入の 月あたり実質メリット';
+    timelineTitle = '取り戻せる金額（累計）';
+    legendCurrent = '今の見えないコスト';
+
+    if (netBenefit > 0) {
+      insights.push(`予約の電話・LINE対応に月 <strong style="color:#F1F5F9">${hoursSaved.toFixed(1)}時間</strong>。CUEなら顧客が自分で予約でき、この時間を施術や休息に回せます`);
+      insights.push(`無断キャンセル1件 = <strong style="color:#F1F5F9">${fmtFull(price)}</strong> の損失。自動リマインドで取りこぼしを減らせます`);
+      insights.push(`月5,000円は予約1件分にも満たない水準。<strong style="color:#EC4899">無断キャンセルを1件防ぐだけでほぼ元が取れます</strong>`);
+      resultSub = '相当の手間・取りこぼしをカバーできます（月額5,000円を差し引いた実質）';
+    } else {
+      insights.push(`今の規模だと数字上の効果は月 ${fmtFull(grossBenefit)} 程度。ただし「予約の取りこぼし防止」「顧客カルテでの再来促進」は金額に表れにくい価値です`);
+      insights.push('予約数が増えるほど、手間の削減効果は大きくなります');
+      resultSub = 'まずは手間の削減とLINE完結の体験価値でご判断ください';
+    }
+    assumption = `※ 試算の前提：連絡対応 ${minutes}分/件、時給換算 ${fmtFull(wage)}、無断キャンセルの抑制率は ${NOSHOW_REDUCTION*100}%（自動リマインドによる一般的な目安）と仮定。実際の効果は運用により変動します。金額は保証値ではありません。`;
+    setResult(annualNet, resultLabel, resultSub);
+    renderTimeline(grossBenefit, CUE_FEE);
+  }
+
+  // 共通描画
+  document.getElementById('current_service_name').textContent = currentName;
+  document.getElementById('current_total_label').textContent = currentTotalLabel;
   document.getElementById('c_total').textContent = fmtFull(currentTotal);
-
-  // Annual saving
-  const savingEl = document.getElementById('annual_saving');
-  if (annualDiff <= 0) {
-    savingEl.textContent = '0';
-    document.getElementById('result_sub').textContent = 'CUEに切り替えても大きな差はありません';
-  } else {
-    savingEl.textContent = Math.round(annualDiff).toLocaleString();
-    document.getElementById('result_sub').textContent = 'の削減が見込めます';
-  }
-
-  // Timeline bars
-  const periods = [
-    { key: '6m', mul: 6 },
-    { key: '1y', mul: 12 },
-    { key: '3y', mul: 36 },
-  ];
-  const maxVal = currentTotal * 36;
-  periods.forEach(p => {
-    const curAmt = currentTotal * p.mul;
-    const cueAmt = cueTotal * p.mul;
-    const curPct = Math.max(5, (curAmt / maxVal) * 100);
-    const cuePct = Math.max(3, (cueAmt / maxVal) * 100);
-    document.getElementById(`bar_${p.key}_cur`).style.width = curPct + '%';
-    document.getElementById(`bar_${p.key}_cue`).style.width = cuePct + '%';
-    document.getElementById(`val_${p.key}_cur`).textContent = fmt(curAmt);
-    document.getElementById(`val_${p.key}_cue`).textContent = fmt(cueAmt);
-  });
-
-  // Insights
-  const insights = [];
-  if (annualDiff > 0) {
-    const staff = Math.floor(annualDiff / 250000);
-    const items = Math.floor(annualDiff / 3000);
-    insights.push(`年間 <strong style="color:#F1F5F9">${fmtFull(annualDiff)}</strong> の削減で、サロンの機材・消耗品に回せる予算が大幅に増えます`);
-    if (rate > 0) insights.push(`予約手数料 <strong style="color:#F1F5F9">${rate}%</strong> がなくなるため、予約が増えるほど差が広がります（月${bookings}件なら月間手数料だけで ${fmtFull(commission)}）`);
-    insights.push(`3年間で <strong style="color:#EC4899">${fmt(annualDiff * 3)}</strong> の差。その分を集客・内装・技術習得に投資できます`);
-  } else {
-    insights.push('現在のプランとCUEのコストは近い水準です');
-    insights.push('ただし、CUEには顧客カルテ・自動リマインド・EC機能が含まれており、機能面での優位性があります');
-  }
+  rows('current_rows', currentRows);
+  rows('cue_rows', cueRows);
+  document.getElementById('timeline_title').textContent = timelineTitle;
+  document.getElementById('legend_current').textContent = legendCurrent;
+  document.getElementById('assumption_note').innerHTML = assumption;
+  document.getElementById('assumption_note').style.display = assumption ? '' : 'none';
 
   const ul = document.getElementById('insights');
   ul.innerHTML = insights.map(t => `<div class="point"><div class="point-icon">✓</div><span>${t}</span></div>`).join('');
 }
 
+function setResult(annualValue, label, sub) {
+  document.getElementById('result_label').textContent = label;
+  const savingEl = document.getElementById('annual_saving');
+  savingEl.textContent = annualValue > 0 ? Math.round(annualValue).toLocaleString() : '0';
+  document.getElementById('result_sub').textContent = sub;
+}
+
+function renderTimeline(currentMonthly, cueMonthly) {
+  const periods = [{ key: '6m', mul: 6 }, { key: '1y', mul: 12 }, { key: '3y', mul: 36 }];
+  const maxVal = Math.max(currentMonthly, cueMonthly) * 36 || 1;
+  periods.forEach(p => {
+    const curAmt = currentMonthly * p.mul;
+    const cueAmt = cueMonthly * p.mul;
+    document.getElementById(`bar_${p.key}_cur`).style.width = Math.max(5, (curAmt / maxVal) * 100) + '%';
+    document.getElementById(`bar_${p.key}_cue`).style.width = Math.max(3, (cueAmt / maxVal) * 100) + '%';
+    document.getElementById(`val_${p.key}_cur`).textContent = fmt(curAmt);
+    document.getElementById(`val_${p.key}_cue`).textContent = fmt(cueAmt);
+  });
+}
+
 // Init
 document.querySelectorAll('input').forEach(el => el.addEventListener('input', calculate));
-document.getElementById('commission_rate_group').style.display = '';
-document.getElementById('new_customer_ratio_group').style.display = 'none';
+renderIndustries();
+renderServices();
+applyService(Object.keys(svcMap())[0]);
+setMode(INDUSTRIES[industry].mode);
 calculate();
 </script>
 </body>
