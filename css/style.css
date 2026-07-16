@@ -224,6 +224,24 @@ body {
   padding-block: 16px;
 }
 
+/* フッターのSNSリンク */
+.l-footer__sns {
+  display: flex;
+  justify-content: center;
+  gap: 22px;
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+}
+.l-footer__sns a {
+  display: inline-flex;
+  color: var(--gray-color04);
+  transition: color 0.2s;
+}
+.l-footer__sns a:hover {
+  color: var(--primary-color);
+}
+
 /*---------- module ----------*/
 .m-header-hamburger {
   display: flex;
