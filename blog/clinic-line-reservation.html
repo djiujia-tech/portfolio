@@ -3,12 +3,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <!-- ▼ 未公開（ドリップ待ち）: 公開時にこの robots 行を削除し、blog.html一覧とsitemapに追加する -->
+    <meta name="robots" content="noindex" />
     <!-- ▼ 記事ごとに書き換える: title / canonical / description / og系 / 日付 -->
-    <title>医療の専門用語を「患者さんの言葉」に翻訳する書き方｜Web集患の基本</title>
-    <link rel="canonical" href="https://gaku-web.com/blog/medical-plain-writing.html" />
+    <title>クリニックの予約を電話からLINEに｜診療予約をスマートにする方法</title>
+    <link rel="canonical" href="https://gaku-web.com/blog/clinic-line-reservation.html" />
     <meta
       name="description"
-      content="クリニックや治療院のホームページで、専門用語が患者さんを遠ざけていませんか。元看護師が、医療の言葉を「患者さんの言葉」に翻訳する3ステップを、Before/After付きで解説します。"
+      content="つながらない電話、受付の負担、無断キャンセル。クリニックの診療予約をLINEで受ける方法と、向いているケース・注意点・費用を、元看護師のWebデザイナーが解説します。"
     />
 
     <link rel="icon" href="../img/favicon-32.png" type="image/png" sizes="32x32" />
@@ -16,17 +18,17 @@
     <link rel="apple-touch-icon" href="../img/apple-touch-icon.png" />
 
     <meta property="og:site_name" content="Gaku portfolio" />
-    <meta property="og:url" content="https://gaku-web.com/blog/medical-plain-writing.html" />
+    <meta property="og:url" content="https://gaku-web.com/blog/clinic-line-reservation.html" />
     <meta property="og:type" content="article" />
-    <meta property="og:title" content="医療の専門用語を「患者さんの言葉」に翻訳する書き方｜Web集患の基本" />
+    <meta property="og:title" content="クリニックの予約を電話からLINEに｜診療予約をスマートにする方法" />
     <meta
       property="og:description"
-      content="医療の言葉を「患者さんの言葉」に翻訳する3ステップを、Before/After付きで解説します。"
+      content="クリニックの診療予約をLINEで受ける方法と、向いているケース・注意点・費用を解説します。"
     />
     <meta property="og:image" content="https://gaku-web.com/img/ogp.png" />
     <meta property="og:locale" content="ja_JP" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="医療の専門用語を「患者さんの言葉」に翻訳する書き方｜Web集患の基本" />
+    <meta name="twitter:title" content="クリニックの予約を電話からLINEに｜診療予約をスマートにする方法" />
     <meta name="twitter:image" content="https://gaku-web.com/img/ogp.png" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -44,12 +46,12 @@
     {
       "@context": "https://schema.org",
       "@type": "BlogPosting",
-      "headline": "医療の専門用語を「患者さんの言葉」に翻訳する書き方｜Web集患の基本",
-      "datePublished": "2026-07-17",
-      "dateModified": "2026-07-17",
+      "headline": "クリニックの予約を電話からLINEに｜診療予約をスマートにする方法",
+      "datePublished": "2026-07-19",
+      "dateModified": "2026-07-19",
       "author": { "@type": "Person", "name": "Gaku" },
       "image": "https://gaku-web.com/img/ogp.png",
-      "mainEntityOfPage": "https://gaku-web.com/blog/medical-plain-writing.html"
+      "mainEntityOfPage": "https://gaku-web.com/blog/clinic-line-reservation.html"
     }
     </script>
     <script type="application/ld+json">
@@ -59,7 +61,7 @@
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://gaku-web.com/" },
         { "@type": "ListItem", "position": 2, "name": "ブログ", "item": "https://gaku-web.com/blog.html" },
-        { "@type": "ListItem", "position": 3, "name": "医療の専門用語を患者さんの言葉に翻訳する書き方", "item": "https://gaku-web.com/blog/medical-plain-writing.html" }
+        { "@type": "ListItem", "position": 3, "name": "クリニックの予約を電話からLINEに", "item": "https://gaku-web.com/blog/clinic-line-reservation.html" }
       ]
     }
     </script>
@@ -118,72 +120,66 @@
       <article class="post">
         <div class="l_container-sm">
           <header class="post__header">
-            <time class="post__date" datetime="2026-07-17">2026.07.17</time>
+            <time class="post__date" datetime="2026-07-19">2026.07.19</time>
             <h1 class="post__title">
-              医療の専門用語を「患者さんの言葉」に翻訳する書き方｜Web集患の基本
+              クリニックの予約を電話からLINEに｜診療予約をスマートにする方法
             </h1>
             <p class="post__lead">
-              クリニックや治療院のホームページで、いちばんもったいないのは「正しいけれど、伝わらない」文章です。専門用語のままでは、患者さんは自分に関係あるかどうかを判断できず、静かに離脱します。この記事では、元看護師の視点で、医療の言葉を「患者さんの言葉」に翻訳する具体的な手順を、Before/After付きで紹介します。
+              昼休みに集中する電話、つながらずに諦める患者さん、受付の手が止まる時間。クリニックの電話予約は、受付にも患者さんにも見えない負担がかかっています。この記事では、診療予約をLINEで受ける方法と、向いているケース・注意点・費用の目安を、元看護師の視点で整理します。
             </p>
           </header>
 
           <div class="post__body">
-            <h2>なぜ専門用語は「伝わらない」のか</h2>
+            <h2>電話予約は、受付も患者さんも消耗している</h2>
             <p>
-              専門用語が悪いわけではありません。問題は、<strong>患者さんの頭の中には、その言葉に対応する「実感」がない</strong>ことです。医療者にとっては1語で済む情報でも、患者さんはまず「これは何？」「自分に関係ある？」「痛い？怖い？高い？」を知りたい。そこが埋まらないまま専門用語だけ並ぶと、読み手は「よくわからないから、やめておこう」と離れていきます。
+              クリニックの電話は、昼休みや診療開始直後など、<strong>いちばん忙しい時間に集中</strong>します。受付は目の前の患者さん対応と電話対応を同時にこなし、かかってきた電話がつながらなければ、患者さんは「また今度」と受診をあきらめる。この取りこぼしは数字に出ませんが、確実に起きています。
             </p>
             <p>
-              Webサイトは対面と違い、その場で質問できません。だからこそ、<strong>先回りして疑問と不安を解消する言葉</strong>が必要になります。
-            </p>
-
-            <h2>翻訳の基本は3ステップ</h2>
-            <h3>ステップ1：言い換える（何のことか）</h3>
-            <p>
-              まず、専門用語を日常語に置きかえます。難しい言葉を消すのではなく、<strong>そのすぐ隣に「かみくだいた説明」を添える</strong>のがコツです。用語を完全に消すと検索や信頼性の面で損をするので、「用語＋やさしい補足」の形が理想です。
-            </p>
-            <p>
-              <strong>Before：</strong>「当院では骨盤矯正を行っています。」<br />
-              <strong>After：</strong>「骨盤のゆがみを整える施術（骨盤矯正）を行っています。産後や、長時間のデスクワークで腰が気になる方に多く選ばれています。」
+              患者さんの側も、<strong>診療時間内にしか電話できない</strong>のは不便です。仕事や育児の合間、夜に「予約しておきたい」と思っても、その時間は受付が閉まっている。予約したい気持ちが行き場を失っています。
             </p>
 
-            <h3>ステップ2：具体化する（自分ごとにする）</h3>
+            <h2>LINE予約が向いているクリニック・向かないケース</h2>
             <p>
-              次に、「どんな人の、どんな悩みに効くのか」を具体的に書きます。患者さんは症状や状況で自分を探します。<strong>症状・シーン・対象者を言葉にする</strong>ほど、「これは自分のことだ」と気づいてもらえます。
+              LINE予約が特に効くのは、<strong>再診・定期通院が多い</strong>クリニック、<strong>自由診療やワクチン・健診など予約枠を管理したい</strong>ケースです。患者さんは使い慣れたLINEから、24時間いつでも枠を押さえられます。
             </p>
             <p>
-              <strong>Before：</strong>「肩こり・腰痛に対応しています。」<br />
-              <strong>After：</strong>「『朝起きると首が回らない』『夕方になると腰が重い』——そんな慢性的な肩こり・腰痛の方へ。デスクワークや育児で同じ姿勢が続く方に多いお悩みです。」
-            </p>
-
-            <h3>ステップ3：不安に接続する（怖くない・行ける）</h3>
-            <p>
-              最後に、行動の前に立ちはだかる不安を先に消します。<strong>痛みはあるか、時間はどれくらいか、料金はいくらか、初めてでも大丈夫か</strong>。ここが書かれていないと、興味を持った人ほど「一応やめておこう」に傾きます。
-            </p>
-            <p>
-              <strong>Before：</strong>「まずはお気軽にご相談ください。」<br />
-              <strong>After：</strong>「初回は問診とお身体のチェックで約40分。強い刺激が苦手な方には力加減を調整しますので、施術が初めての方もご安心ください。料金は初回◯◯円です。」
+              一方、急な症状で当日すぐ診てほしいケースや、高度な受付システムがすでに入っている大規模施設では、LINEだけで完結させるより<strong>電話との併用</strong>が現実的です。「すべてを置きかえる」のではなく、「電話の混雑を減らす受け皿を増やす」と考えると導入しやすくなります。
             </p>
 
-            <h2>やりがちなNG</h2>
+            <h2>予約の受け方は大きく3つ</h2>
+            <h3>1. 電話のみ（現状）</h3>
             <p>
-              一つは、<strong>用語をただ並べること</strong>。「◯◯療法・△△矯正・□□整体」と羅列されても、患者さんは違いも効果もわかりません。もう一つは逆に、<strong>やさしくしすぎて中身が消えること</strong>。「体にやさしい施術です」だけでは、何をするのか伝わらず信頼につながりません。かみくだきつつ、具体は残す。このバランスが大事です。
+              追加コストはかかりませんが、受付の負担と時間外の取りこぼしは残ります。患者数が増えるほど、この「見えないコスト」は積み上がります。
+            </p>
+            <h3>2. 汎用の予約システムを導入する</h3>
+            <p>
+              診療予約に対応したシステムは多くあります。機能は豊富な反面、患者さん側に専用アプリやアカウント登録を求めるものもあり、<strong>高齢の患者さんが多い</strong>クリニックでは使ってもらえるかが課題になります。
+            </p>
+            <h3>3. LINEで完結する予約を用意する</h3>
+            <p>
+              日本ではLINEがほぼ全世代に普及しています。公式LINEを友だち追加してもらえば、患者さんは<strong>新しいアプリを入れずに</strong>予約でき、前日リマインドもLINEに届くので<strong>無断キャンセルの抑止</strong>にもつながります。年配の方にとっても、使い慣れたLINEはハードルが低いのが利点です。
             </p>
 
-            <h2>サイトのどこで効くか</h2>
+            <h2>導入で気をつけること</h2>
             <p>
-              この「翻訳」がとくに効くのは、<strong>トップページの第一印象、メニュー・料金の説明、症状別ページ、そして「初めての方へ」</strong>です。中でも料金と「初めての方へ」は、不安がいちばん出る場所。ここを患者さんの言葉で丁寧に書くだけで、予約や問い合わせのハードルは確実に下がります。
+              大切なのは、患者さんを置き去りにしないことです。<strong>当面は電話とLINEを併用</strong>し、院内の掲示や会計時の声かけで「LINEでも予約できます」と案内する。高齢の患者さんには受付でひとこと添える。こうして少しずつLINE予約の比率を上げれば、無理なく電話の混雑を減らせます。予約枠の設計（1枠の人数・診療時間・受付締切）も、運用に合わせて最初に決めておくとスムーズです。
             </p>
 
-            <h2>おわりに</h2>
+            <h2>費用感の目安</h2>
             <p>
-              専門性が高いサービスほど、伝え方ひとつで「行ってみよう」にも「よくわからない」にも変わります。難しいことを、正しさを保ったまま、相手の言葉に翻訳する。これは僕が看護師の8年間、毎日やってきたことでもあります。「うちのサイト、専門用語が多いかも」と感じたら、症状別ページや料金まわりから見直してみてください。そこが、いちばん効きます。
+              汎用の予約システムは「月額数千円〜」、オーダー型のLINE予約は「初期費用＋月額」が一般的です。安さだけでなく、<strong>「患者さんが実際に使ってくれるか」</strong>まで含めて選ぶのが失敗しないコツです。参考までに、私が開発しているLINE予約システム「CUE」は初期¥50,000〜＋月額¥5,000〜で、導入設定と使い方のサポートまで含めています。今の運用との差は<a href="../cue-roi.html">費用シミュレーター</a>でも試算できます。
+            </p>
+
+            <h2>まとめ</h2>
+            <p>
+              電話予約の負担は「仕方がないもの」と思われがちですが、受け皿を増やすだけで受付も患者さんも楽になります。まずは自院の予約が「いつ・どこから・どうやって」入っているかを1週間見てみてください。時間外の問い合わせや、つながらなかった電話の多さに気づけたら、それがLINE予約を検討するサインです。
             </p>
           </div>
 
           <aside class="post__cta">
-            <p class="post__cta-title">「伝わる文章」でサイトを作りませんか？</p>
+            <p class="post__cta-title">クリニックのLINE予約、うちでもできる？</p>
             <p class="post__cta-text">
-              医療・治療院・介護に特化して、元看護師の視点で「患者さんに伝わる」サイト制作を行っています。文章の設計から、デザイン・実装・LINE予約の導入まで一貫対応。相談・お見積りは無料です。
+              整体院・接骨院・クリニック向けに、LINEで完結する予約システム「CUE」を開発しています。デモを触りながら、貴院に合うかを一緒に確認できます。相談・お見積りは無料です。
             </p>
             <div class="post__cta-buttons">
               <a
@@ -192,7 +188,7 @@
                 rel="noopener noreferrer"
                 class="m_button m_button__line"
               >LINEで気軽に相談</a>
-              <a href="../works.html" class="m_button m_button__brack">制作事例を見る</a>
+              <a href="../cue.html" class="m_button m_button__brack">CUEの詳細を見る</a>
             </div>
           </aside>
 

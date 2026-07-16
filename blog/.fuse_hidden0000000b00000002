@@ -3,6 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <!-- ▼ 未公開（ドリップ待ち）: 公開時にこの robots 行を削除し、blog.html一覧とsitemapに追加する -->
+    <meta name="robots" content="noindex" />
     <!-- ▼ 記事ごとに書き換える: title / canonical / description / og系 / 日付 -->
     <title>医療の専門用語を「患者さんの言葉」に翻訳する書き方｜Web集患の基本</title>
     <link rel="canonical" href="https://gaku-web.com/blog/medical-plain-writing.html" />
@@ -45,8 +47,8 @@
       "@context": "https://schema.org",
       "@type": "BlogPosting",
       "headline": "医療の専門用語を「患者さんの言葉」に翻訳する書き方｜Web集患の基本",
-      "datePublished": "2026-07-17",
-      "dateModified": "2026-07-17",
+      "datePublished": "2026-07-16",
+      "dateModified": "2026-07-16",
       "author": { "@type": "Person", "name": "Gaku" },
       "image": "https://gaku-web.com/img/ogp.png",
       "mainEntityOfPage": "https://gaku-web.com/blog/medical-plain-writing.html"
@@ -118,7 +120,7 @@
       <article class="post">
         <div class="l_container-sm">
           <header class="post__header">
-            <time class="post__date" datetime="2026-07-17">2026.07.17</time>
+            <time class="post__date" datetime="2026-07-16">2026.07.16</time>
             <h1 class="post__title">
               医療の専門用語を「患者さんの言葉」に翻訳する書き方｜Web集患の基本
             </h1>
