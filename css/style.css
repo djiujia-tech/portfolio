@@ -126,6 +126,7 @@ body {
   top: 0;
   right: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 100%;
@@ -138,6 +139,7 @@ body {
 @media (min-width: 768px) {
   .l-header__nav {
     position: static;
+    flex-direction: row;
     width: auto;
     height: auto;
     background-color: transparent;
@@ -179,6 +181,36 @@ body {
   }
   /* KVの上(未スクロール時)は白で可読性を確保 */
   .l-header:not(.is-scrolled) .l-header__nav-list a {
+    color: var(--white-color);
+  }
+}
+
+/* ヘッダーのSNSリンク */
+.l-header__sns {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+  padding: 0;
+  margin: 40px 0 0;
+  justify-content: center;
+}
+.l-header__sns a {
+  display: inline-flex;
+  color: var(--white-color);
+  transition: color 0.3s ease, opacity 0.3s;
+}
+.l-header__sns a:hover {
+  opacity: 0.6;
+}
+@media (min-width: 768px) {
+  .l-header__sns {
+    margin: 0 0 0 32px;
+    gap: 18px;
+  }
+  .l-header__sns a {
+    color: var(--primary-color);
+  }
+  .l-header:not(.is-scrolled) .l-header__sns a {
     color: var(--white-color);
   }
 }
