@@ -3,12 +3,9 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>ブログ｜医療・治療院のWeb制作・LINE予約 Gaku（岡山）</title>
-    <link rel="canonical" href="https://gaku-web.com/blog.html" />
-    <meta
-      name="description"
-      content="元看護師のWebデザイナーGakuのブログ。医療・治療院・介護の集患、小規模店舗の予約業務効率化、LINE予約システム、ホームページ活用のヒントを発信します。"
-    />
+    <title>交代勤務シフト自動作成ツール（看護・介護向け）｜Product｜Gaku</title>
+    <link rel="canonical" href="https://gaku-web.com/shift-scheduler.html" />
+    <meta name="description" content="看護・介護の交代勤務シフトを自動作成するツール。希望・必要人数・公休・夜勤回数のバランスを考慮して組み、ルール違反をその場でチェック。元看護師のWebデザイナーが現場の負担を解決するために自作しました。触れるデモ公開中。" />
 
     <!-- favicon/web-clip-icon -->
     <link rel="icon" href="img/favicon-32.png" type="image/png" sizes="32x32" />
@@ -16,18 +13,16 @@
     <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
     <!-- ogp -->
     <meta property="og:site_name" content="Gaku portfolio" />
-    <meta property="og:url" content="https://gaku-web.com/blog.html" />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="ブログ｜医療・治療院のWeb制作・LINE予約 Gaku（岡山）" />
-    <meta
-      property="og:description"
-      content="医療・治療院・介護の集患、小規模店舗の予約業務効率化、LINE予約システム、ホームページ活用のヒントを発信します。"
-    />
+    <meta property="og:url" content="https://gaku-web.com/shift-scheduler.html" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="交代勤務シフト自動作成ツール（看護・介護向け）｜Gaku" />
+    <meta property="og:description" content="看護・介護の交代勤務シフトを自動作成。希望・必要人数・公休・夜勤回数を考慮し、ルール違反もチェック。元看護師が自作したツールです。触れるデモ公開中。" />
     <meta property="og:image" content="https://gaku-web.com/img/ogp.png" />
     <meta property="og:locale" content="ja_JP" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="ブログ｜医療・治療院のWeb制作・LINE予約 Gaku（岡山）" />
+    <meta name="twitter:title" content="交代勤務シフト自動作成ツール（看護・介護向け）｜Gaku" />
     <meta name="twitter:image" content="https://gaku-web.com/img/ogp.png" />
+    <meta name="twitter:description" content="看護・介護の交代勤務シフトを自動作成するツール。元看護師が自作。触れるデモ公開中。" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -36,25 +31,29 @@
       rel="stylesheet"
     />
 
+    <!-- css -->
     <link rel="stylesheet" href="css/reset.css" />
     <link rel="stylesheet" href="css/style.css" />
-      <script type="application/ld+json">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CreativeWork",
+      "name": "交代勤務シフト自動作成ツール（看護・介護向け）",
+      "creator": { "@type": "Person", "name": "Gaku" },
+      "about": "看護・介護の交代勤務シフトを自動作成するWebツールの自主開発",
+      "url": "https://gaku-web.com/shift-scheduler.html",
+      "image": "https://gaku-web.com/img/ogp.png"
+    }
+    </script>
+    <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "ホーム",
-          "item": "https://gaku-web.com/"
-        },
-        {
-          "@type": "ListItem",
-          "position": 2,
-          "name": "ブログ",
-          "item": "https://gaku-web.com/blog.html"
-        }
+        { "@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://gaku-web.com/" },
+        { "@type": "ListItem", "position": 2, "name": "制作事例", "item": "https://gaku-web.com/works.html" },
+        { "@type": "ListItem", "position": 3, "name": "交代勤務シフト自動作成ツール", "item": "https://gaku-web.com/shift-scheduler.html" }
       ]
     }
     </script>
@@ -96,7 +95,6 @@
             <a href="https://www.instagram.com/gaku_webdesign/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163C8.741 0 8.332.014 7.052.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
           </li>
         </ul>
-      
       </nav>
 
       <button
@@ -111,87 +109,76 @@
     </header>
 
     <main class="l_main">
-      <div class="works-hero">
-        <div class="l_container">
-          <div class="m_section-title">
-            <span class="m_section-title__sub">Blog</span>
-            <h1 class="m_section-title__main">ブログ</h1>
-          </div>
-        </div>
+      <div class="works-detail__kv">
+        <picture>
+          <source srcset="img/works-shift.webp" type="image/webp" />
+          <img
+            src="img/works-shift-pc.jpg"
+            alt="交代勤務シフト自動作成ツール（看護・介護向け）の画面"
+            width="1280"
+            height="720"
+            class="works-detail__kv-img" fetchpriority="high" decoding="async" />
+        </picture>
       </div>
 
-      <section class="post-list">
-        <div class="l_container">
-          <p class="post-list__lead">
-            医療・治療院・介護の集患とWeb活用のヒントを、現場目線で書いています。
-          </p>
-
-          <ul class="post-list__items">
-            <!-- ▼ 新しい記事はこのliをコピーして一番上に追加 -->
-            <li class="post-list__item">
-              <a href="blog/seitai-website-essentials.html" class="post-list__link">
-                <time class="post-list__date" datetime="2026-07-17">2026.07.17</time>
-                <h2 class="post-list__title">
-                  整体院のホームページ、何を載せれば予約が増える？必須7要素
-                </h2>
-                <p class="post-list__excerpt">
-                  整体院・接骨院のホームページで予約につながるのは「きれいさ」ではありません。患者さんの不安を先回りして消す必須7要素を、元看護師のWebデザイナーが解説します。
-                </p>
-                <span class="post-list__more">続きを読む →</span>
-              </a>
-            </li>
-            <li class="post-list__item">
-              <a href="blog/nurse-web-designer.html" class="post-list__link">
-                <time class="post-list__date" datetime="2026-07-16">2026.07.16</time>
-                <h2 class="post-list__title">
-                  元看護師がWeb制作をする理由｜現場で見た「伝わらない」の損失
-                </h2>
-                <p class="post-list__excerpt">
-                  なぜ看護師からWebデザイナーへ。病棟で8年やってきた「わかりやすく伝える」仕事と、医療・治療院・介護のサイト作りが地続きである理由を綴りました。
-                </p>
-                <span class="post-list__more">続きを読む →</span>
-              </a>
-            </li>
-            <li class="post-list__item">
-              <a href="blog/medical-plain-writing.html" class="post-list__link">
-                <time class="post-list__date" datetime="2026-07-17">2026.07.17</time>
-                <h2 class="post-list__title">
-                  医療の専門用語を「患者さんの言葉」に翻訳する書き方
-                </h2>
-                <p class="post-list__excerpt">
-                  クリニックや治療院のホームページで、専門用語が患者さんを遠ざけていませんか。元看護師が、医療の言葉を「患者さんの言葉」に翻訳する3ステップを、Before/After付きで解説します。
-                </p>
-                <span class="post-list__more">続きを読む →</span>
-              </a>
-            </li>
-            <li class="post-list__item">
-              <a href="blog/chiryoin-line-reservation.html" class="post-list__link">
-                <time class="post-list__date" datetime="2026-07-14">2026.07.14</time>
-                <h2 class="post-list__title">
-                  整体院・接骨院の電話予約をやめたい|LINE予約に切り替える方法と費用
-                </h2>
-                <p class="post-list__excerpt">
-                  施術中に鳴る電話、その場でしか取れない次回予約、当日キャンセル。整体院・接骨院の予約対応を「LINEで完結」に切り替える方法を、治療院ならではの事情もふまえて整理しました。
-                </p>
-                <span class="post-list__more">続きを読む →</span>
-              </a>
-            </li>
-            <li class="post-list__item">
-              <a href="blog/line-reservation-guide.html" class="post-list__link">
-                <time class="post-list__date" datetime="2026-07-09">2026.07.09</time>
-                <h2 class="post-list__title">
-                  美容室の電話予約をやめたい|LINE予約に切り替える方法と費用
-                </h2>
-                <p class="post-list__excerpt">
-                  施術中に鳴る電話、Instagram DMの埋もれる予約依頼。小さなサロンの予約対応を「LINEで完結」に切り替える方法を、選択肢と費用感つきで整理しました。
-                </p>
-                <span class="post-list__more">続きを読む →</span>
-              </a>
-            </li>
-            <!-- ▲ ここまで -->
-          </ul>
+      <div class="l_container">
+        <div class="works-detail__title-wrapper">
+          <h1 class="works-detail__title">交代勤務シフト自動作成ツール</h1>
         </div>
-      </section>
+
+        <div class="works-detail__back" style="margin-top: 24px; margin-bottom: 8px;">
+          <a href="shift-scheduler-demo.html" target="_blank" rel="noopener noreferrer" class="m_button m_button__brack">デモを触ってみる →</a>
+        </div>
+
+        <dl class="works-detail__list">
+          <div class="works-detail__item">
+            <dt class="works-detail__label">デモURL</dt>
+            <dd class="works-detail__text">
+              <a href="shift-scheduler-demo.html" target="_blank" rel="noopener noreferrer">実際に触れるデモを開く</a><br />
+              ※ 入力したデータはお使いのブラウザ内にのみ保存されます（サーバーには送信されません）。
+            </dd>
+          </div>
+          <div class="works-detail__item">
+            <dt class="works-detail__label">概要</dt>
+            <dd class="works-detail__text">
+              看護・介護の交代勤務（日勤・夜勤・公休）のシフトを自動で組むためのツールです。スタッフの希望、施設ごとの必要人数、公休数、夜勤回数のバランスといった条件を踏まえてシフト案を生成し、ルール違反はその場で警告します。手作業で何時間もかかっていたシフト作成の負担を、大きく減らすことを狙いました。
+            </dd>
+          </div>
+          <div class="works-detail__item">
+            <dt class="works-detail__label">制作背景</dt>
+            <dd class="works-detail__text">
+              看護師として働く中で、毎月のシフト作成が大きな負担であることを現場で痛感していました。<br />
+              希望を汲みつつ、必要人数と公休を満たし、夜勤の偏りもなくす——この"パズル"を人力で解く大変さを知っているからこそ、「条件を入れれば下案が出る」道具を自分で作りました。現場の事情を分かっているからこそ設計できたツールです。
+            </dd>
+          </div>
+          <div class="works-detail__item">
+            <dt class="works-detail__label">主な機能</dt>
+            <dd class="works-detail__text">
+              <ul class="works-detail__bullet">
+                <li>スタッフごとの希望シフト入力（日付をクリックして選択）</li>
+                <li>チーム設定・スタッフ管理</li>
+                <li>施設ルールの設定（時間帯ごとの必要人数・公休数）</li>
+                <li>入浴介助などの係業務の割り当て</li>
+                <li>条件を踏まえたシフトの自動生成</li>
+                <li>ルール違反のバリデーション（不足・偏りをその場で警告）</li>
+                <li>日勤人数・夜勤回数の集計でバランスを可視化</li>
+                <li>データはブラウザ内に保存（オフラインでも動作）</li>
+              </ul>
+            </dd>
+          </div>
+          <div class="works-detail__item">
+            <dt class="works-detail__label">使用技術</dt>
+            <dd class="works-detail__text">
+              HTML / CSS / JavaScript（Vanilla JS）<br />
+              シフト生成・制約チェックのロジックを自前で実装 / データ保存はブラウザのlocalStorage / レスポンシブ対応
+            </dd>
+          </div>
+        </dl>
+
+        <div class="works-detail__back">
+          <a href="works.html" class="m_button">← 一覧に戻る</a>
+        </div>
+      </div>
     </main>
 
     <footer class="l-footer">

@@ -1,0 +1,3830 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>交代勤務シフト自動作成ツール ｜ デモ</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Helvetica Neue', sans-serif; background: #f5f5f5; color: #1a1a1a; padding: 16px; }
+  h1 { font-size: 18px; margin-bottom: 12px; }
+  h2 { font-size: 14px; margin: 16px 0 8px; color: #444; }
+  .card { background: white; border-radius: 8px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .info-card { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 12px; margin-bottom: 12px; font-size: 12px; color: #92400e; }
+
+  /* 月バー */
+  .month-bar { display: flex; align-items: center; gap: 8px; background: white; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); flex-wrap: wrap; }
+  .month-bar label { font-size: 13px; color: #6b7280; }
+  .month-bar select { padding: 5px 8px; border: 1px solid #d1d5db; border-radius: 5px; font-size: 14px; }
+
+  /* ボタン */
+  button { background: #2563eb; color: white; border: none; border-radius: 6px; padding: 8px 16px; font-size: 13px; cursor: pointer; margin-right: 6px; margin-bottom: 6px; }
+  button:hover { background: #1d4ed8; }
+  button.secondary { background: #6b7280; } button.secondary:hover { background: #4b5563; }
+  button.success { background: #059669; } button.success:hover { background: #047857; }
+  button.small { padding: 4px 10px; font-size: 12px; margin: 0; }
+
+  /* タブ */
+  .tab-bar { display: flex; gap: 4px; margin-bottom: 12px; flex-wrap: wrap; }
+  .tab { padding: 7px 12px; border-radius: 6px; font-size: 13px; cursor: pointer; border: 1px solid #d1d5db; background: white; white-space: nowrap; }
+  .tab.active { background: #2563eb; color: white; border-color: #2563eb; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* 希望カレンダー */
+  .staff-select { width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; margin-bottom: 8px; font-size: 14px; }
+  .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 8px; }
+  .cal-header { text-align: center; font-size: 11px; color: #6b7280; padding: 4px; }
+  .cal-header.sat { color: #3b82f6; } .cal-header.sun { color: #ef4444; }
+  .cal-day { text-align: center; padding: 6px 2px; font-size: 12px; border-radius: 4px; cursor: pointer; border: 1px solid #e5e7eb; background: white; user-select: none; position: relative; }
+  .cal-day.empty { border: none; background: transparent; cursor: default; }
+  .cal-day.sat { color: #3b82f6; } .cal-day.sun { color: #ef4444; }
+  .cal-day.holiday-mark { background: #fff7ed; border-color: #f97316; }
+  .cal-day.holiday-mark.sat { color: #3b82f6; } .cal-day.holiday-mark.sun { color: #ef4444; }
+  .cal-day.req-holiday { background: #fef3c7; border-color: #f59e0b; }
+  .cal-day.req-summer { background: #ccfbf1; border-color: #14b8a6; color: #0f766e; }
+  .holiday-dot { display: inline-block; width: 5px; height: 5px; background: #f97316; border-radius: 50%; position: absolute; top: 2px; right: 2px; }
+  .legend { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 4px; font-size: 11px; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 2px; }
+
+  /* 祝日ミニカレ */
+  .holiday-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-top: 8px; }
+  .hcal-day { text-align: center; padding: 4px 2px; font-size: 11px; border-radius: 4px; cursor: pointer; border: 1px solid #e5e7eb; background: white; user-select: none; }
+  .hcal-day.empty { border: none; background: transparent; cursor: default; }
+  .hcal-day.sat { color: #3b82f6; } .hcal-day.sun { color: #ef4444; }
+  .hcal-day.is-holiday { background: #fff7ed; border-color: #f97316; font-weight: 600; color: #c2410c; }
+  .hcal-day.is-weekend { background: #f3f4f6; cursor: default; color: #9ca3af; }
+
+  /* スタッフ設定 */
+  .sct { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .sct th { background: #f3f4f6; padding: 7px 6px; text-align: left; font-weight: 600; border-bottom: 2px solid #e5e7eb; }
+  .sct td { padding: 5px 6px; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
+  .sct tr:hover td { background: #fafafa; }
+  .sct select { padding: 3px 5px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 11px; }
+  .team-badge { display: inline-block; padding: 1px 7px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .team-badge.A { background: #fee2e2; color: #991b1b; }
+  .team-badge.B { background: #dbeafe; color: #1e40af; }
+  .team-badge.C { background: #d1fae5; color: #065f46; }
+  /* ドラッグ&ドロップ並び替え */
+  .sct tr[draggable="true"] { cursor: grab; }
+  .sct tr.dragging { opacity: 0.4; }
+  .sct tr.drag-top td { border-top: 3px solid #2563eb; }
+  .sct tr.drag-bottom td { border-bottom: 3px solid #2563eb; }
+  .drag-handle { color: #9ca3af; font-size: 13px; cursor: grab; user-select: none; }
+  .shift-type-triple { color: #7c3aed; font-weight: 600; }
+  .shift-type-day_only { color: #059669; font-weight: 600; }
+  .shift-type-weekday_day { color: #d97706; font-weight: 600; }
+  button.danger { background: #dc2626; } button.danger:hover { background: #b91c1c; }
+  .pair-count { font-size: 11px; color: #6b7280; margin-left: 3px; }
+
+  /* モーダル */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal-box { background: white; border-radius: 12px; padding: 20px; max-width: 420px; width: 92%; max-height: 80vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+  .modal-title { font-size: 15px; font-weight: 600; margin-bottom: 10px; }
+  .pair-list { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 14px; }
+  .pair-item { display: flex; align-items: center; gap: 5px; font-size: 12px; padding: 3px 4px; border-radius: 4px; cursor: pointer; }
+  .pair-item:hover { background: #f3f4f6; }
+  .pair-separator { grid-column: 1/-1; font-size: 11px; font-weight: 600; color: #6b7280; padding: 4px 0 2px; border-top: 1px solid #e5e7eb; margin-top: 4px; }
+
+  /* シフト表 */
+  .shift-table-wrap { overflow-x: auto; }
+  table { border-collapse: collapse; font-size: 11px; min-width: 100%; }
+  th, td { border: 1px solid #d1d5db; padding: 3px 4px; white-space: nowrap; text-align: center; }
+  th { background: #f3f4f6; font-weight: 600; }
+  td.V { background: #fef3c7; color: #92400e; }
+  td.jun { background: #ede9fe; color: #5b21b6; }
+  td.deep { background: #dbeafe; color: #1e40af; }
+  td.summer { background: #d1fae5; color: #065f46; }
+  td.nyukyu { background: #fce7f3; color: #9d174d; }
+  td.yukyuu { background: #e0f2fe; color: #0369a1; }
+  td.day { background: white; }
+  td.day.off-day { background: #f9fafb; }
+  .team-a { border-left: 3px solid #ef4444; }
+  .team-b { border-left: 3px solid #3b82f6; }
+  .team-c { border-left: 3px solid #10b981; }
+  th.sat { color: #3b82f6; } th.sun { color: #ef4444; } th.hol { color: #f97316; }
+
+  /* バリデ */
+  .violations { list-style: none; }
+  .violations li { padding: 4px 8px; margin-bottom: 3px; background: #fee2e2; border-radius: 4px; font-size: 12px; color: #991b1b; }
+  .violations li.warn { background: #fef3c7; color: #92400e; }
+  .ok { color: #065f46; background: #d1fae5; padding: 8px; border-radius: 4px; font-size: 13px; }
+  .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .stat-box { background: #f9fafb; border-radius: 6px; padding: 10px; text-align: center; }
+  .stat-num { font-size: 22px; font-weight: 700; color: #2563eb; }
+  .stat-label { font-size: 11px; color: #6b7280; margin-top: 2px; }
+  .night-row { display: flex; justify-content: space-between; padding: 2px 0; border-bottom: 1px solid #f3f4f6; font-size: 12px; }
+
+  /* ===== ログイン画面 ===== */
+  #loginOverlay { display:flex; align-items:center; justify-content:center; min-height:100vh; background:linear-gradient(135deg,#eff6ff 0%,#f0fdf4 100%); padding:20px; box-sizing:border-box; margin:-16px; }
+  .login-box { background:white; border-radius:16px; padding:32px 28px; max-width:340px; width:92%; box-shadow:0 8px 32px rgba(0,0,0,0.12); text-align:center; }
+  .login-logo { font-size:40px; margin-bottom:12px; }
+  .login-title { font-size:18px; font-weight:700; margin-bottom:4px; color:#1e40af; }
+  .login-sub { font-size:12px; color:#6b7280; margin-bottom:24px; }
+  .login-input { width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:16px; margin-bottom:10px; text-align:center; }
+  .login-btn { width:100%; padding:11px; background:#2563eb; color:white; border:none; border-radius:8px; font-size:15px; cursor:pointer; font-weight:600; margin-bottom:0; }
+  .login-btn:hover { background:#1d4ed8; }
+  .login-error { color:#dc2626; font-size:12px; margin-top:8px; min-height:16px; }
+  .login-hint { font-size:11px; color:#9ca3af; margin-top:12px; }
+  /* ===== スタッフ希望入力ビュー ===== */
+  #staffView { display:none; }
+  .staff-header { display:flex; align-items:center; justify-content:space-between; background:white; border-radius:8px; padding:12px 16px; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,0.08); }
+  .staff-name-badge { font-size:16px; font-weight:700; color:#1e40af; }
+  .req-cycle-hint { font-size:11px; color:#6b7280; margin-bottom:8px; background:#f9fafb; padding:6px 10px; border-radius:6px; }
+  .cal-day.req-jun  { background:#ede9fe; border-color:#7c3aed; color:#5b21b6; }
+  .cal-day.req-deep { background:#dbeafe; border-color:#2563eb; color:#1e40af; }
+  .cal-day.req-dayreq { background:#dcfce7; border-color:#22c55e; color:#166534; }
+  .cal-day.req-ng     { background:#ffedd5; border-color:#f97316; color:#9a3412; }
+  .cal-day.req-yukyuu { background:#e0f2fe; border-color:#0ea5e9; color:#0369a1; }
+  .cal-day.req-junday { background:#f5f3ff; border-color:#a78bfa; color:#5b21b6; }
+  .cal-day.req-deepday{ background:#eff6ff; border-color:#93c5fd; color:#1e40af; }
+  .cal-day.req-nyu    { background:#fce7f3; border-color:#db2777; color:#9d174d; }
+  .cal-day.req-iinkai { background:#ecfccb; border-color:#84cc16; color:#3f6212; }
+  .cal-day.req-junv   { background:#fdf4ff; border-color:#c084fc; color:#86198f; }
+  .cal-day.req-deepv  { background:#eef2ff; border-color:#818cf8; color:#3730a3; }
+  .cal-day.req-menjo  { background:#e5e7eb; border-color:#9ca3af; color:#374151; }
+  td.menjo { background:#e5e7eb; color:#4b5563; }
+  td.absence { background:#f3f4f6; color:#9ca3af; font-size:9px; }
+  .req-pick-btn { border:2px solid; border-radius:6px; padding:8px 4px; font-size:13px; cursor:pointer; text-align:center; font-weight:600; }
+  .req-group-head { grid-column:1/-1; font-size:11px; font-weight:700; color:#6b7280; border-top:1px solid #e5e7eb; padding-top:6px; margin-top:2px; }
+  /* 印刷（A4横・シフト表のみ） */
+  @media print {
+    @page { size: A4 landscape; margin: 8mm; }
+    body.printing * { visibility: hidden; }
+    body.printing #printTitle,
+    body.printing .shift-table-wrap, body.printing .shift-table-wrap * { visibility: visible; }
+    body.printing #printTitle { display:block !important; position:absolute; top:0; left:0; font-size:14px; font-weight:700; }
+    body.printing .shift-table-wrap { position:absolute; top:8mm; left:0; width:100%; overflow:visible; }
+    body.printing table { font-size:7.5px; min-width:0; width:100%; }
+    body.printing th, body.printing td { padding:1px 2px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== フォルダ接続画面 ===== -->
+<div id="connectOverlay" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#eff6ff,#f0fdf4);padding:20px;box-sizing:border-box;margin:-16px;">
+  <div class="login-box">
+    <div class="login-logo">🗓️</div>
+    <div class="login-title">交代勤務シフト自動作成ツール <span style="font-size:10px;color:#dc2626;font-weight:700;">DEMO</span></div>
+    <div class="login-sub" id="connectMsg">複雑な現場ルールをそのまま組み込めるシフト自動作成ツールのデモです。<br>チーム数・人数・公休なども自由に設定できます。データはすべて架空です。</div>
+    <button class="login-btn" onclick="startDemo()" style="background:#059669;">▶ サンプルデータで試す（管理者として開始）</button>
+    <div class="login-error" id="connectError"></div>
+    <div class="login-hint">
+      ログイン不要。ボタンを押すと管理者画面で始まります。<br>
+      画面上部の「👤 スタッフ画面を見る」でスタッフ本人の体験に切り替えられます。<br>
+      <span style="color:#9ca3af;">すべてブラウザ内で完結（外部送信なし）。押すたびにサンプルが初期化されます。</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ログイン画面 ===== -->
+<div id="loginOverlay" style="min-height:100vh;display:none;align-items:center;justify-content:center;background:linear-gradient(135deg,#eff6ff,#f0fdf4);padding:20px;box-sizing:border-box;margin:-16px;">
+  <div class="login-box">
+    <div class="login-logo">🏥</div>
+    <div class="login-title">勤務表システム <span class="app-version" style="font-size:10px;color:#9ca3af;font-weight:normal;"></span></div>
+    <div class="login-sub">職番とPINを入力してください</div>
+    <input type="text" id="loginId" class="login-input" placeholder="職番 または ログインID"
+      onkeydown="if(event.key==='Enter')document.getElementById('loginPin').focus()">
+    <input type="password" id="loginPin" class="login-input" placeholder="PIN"
+      onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">ログイン</button>
+    <div class="login-error" id="loginError"></div>
+    <div class="login-hint">スタッフ：初期は職番／PIN＝職番。ID・PINは自分の画面で自由に変更でき、職番が変わっても保持されます<br>師長ログイン：職番 0 ／ 初期PIN：0000</div>
+  </div>
+</div>
+
+<!-- ===== スタッフ希望入力ビュー ===== -->
+<div id="staffView">
+  <div class="staff-header">
+    <div>
+      <div class="staff-name-badge" id="staffViewName"></div>
+      <div style="font-size:11px;color:#6b7280;" id="staffViewMonth"></div>
+    </div>
+    <span style="display:flex;gap:6px;">
+      <button class="small" onclick="demoBackToAdmin()" style="margin:0;background:#2563eb;">← 管理者画面へ</button>
+      <button class="secondary small" onclick="changeMyLoginId()" style="margin:0;">🪪 ID変更</button>
+      <button class="secondary small" onclick="changeMyPin()" style="margin:0;">🔑 PIN変更</button>
+    </span>
+  </div>
+  <div class="card">
+    <h2 id="staffViewHeading">希望入力</h2>
+    <div class="req-cycle-hint">📅 日付をタップすると希望の選択メニューが開きます（△✕／○✕は「その日は準夜／深夜に入れない」という意味です）<br>
+    🫂 各日の下段はみんなの希望状況：<b>休n</b>=休み系希望の人数（4人以上で赤）、<b>△／○</b>=同じチームに夜勤希望あり。日付をタップすると誰の希望か名前が見えます。
+    <button class="small secondary" style="margin-left:6px;padding:2px 8px;" onclick="refreshStaffView()">🔄 最新を読み込む</button></div>
+    <div class="legend req-legend" style="margin-bottom:8px;"></div>
+    <div id="staffConflictBox" style="display:none;margin-bottom:8px;padding:8px 10px;background:#fee2e2;border:1px solid #fca5a5;border-radius:6px;font-size:12px;color:#991b1b;"></div>
+    <div class="calendar-grid" id="staffReqCalHeader" style="margin-bottom:4px;"></div>
+    <div class="calendar-grid" id="staffReqCal"></div>
+    <div style="margin-top:14px;">
+      <label style="font-size:12px;color:#6b7280;">コメント・備考</label>
+      <textarea id="staffComment" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;margin-top:4px;resize:vertical;" rows="3" placeholder="連絡事項があれば入力してください"></textarea>
+    </div>
+    <div style="margin-top:10px;display:flex;align-items:center;gap:10px;">
+      <button class="success" onclick="saveStaffRequest()">💾 保存</button>
+      <span id="staffSaveMsg" style="font-size:12px;color:#059669;opacity:0;transition:opacity 0.5s;"></span>
+    </div>
+  </div>
+  <div class="card" id="staffShiftCard" style="display:none;">
+    <h2 id="staffShiftTitle">今月のシフト（確定版）</h2>
+    <div class="calendar-grid" id="staffShiftCalHeader" style="margin-bottom:4px;"></div>
+    <div class="calendar-grid" id="staffShiftCal"></div>
+  </div>
+</div>
+
+<!-- ===== メインアプリ（師長用） ===== -->
+<div id="appView" style="display:none;">
+<h1>🗓️ 交代勤務シフト自動作成ツール <span style="font-size:12px;color:#dc2626;font-weight:700;">DEMO（架空データ）</span></h1>
+
+<!-- 月選択 -->
+<div class="month-bar">
+  <label>対象月：</label>
+  <select id="yearSelect" onchange="onMonthChange()"></select>年
+  <select id="monthSelect" onchange="onMonthChange()"></select>月
+  <span id="daysLabel" style="font-size:12px;color:#6b7280;"></span>
+  <span style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+    <span id="currentUserLabel" style="font-size:12px;color:#1e40af;font-weight:600;"></span>
+    <button class="small" onclick="demoViewAsStaff()" style="margin:0;background:#059669;" title="スタッフ本人の希望入力・確定シフト閲覧画面を体験">👤 スタッフ画面を見る</button>
+    <button class="small secondary" onclick="doLogout()" style="margin:0;">最初に戻る</button>
+  </span>
+</div>
+
+<div class="tab-bar">
+  <div class="tab active" onclick="switchTab('config')">⓪ スタッフ設定</div>
+  <div class="tab" onclick="switchTab('holiday')">📅 祝日設定</div>
+  <div class="tab" onclick="switchTab('input')">① 希望入力</div>
+  <div class="tab" onclick="switchTab('generate')">② シフト生成</div>
+  <div class="tab" onclick="switchTab('check')">③ チェック</div>
+  <div class="tab" onclick="switchTab('help')">❓ ヘルプ</div>
+</div>
+
+<!-- スタッフ設定 -->
+<div id="tab-config" class="tab-content active">
+  <div class="info-card">
+    💡 <b>勤務タイプ</b>：「二交代」= 準夜の翌日に必ず深夜を連続担当。「三交代」= △の翌日V・○の前日V。「日勤のみ」= 夜勤なし。「平日日勤のみ」= 平日は日勤、土日祝は必ずV（管理者）。役職・夜勤回数・入浴対象・休業なども個別に設定できます。
+    <br>💡 <b>DEMOモード</b>：データはすべてブラウザ内に保存され、外部には送信されません。ページを閉じても残り、トップの「試す」で初期化できます。
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+    <span id="saveIndicator" style="font-size:12px;color:#059669;transition:opacity 1s;opacity:0;"></span>
+    <button class="small secondary" onclick="renumberAllStaff()" style="margin-left:auto;">🔢 職番を連番に振り直す</button>
+    <button class="small secondary" onclick="changeMasterPinPrompt()">🔑 師長PIN変更</button>
+    <button class="small secondary" onclick="resetSettings()">🗑️ 設定をリセット</button>
+  </div>
+  <div class="card">
+    <div style="overflow-x:auto;">
+      <table class="sct">
+        <thead><tr><th>職番</th><th>名前</th><th>T</th><th>役職</th><th>勤務タイプ</th><th>夜勤ルール</th><th>夜勤希望</th><th>夜勤回数</th><th>入浴</th><th>休業</th><th>禁止ペア</th><th></th></tr></thead>
+        <tbody id="configTableBody"></tbody>
+      </table>
+    </div>
+    <div style="margin-top:12px;border-top:1px solid #e5e7eb;padding-top:12px;">
+      <h2 style="margin-bottom:8px;">スタッフを追加</h2>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+        <input type="number" id="newStaffId" placeholder="職番" min="1" style="width:70px;padding:6px;border:1px solid #d1d5db;border-radius:5px;font-size:13px;">
+        <input type="text"   id="newStaffName" placeholder="名前" style="width:130px;padding:6px;border:1px solid #d1d5db;border-radius:5px;font-size:13px;">
+        <select id="newStaffTeam" style="padding:6px;border:1px solid #d1d5db;border-radius:5px;font-size:13px;"></select>
+        <button onclick="addStaff()" class="success small" style="padding:6px 12px;margin:0;">➕ 追加</button>
+      </div>
+      <div id="addStaffMsg" style="font-size:12px;color:#6b7280;margin-top:4px;"></div>
+    </div>
+    <div class="card" style="background:#fefce8;border:1px solid #fde68a;margin-top:12px;">
+      <h2 style="margin-bottom:6px;">👥 チーム設定</h2>
+      <p style="font-size:12px;color:#6b7280;margin-bottom:8px;">チームの数と名前を自由に決められます（2〜8）。名前はカンマ区切り。夜勤は各チームから準夜1・深夜1が割り当てられます。既存スタッフのチームが無くなった場合は先頭チームへ移動します。</p>
+      <div style="display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap;">
+        <label style="font-size:12px;display:flex;flex-direction:column;gap:2px;flex:1;min-width:220px;">チーム名（カンマ区切り）
+          <input type="text" id="teamsInput" placeholder="例：A,B,C ／ 北,南 ／ 日勤,夜勤" style="padding:6px;border:1px solid #d1d5db;border-radius:5px;font-size:14px;">
+        </label>
+        <button class="small success" style="margin:0;" onclick="applyTeamsFromInput()">反映</button>
+      </div>
+      <div id="teamsMsg" style="font-size:12px;color:#6b7280;margin-top:4px;"></div>
+    </div>
+    <div class="card" style="background:#f0f9ff;border:1px solid #bae6fd;margin-top:12px;">
+      <h2 style="margin-bottom:6px;">🏥 施設ルール（必要人数・公休）</h2>
+      <p style="font-size:12px;color:#6b7280;margin-bottom:8px;">施設ごとに異なる基本ルールをここで設定します。生成・チェックの基準になります。</p>
+      <div style="display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;">
+        <div>
+          <div style="font-size:12px;color:#374151;margin-bottom:4px;">平日の日勤人数（曜日別）</div>
+          <div id="weekdayCountInputs" style="display:flex;gap:6px;"></div>
+        </div>
+        <label style="font-size:12px;display:flex;flex-direction:column;gap:2px;">土日祝の日勤人数
+          <input type="number" min="0" max="30" id="holidayCountInput" onchange="setFacility('holidayCount',this.value)" style="width:70px;padding:5px;border:1px solid #d1d5db;border-radius:5px;font-size:14px;">
+        </label>
+        <label style="font-size:12px;display:flex;flex-direction:column;gap:2px;">公休日数（月）
+          <input type="number" min="0" max="20" id="offTargetInput" onchange="setFacility('offTargetDays',this.value)" style="width:70px;padding:5px;border:1px solid #d1d5db;border-radius:5px;font-size:14px;">
+        </label>
+      </div>
+      <div style="display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-top:10px;border-top:1px dashed #bae6fd;padding-top:10px;">
+        <label style="font-size:12px;display:flex;flex-direction:column;gap:2px;">連勤上限（日）
+          <input type="number" min="1" max="14" id="maxConsecInput" onchange="setFacility('maxConsecutive',this.value)" style="width:64px;padding:5px;border:1px solid #d1d5db;border-radius:5px;font-size:14px;">
+        </label>
+        <label style="font-size:12px;display:flex;flex-direction:column;gap:2px;">チーム日勤 最低
+          <input type="number" min="0" max="20" id="teamMinInput" onchange="setFacility('teamDayMin',this.value)" style="width:64px;padding:5px;border:1px solid #d1d5db;border-radius:5px;font-size:14px;">
+        </label>
+        <label style="font-size:12px;display:flex;flex-direction:column;gap:2px;">チーム日勤 目標
+          <input type="number" min="0" max="20" id="teamTargetInput" onchange="setFacility('teamDayTarget',this.value)" style="width:64px;padding:5px;border:1px solid #d1d5db;border-radius:5px;font-size:14px;">
+        </label>
+        <label style="font-size:12px;display:flex;flex-direction:column;gap:2px;">夜勤インターバル（日）
+          <input type="number" min="0" max="10" id="nightIntervalInput" onchange="setFacility('nightInterval',this.value)" style="width:64px;padding:5px;border:1px solid #d1d5db;border-radius:5px;font-size:14px;">
+        </label>
+        <label style="font-size:12px;display:flex;flex-direction:column;gap:2px;">夜勤最低回数（既定）
+          <input type="number" min="0" max="15" id="minNightsInput" onchange="setFacility('minNightsDefault',this.value)" style="width:64px;padding:5px;border:1px solid #d1d5db;border-radius:5px;font-size:14px;">
+        </label>
+        <label style="font-size:12px;display:flex;align-items:center;gap:6px;">
+          <input type="checkbox" id="seniorRuleInput" onchange="setSeniorRule(this.checked)"> 土日祝は主任を必ず日勤に1人
+        </label>
+      </div>
+    </div>
+    <div style="margin-top:12px;border-top:1px solid #e5e7eb;padding-top:12px;">
+      <h2 style="margin-bottom:6px;">入浴介助（係業務）</h2>
+      <p style="font-size:12px;color:#6b7280;margin-bottom:8px;">この業務が無い施設はオフにできます。オフにすると割り当て・半日公休カウント・チェックをすべて行いません。曜日ごとに必要人数を設定できます。</p>
+      <label style="font-size:13px;display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+        <input type="checkbox" id="nyukyuEnabled" onchange="setNyukyuEnabled(this.checked)"> 入浴介助を使う
+      </label>
+      <div id="nyukyuDayInputs" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 祝日設定 -->
+<div id="tab-holiday" class="tab-content">
+  <div class="card">
+    <h2>祝日設定（<span id="holidayMonthLabel"></span>）</h2>
+    <p style="font-size:12px;color:#6b7280;margin-bottom:8px;">土日以外の祝日をクリックしてマーク。祝日は土日と同じ日勤9人ルールを適用します。</p>
+    <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
+      <span style="font-size:11px;display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:12px;height:12px;background:#fff7ed;border:1px solid #f97316;border-radius:2px;"></span>祝日（クリック設定）</span>
+      <span style="font-size:11px;display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:12px;height:12px;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:2px;"></span>土日（自動）</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px;">
+      <div style="text-align:center;font-size:11px;color:#ef4444;">日</div>
+      <div style="text-align:center;font-size:11px;color:#6b7280;">月</div>
+      <div style="text-align:center;font-size:11px;color:#6b7280;">火</div>
+      <div style="text-align:center;font-size:11px;color:#6b7280;">水</div>
+      <div style="text-align:center;font-size:11px;color:#6b7280;">木</div>
+      <div style="text-align:center;font-size:11px;color:#6b7280;">金</div>
+      <div style="text-align:center;font-size:11px;color:#3b82f6;">土</div>
+    </div>
+    <div class="holiday-cal" id="holidayCal"></div>
+    <div id="holidayCount" style="font-size:12px;color:#6b7280;margin-top:8px;"></div>
+  </div>
+</div>
+
+<!-- 希望入力 -->
+<div id="tab-input" class="tab-content">
+  <div class="card">
+    <h2>希望を入力（日付クリックで選択メニュー）</h2>
+    <select class="staff-select" id="staffSelect" onchange="renderCalendar()"></select>
+    <div class="legend req-legend"></div>
+    <div class="calendar-grid" id="calendarGrid"></div>
+    <div id="requestCount" style="font-size:12px;color:#6b7280;margin-top:4px;"></div>
+  </div>
+  <div class="card">
+    <h2>入力済みスタッフ</h2>
+    <div id="inputSummary" style="font-size:12px;color:#6b7280;">まだ入力がありません</div>
+  </div>
+</div>
+
+<!-- シフト生成 -->
+<div id="tab-generate" class="tab-content">
+  <div class="card">
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-num" id="statStaff">28</div><div class="stat-label">スタッフ数</div></div>
+      <div class="stat-box"><div class="stat-num" id="statDays">-</div><div class="stat-label">対象日数</div></div>
+      <div class="stat-box"><div class="stat-num" id="statRequests">0</div><div class="stat-label">希望件数</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <button onclick="generateShift()">🔄 シフト生成</button>
+    <button class="secondary" onclick="undoGenerate()" title="生成し直す前の状態と入れ替えます（もう一度押すと戻る）">↩ 直前に戻す</button>
+    <button class="secondary" onclick="resetShift()">リセット</button>
+    <button class="success" onclick="finalizeShift()" title="確定するとスタッフが自分のシフトをログインして見られるようになります">✅ 確定してスタッフに公開</button>
+    <button class="success" onclick="exportCSV()">📥 CSV出力</button>
+    <button class="secondary" onclick="printShift()">🖨 印刷（A4横）</button>
+    <div style="margin-top:6px;"><span id="finalizeStatus" style="font-size:12px;font-weight:600;"></span></div>
+    <div id="generateMsg" style="margin-top:6px;font-size:13px;color:#6b7280;"></div>
+  </div>
+  <div id="requestViolationsCard" class="card" style="display:none;">
+    <h2 style="color:#dc2626;">⚠️ 希望未反映スタッフ</h2>
+    <ul id="requestViolationsList" class="violations" style="margin-top:8px;"></ul>
+  </div>
+  <div class="card">
+    <h2>生成されたシフト表</h2>
+    <p style="font-size:11px;color:#6b7280;margin-bottom:6px;">セルに色枠がある日は勤務希望が入っています（枠の色＝希望の種類。マウスを乗せると内容表示）。セルクリックで手動編集。</p>
+    <div id="printTitle" style="display:none;"></div>
+    <div class="shift-table-wrap">
+      <table id="shiftTable"><tr><td style="color:#9ca3af;font-size:12px;">生成ボタンを押してください</td></tr></table>
+    </div>
+  </div>
+</div>
+
+<!-- チェック -->
+<div id="tab-check" class="tab-content">
+  <div class="card">
+    <h2>バリデーション結果</h2>
+    <div id="validationResult">シフトを生成してからチェックしてください</div>
+  </div>
+  <div class="card">
+    <h2>日勤人数（日別）</h2>
+    <div id="nikkinStats" style="font-size:12px;"></div>
+  </div>
+  <div class="card">
+    <h2>夜勤回数（スタッフ別）</h2>
+    <div id="nightStats" style="font-size:12px;color:#6b7280;">データなし</div>
+  </div>
+</div>
+
+<!-- ヘルプ -->
+<div id="tab-help" class="tab-content">
+  <div class="card">
+    <h2>💾 データの仕組み</h2>
+    <p style="font-size:12px;color:#374151;line-height:1.8;">
+      すべてのデータ（スタッフ設定・希望入力・PIN・生成したシフト）は、最初に接続した<b>データフォルダ内の shift-data.json</b> に保存されます。
+      共有フォルダにデータフォルダを置けば、<b>どのPCから開いても同じデータ</b>が使えます。<br>
+      保存のたびに <b>backup フォルダに1日1回自動バックアップ</b>が作られます（60日分保持・自動削除）。
+    </p>
+  </div>
+  <div class="card">
+    <h2>🖥️ 新しいPCで使うとき</h2>
+    <p style="font-size:12px;color:#374151;line-height:1.8;">
+      共有フォルダ内のこのHTMLファイルを<b>ChromeまたはEdge</b>で開き、「データフォルダに接続」ボタンで<b>「勤務表データ」フォルダを選択</b>するだけです。設定は不要です。
+    </p>
+  </div>
+  <div class="card">
+    <h2>🛟 データが消えた・壊れたとき</h2>
+    <p style="font-size:12px;color:#374151;line-height:1.8;">
+      ① データフォルダ内の <b>backup フォルダ</b>を開く<br>
+      ② いちばん日付が新しい「shift-data_日付.json」をコピーする<br>
+      ③ データフォルダ直下の <b>shift-data.json</b> に上書き（名前を shift-data.json に変更）する<br>
+      ④ このシステムを開き直す<br>
+      または、下の「バックアップから復元」ボタンでJSONファイルを直接読み込むこともできます。
+    </p>
+    <div style="margin-top:10px;">
+      <button onclick="exportStoreFile()">📥 データを手動バックアップ</button>
+      <button class="secondary" onclick="document.getElementById('importFile').click()">📤 バックアップから復元</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importStoreFile(this.files[0])">
+    </div>
+  </div>
+  <div class="card">
+    <h2>❓ よくあるトラブル</h2>
+    <p style="font-size:12px;color:#374151;line-height:1.8;">
+      <b>「保存に失敗しました」と出る</b> → 共有フォルダへの接続が切れています。ページを開き直して再接続してください。<br>
+      <b>接続ボタンを押してもフォルダ選択が出ない</b> → ChromeまたはEdgeで開いているか確認してください（Internet Explorerや古いブラウザは非対応）。<br>
+      <b>スタッフがPINを忘れた</b> → 初期PINはその人の職番と同じ数字です。師長画面では全スタッフのPINをリセットできます。<br>
+      <b>師長PINを忘れた</b> → shift-data.json をメモ帳で開き "masterPin" の値を確認・変更できます。
+    </p>
+  </div>
+</div>
+
+<!-- 禁止ペアモーダル -->
+<div class="modal-overlay" id="pairModal">
+  <div class="modal-box">
+    <div class="modal-title">禁止ペア設定：<span id="pairModalName"></span></div>
+    <p style="font-size:12px;color:#6b7280;margin-bottom:10px;">チェックした人と同じ夜に夜勤が重ならないよう調整します。</p>
+    <div class="pair-list" id="pairList"></div>
+    <button onclick="closePairModal()">✅ 完了</button>
+  </div>
+</div>
+</div><!-- /appView -->
+
+<!-- 休業期間モーダル -->
+<div class="modal-overlay" id="absenceModal">
+  <div class="modal-box" style="max-width:320px;">
+    <div class="modal-title">休業期間：<span id="absenceModalName"></span></div>
+    <p style="font-size:12px;color:#6b7280;margin-bottom:12px;">育休・病休など長期間休む場合に設定します。期間中は自動的に「休業」となり、夜勤・日勤・入浴・公休の割り当て対象から外れます。公休目標は在籍日数に応じて自動調整されます。</p>
+    <label style="font-size:12px;color:#374151;">開始日</label>
+    <input type="date" id="absenceFrom" style="width:100%;padding:7px;border:1px solid #d1d5db;border-radius:6px;font-size:14px;margin:4px 0 10px;">
+    <label style="font-size:12px;color:#374151;">終了日（復帰前日）</label>
+    <input type="date" id="absenceTo" style="width:100%;padding:7px;border:1px solid #d1d5db;border-radius:6px;font-size:14px;margin:4px 0 14px;">
+    <div style="display:flex;gap:6px;">
+      <button class="success" style="flex:1;margin:0;" onclick="saveAbsenceFromModal()">保存</button>
+      <button class="danger" style="flex:1;margin:0;" onclick="clearAbsence()">休業を解除</button>
+      <button class="secondary" style="flex:1;margin:0;" onclick="closeAbsenceModal()">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<!-- シフト手動編集モーダル（師長用） -->
+<div class="modal-overlay" id="shiftPicker">
+  <div class="modal-box" style="max-width:320px;">
+    <div class="modal-title" id="shiftPickerTitle"></div>
+    <p style="font-size:11px;color:#6b7280;margin-bottom:8px;">手動編集は即保存されます。編集後は③チェックタブでルール違反がないか確認してください。</p>
+    <div id="shiftPickerBtns" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;"></div>
+    <div style="display:flex;gap:6px;margin-top:10px;">
+      <button class="req-pick-btn" style="flex:1;background:white;border-color:#d1d5db;color:#374151;" onclick="applyPickedShift('')">空白にする</button>
+      <button class="req-pick-btn" style="flex:1;background:#6b7280;border-color:#6b7280;color:white;" onclick="closeShiftPicker()">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<!-- 希望タイプ選択モーダル（スタッフ画面・師長画面共用） -->
+<div class="modal-overlay" id="reqPicker">
+  <div class="modal-box" style="max-width:320px;">
+    <div class="modal-title" id="reqPickerTitle"></div>
+    <div id="reqPickerOthers" style="font-size:11px;color:#374151;margin-bottom:8px;"></div>
+    <div id="reqPickerBtns" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;"></div>
+    <div style="display:flex;gap:6px;margin-top:10px;">
+      <button class="req-pick-btn" style="flex:1;background:white;border-color:#d1d5db;color:#374151;" onclick="applyPickedReq(null)">指定なしに戻す</button>
+      <button class="req-pick-btn" style="flex:1;background:#6b7280;border-color:#6b7280;color:white;" onclick="closeReqPicker()">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== スタッフデータ（可変） =====
+let STAFF = [
+  { id: 1,  name: '管理者',  team: 'A' },
+  { id: 2,  name: 'A-1',    team: 'A' },
+  { id: 3,  name: 'A-2',    team: 'A' },
+  { id: 4,  name: 'A-3',    team: 'A' },
+  { id: 5,  name: 'A-4',    team: 'A' },
+  { id: 6,  name: 'A-5',    team: 'A' },
+  { id: 7,  name: 'A-6',    team: 'A' },
+  { id: 8,  name: 'A-7',    team: 'A' },
+  { id: 9,  name: 'A-8',    team: 'A' },
+  { id: 10, name: 'B-1',    team: 'B' },
+  { id: 11, name: 'B-2',    team: 'B' },
+  { id: 12, name: 'B-3',    team: 'B' },
+  { id: 13, name: 'B-4',    team: 'B' },
+  { id: 14, name: 'B-5',    team: 'B' },
+  { id: 15, name: 'B-6',    team: 'B' },
+  { id: 16, name: 'B-7',    team: 'B' },
+  { id: 17, name: 'B-8',    team: 'B' },
+  { id: 18, name: 'B-9',    team: 'B' },
+  { id: 19, name: 'C-1',    team: 'C' },
+  { id: 20, name: 'C-2',    team: 'C' },
+  { id: 21, name: 'C-3',    team: 'C' },
+  { id: 22, name: 'C-4',    team: 'C' },
+  { id: 23, name: 'C-5',    team: 'C' },
+  { id: 24, name: 'C-6',    team: 'C' },
+  { id: 25, name: 'C-7',    team: 'C' },
+  { id: 26, name: 'C-8',    team: 'C' },
+  { id: 27, name: 'C-9',    team: 'C' },
+  { id: 28, name: 'C-10',   team: 'C' },
+];
+
+// デフォルト勤務タイプ
+// regular=二交代, triple=三交代, day_only=日勤のみ, weekday_day=平日日勤のみ
+const SHIFT_TYPE_DEFAULTS = {
+  1: 'weekday_day',
+  3: 'triple', 4: 'triple', 5: 'triple',
+  12: 'triple', 16: 'triple', 17: 'triple',
+  18: 'day_only'
+};
+
+const SHIFT_LABELS = { day: '日', jun: '△', deep: '○', V: 'V', summer: '夏', nyukyu: '入', yukyuu: '有', menjo: '免', absence: '休業' };
+const DOW = ['日','月','火','水','木','金','土'];
+
+// ===== 希望タイプ定義 =====
+// holiday=休み希望, summer=夏休み, yukyuu=有給, menjo=職務免除,
+// req_day=日勤希望, req_jun=△希望, req_deep=○希望,
+// jun_ng=その日は準夜(△)不可, deep_ng=その日は深夜(○)不可
+const REQ_TYPES = {
+  holiday:  { label:'休み希望', short:'休',   cls:'req-holiday', bg:'#fef3c7', bd:'#f59e0b', fg:'#92400e' },
+  summer:   { label:'夏休み',   short:'夏',   cls:'req-summer',  bg:'#ccfbf1', bd:'#14b8a6', fg:'#0f766e' },
+  yukyuu:   { label:'有給',     short:'有',   cls:'req-yukyuu',  bg:'#e0f2fe', bd:'#0ea5e9', fg:'#0369a1' },
+  menjo:    { label:'職務免除', short:'免',   cls:'req-menjo',   bg:'#e5e7eb', bd:'#9ca3af', fg:'#374151' },
+  req_day:  { label:'日勤希望', short:'日',   cls:'req-dayreq',  bg:'#dcfce7', bd:'#22c55e', fg:'#166534' },
+  req_jun:  { label:'△希望',   short:'△',   cls:'req-jun',     bg:'#ede9fe', bd:'#7c3aed', fg:'#5b21b6' },
+  req_deep: { label:'○希望',   short:'○',   cls:'req-deep',    bg:'#dbeafe', bd:'#2563eb', fg:'#1e40af' },
+  jun_or_day: { label:'△か日勤', short:'△/日', cls:'req-junday',  bg:'#f5f3ff', bd:'#a78bfa', fg:'#5b21b6' },
+  deep_or_day:{ label:'○か日勤', short:'○/日', cls:'req-deepday', bg:'#eff6ff', bd:'#93c5fd', fg:'#1e40af' },
+  jun_or_v:   { label:'△か休み', short:'△/V', cls:'req-junv',    bg:'#fdf4ff', bd:'#c084fc', fg:'#86198f' },
+  deep_or_v:  { label:'○か休み', short:'○/V', cls:'req-deepv',   bg:'#eef2ff', bd:'#818cf8', fg:'#3730a3' },
+  req_nyukyu: { label:'入浴希望', short:'入',   cls:'req-nyu',     bg:'#fce7f3', bd:'#db2777', fg:'#9d174d' },
+  iinkai:     { label:'委員会',   short:'委',   cls:'req-iinkai',  bg:'#ecfccb', bd:'#84cc16', fg:'#3f6212' },
+  jun_ng:   { label:'△不可',   short:'△✕', cls:'req-ng',      bg:'#ffedd5', bd:'#f97316', fg:'#9a3412' },
+  deep_ng:  { label:'○不可',   short:'○✕', cls:'req-ng',      bg:'#ffedd5', bd:'#f97316', fg:'#9a3412' },
+};
+const REQ_ORDER = ['holiday','summer','yukyuu','menjo','req_day','iinkai','req_nyukyu','req_jun','jun_or_day','jun_or_v','req_deep','deep_or_day','deep_or_v','jun_ng','deep_ng'];
+
+// ===== 共有フォルダ保存（File System Access API） =====
+// すべてのデータはデータフォルダ内の shift-data.json に保存される。
+// 非対応ブラウザでは localStorage フォールバック（このPC内のみ）。
+const DATA_FILE = 'shift-data.json';
+let dirHandle = null;   // データフォルダのハンドル
+let store = null;       // shift-data.json の内容（メモリキャッシュ）
+let fsMode = 'file';    // 'file' | 'local'
+
+function defaultStore() {
+  const now = new Date();
+  return {
+    version: 1,
+    updatedAt: null,
+    currentMonth: `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`,
+    settings: null,
+    pins: { staffPins: {}, masterPin: '0000', staffLoginIds: {} },
+    months: {}
+  };
+}
+function monthKey() { return `${YEAR}-${String(MONTH+1).padStart(2,'0')}`; }
+function monthData(d, key) {
+  key = key || monthKey();
+  if(!d.months) d.months = {};
+  if(!d.months[key]) d.months[key] = { requests:{}, comments:{}, holidays:[], savedShift:null };
+  const m = d.months[key];
+  if(!m.requests) m.requests = {};
+  if(!m.comments) m.comments = {};
+  if(!m.holidays) m.holidays = [];
+  if(m.finalized === undefined) m.finalized = false;
+  return m;
+}
+
+// --- IndexedDB（フォルダハンドル記憶用） ---
+function idbOpen() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open('nurseShiftCfgFS', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('kv');
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+async function idbSet(key, val) {
+  const db = await idbOpen();
+  return new Promise((res, rej) => {
+    const tx = db.transaction('kv', 'readwrite');
+    tx.objectStore('kv').put(val, key);
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+  });
+}
+async function idbGet(key) {
+  const db = await idbOpen();
+  return new Promise((res, rej) => {
+    const rq = db.transaction('kv').objectStore('kv').get(key);
+    rq.onsuccess = () => res(rq.result);
+    rq.onerror = () => rej(rq.error);
+  });
+}
+
+// --- ディスク読み書き ---
+async function readStoreFromDisk() {
+  if(fsMode === 'local') {
+    const raw = localStorage.getItem('nurseShiftCfgStore_v1');
+    return raw ? JSON.parse(raw) : defaultStore();
+  }
+  try {
+    const fh = await dirHandle.getFileHandle(DATA_FILE);
+    const text = await (await fh.getFile()).text();
+    return text.trim() ? JSON.parse(text) : defaultStore();
+  } catch(e) {
+    if(e.name === 'NotFoundError') return defaultStore();
+    throw e;
+  }
+}
+
+// すべての保存はここを通す：最新を読み直し→変更を適用→書き戻し。
+// 他のPCで行われた保存を潰さないための仕組み（直列実行）。
+let saveQueue = Promise.resolve();
+function updateStore(mutator) {
+  const p = saveQueue.then(() => doSave(mutator));
+  saveQueue = p.catch(() => {});
+  return p;
+}
+async function doSave(mutator) {
+  try {
+    const latest = await readStoreFromDisk();
+    mutator(latest);
+    latest.updatedAt = new Date().toISOString();
+    if(fsMode === 'local') {
+      localStorage.setItem('nurseShiftCfgStore_v1', JSON.stringify(latest));
+    } else {
+      const fh = await dirHandle.getFileHandle(DATA_FILE, { create: true });
+      const w = await fh.createWritable();
+      await w.write(JSON.stringify(latest, null, 1));
+      await w.close();
+      await makeDailyBackup(latest);
+    }
+    store = latest;
+    flashSaved();
+  } catch(e) {
+    console.error('保存に失敗:', e);
+    alert('⚠️ 保存に失敗しました。共有フォルダへの接続を確認し、ページを開き直してください。\n' + e);
+    throw e;
+  }
+}
+
+function flashSaved() {
+  const el = document.getElementById('saveIndicator');
+  if(el){ el.textContent='💾 共有フォルダに保存しました'; el.style.opacity='1'; setTimeout(()=>el.style.opacity='0', 1500); }
+}
+
+// --- 日次バックアップ（backupフォルダに1日1回・60世代保持） ---
+async function makeDailyBackup(data) {
+  try {
+    const today = new Date().toISOString().slice(0,10);
+    const bdir = await dirHandle.getDirectoryHandle('backup', { create: true });
+    const name = `shift-data_${today}.json`;
+    try { await bdir.getFileHandle(name); return; } catch(e) {} // 今日の分は作成済み
+    const fh = await bdir.getFileHandle(name, { create: true });
+    const w = await fh.createWritable();
+    await w.write(JSON.stringify(data, null, 1));
+    await w.close();
+    const names = [];
+    for await (const entry of bdir.keys()) if(entry.startsWith('shift-data_')) names.push(entry);
+    names.sort();
+    while(names.length > 60) await bdir.removeEntry(names.shift());
+  } catch(e) { console.warn('バックアップ作成に失敗:', e); }
+}
+
+// ===== デモモード =====
+// サンプルデータ（架空スタッフ＋今月の希望入力例）を作ってすぐ試せる状態にする
+function seedDemoData() {
+  const now = new Date();
+  const mkey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const days = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+  const cons = {};
+  STAFF.forEach(s => {
+    cons[s.id] = {
+      nightRule: 'none', bannedPairs: [], shiftType: SHIFT_TYPE_DEFAULTS[s.id] || 'regular',
+      nightPref: 'normal', noNyukyu: false, nightQuota: null,
+      role: (SHIFT_TYPE_DEFAULTS[s.id]==='weekday_day') ? 'head' : ([2,14,20].includes(s.id) ? 'senior' : 'staff'),
+      absence: null
+    };
+  });
+  const reqs = {};
+  const R = (id, d, t) => { if(d>=1 && d<=days){ (reqs[id] = reqs[id] || {})[d] = t; } };
+  // 全員に休み希望を2つずつ（ばらけるよう職番ベースで散らす）
+  STAFF.forEach(s => {
+    if(cons[s.id].shiftType === 'weekday_day') return;
+    R(s.id, ((s.id * 3) % days) + 1, 'holiday');
+    R(s.id, ((s.id * 7 + 11) % days) + 1, 'holiday');
+  });
+  // 各種希望タイプの見本
+  R(3, 10, 'req_jun'); R(4, 15, 'req_deep'); R(5, 20, 'jun_or_v');
+  R(6, 12, 'summer'); R(6, 13, 'summer');
+  R(7, 18, 'iinkai'); R(8, 22, 'req_day'); R(9, 25, 'yukyuu');
+  R(12, 8, 'deep_or_day'); R(16, 24, 'menjo'); R(17, 6, 'jun_ng');
+  for(let d=3; d<=days; d++){ // 火曜のどこかに入浴希望の見本
+    if(new Date(now.getFullYear(), now.getMonth(), d).getDay() === 2){ R(21, d, 'req_nyukyu'); break; }
+  }
+  const st = defaultStore();
+  st.currentMonth = mkey;
+  st.settings = { staff: STAFF.map(s => ({ id: s.id, name: s.name, team: s.team })), constraints: cons, teams: [...TEAMS] };
+  st.months[mkey] = { requests: reqs, comments: { 8: '（デモ）22日は委員会後に面談があります' }, holidays: [], savedShift: null, finalized: false };
+  return st;
+}
+
+// デモ用：スタッフ画面から管理者画面へ戻る
+async function demoBackToAdmin() {
+  currentUserId = 0;
+  try { store = await readStoreFromDisk(); } catch(e) {}
+  document.getElementById('staffView').style.display = 'none';
+  document.getElementById('appView').style.display = 'block';
+  document.getElementById('currentUserLabel').textContent = '👤 管理者（デモ）';
+  loadAllStaffRequests();
+}
+
+// デモ用：ログインせずにサンプルスタッフ本人の画面へ切り替える
+async function demoViewAsStaff() {
+  const sample = STAFF.find(s => s.id === 8) || STAFF.find(s => staffConstraints[s.id]?.shiftType !== 'weekday_day');
+  currentUserId = sample.id;
+  try { store = await readStoreFromDisk(); const m = monthData(store); requests[sample.id] = { ...(m.requests[sample.id] || {}) }; } catch(e) {}
+  document.getElementById('appView').style.display = 'none';
+  document.getElementById('staffView').style.display = 'block';
+  document.getElementById('staffViewName').textContent = `${sample.name} さん（デモ・スタッフ視点）`;
+  document.getElementById('staffViewMonth').textContent = `${YEAR}年${MONTH+1}月`;
+  document.getElementById('staffViewHeading').textContent = `希望入力（${YEAR}年${MONTH+1}月）`;
+  renderStaffReqView();
+  renderStaffShift();
+}
+
+async function startDemo() {
+  fsMode = 'local';
+  localStorage.setItem('nurseShiftCfgStore_v1', JSON.stringify(seedDemoData()));
+  try { store = await readStoreFromDisk(); } catch(e) { store = seedDemoData(); }
+  applyStoreToState();
+  // デモはログイン不要 → そのまま管理者（師長）画面で開始
+  document.getElementById('connectOverlay').style.display = 'none';
+  document.getElementById('loginOverlay').style.display = 'none';
+  currentUserId = 0;
+  document.getElementById('appView').style.display = 'block';
+  document.getElementById('staffView').style.display = 'none';
+  document.getElementById('currentUserLabel').textContent = '👤 管理者（デモ）';
+  loadAllStaffRequests();
+}
+
+// --- 接続フロー ---
+async function tryAutoConnect() {
+  // デモ版はフォルダ接続を使わず、常にブラウザ内（localStorage）で完結する
+  fsMode = 'local';
+}
+
+async function connectFolder() {
+  try {
+    if(fsMode === 'local') { await finishConnect(); return; }
+    const saved = await idbGet('dirHandle').catch(() => null);
+    if(saved && (await saved.requestPermission({ mode: 'readwrite' })) === 'granted') {
+      dirHandle = saved;
+    } else {
+      dirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+      await idbSet('dirHandle', dirHandle);
+    }
+    await finishConnect();
+  } catch(e) {
+    if(e.name === 'AbortError') return;
+    document.getElementById('connectError').textContent = '接続に失敗しました: ' + e;
+  }
+}
+
+async function finishConnect() {
+  try {
+    store = await readStoreFromDisk();
+  } catch(e) {
+    document.getElementById('connectError').textContent = 'データ読み込みに失敗しました: ' + e;
+    return;
+  }
+  applyStoreToState();
+  document.getElementById('connectOverlay').style.display = 'none';
+  document.getElementById('loginOverlay').style.display = 'flex';
+}
+
+// store の内容を画面状態に反映する
+function applyStoreToState() {
+  if(store.currentMonth) {
+    const [y, m] = store.currentMonth.split('-').map(Number);
+    if(y && m) { YEAR = y; MONTH = m - 1; }
+  }
+  buildYearMonthSelect();
+  staffPins = store.pins?.staffPins || {};
+  masterPin = store.pins?.masterPin || '0000';
+  staffLoginIds = store.pins?.staffLoginIds || {};
+  loadSettings();
+  updateDays();
+  loadMonthFromStore();
+  buildStaffSelect(); renderCalendar(); renderHolidayCal(); renderConfigTable(); renderNyukyuRule(); renderFacility(); renderTeams(); updateInputSummary(); updateStats();
+}
+
+// 現在の年月のデータ（希望・祝日・保存済みシフト）を store から読み込む
+function loadMonthFromStore() {
+  if(!store) store = defaultStore();
+  manualEdited = false;
+  PREV_TAIL = computePrevTail(); // バリデーション用に前月末の勤務も読み込む
+  const m = monthData(store);
+  requests = {};
+  STAFF.forEach(s => { requests[s.id] = {}; });
+  Object.entries(m.requests).forEach(([id, r]) => { requests[parseInt(id)] = { ...r }; });
+  holidays = new Set(m.holidays || []);
+  shift = {};
+  if(m.savedShift && Object.keys(m.savedShift).length) {
+    Object.entries(m.savedShift).forEach(([id, days]) => { shift[parseInt(id)] = { ...days }; });
+    renderShiftTable();
+    document.getElementById('generateMsg').textContent = '💾 保存済みシフトを読み込みました（再生成も可能です）';
+  } else {
+    resetShiftView();
+  }
+  updateFinalizeLabel();
+}
+
+// --- 手動バックアップ／復元 ---
+function exportStoreFile() {
+  if(!store) { alert('データが読み込まれていません'); return; }
+  const blob = new Blob([JSON.stringify(store, null, 1)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `shift-data_手動バックアップ_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+}
+function importStoreFile(file) {
+  if(!file) return;
+  if(!confirm('現在のデータを、選択したバックアップの内容で上書きします。よろしいですか？')) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    try {
+      const data = JSON.parse(rd.result);
+      if(!data.months && !data.settings) throw new Error('勤務表システムのデータではありません');
+      updateStore(d => { Object.keys(d).forEach(k => delete d[k]); Object.assign(d, data); })
+        .then(() => { alert('復元しました。ページを再読み込みします。'); location.reload(); })
+        .catch(() => {});
+    } catch(e) { alert('読み込めませんでした: ' + e); }
+  };
+  rd.readAsText(file);
+}
+
+// ===== 状態 =====
+let YEAR = 2026, MONTH = 6, DAYS_IN_MONTH = 0;
+let requests = {};        // { staffId: { day: 'holiday'|'summer' } }
+let shift = {};           // { staffId: { day: shiftType } }
+let staffConstraints = {};// { staffId: { nightRule, bannedPairs, shiftType } }
+let holidays = new Set(); // 祝日（day番号）
+let committed = {};       // { staffId: Set<day> } 深夜コミット
+let nyukyuRule = { enabled: true, counts: [0,0,2,0,0,1,0] };
+function nyukyuCountForDow(dow){ return nyukyuRule.enabled ? (nyukyuRule.counts[dow] || 0) : 0; }
+const DOW_FULL = ['日','月','火','水','木','金','土'];
+// ===== チーム定義（可変） =====
+let TEAMS = ['A','B','C'];
+const TEAM_PALETTE = [
+  { bg:'#fee2e2', fg:'#991b1b', bar:'#ef4444' },
+  { bg:'#dbeafe', fg:'#1e40af', bar:'#3b82f6' },
+  { bg:'#d1fae5', fg:'#065f46', bar:'#10b981' },
+  { bg:'#fef3c7', fg:'#92400e', bar:'#f59e0b' },
+  { bg:'#ede9fe', fg:'#5b21b6', bar:'#8b5cf6' },
+  { bg:'#ffe4e6', fg:'#9f1239', bar:'#f43f5e' },
+  { bg:'#cffafe', fg:'#155e75', bar:'#06b6d4' },
+  { bg:'#f0fdf4', fg:'#166534', bar:'#22c55e' },
+];
+function teamColor(team){ const i = Math.max(0, TEAMS.indexOf(team)); return TEAM_PALETTE[i % TEAM_PALETTE.length]; }
+function teamBadgeStyle(team){ const c = teamColor(team); return `background:${c.bg};color:${c.fg};`; }
+function teamBarStyle(team){ return `border-left:3px solid ${teamColor(team).bar};`; }
+// 施設ルール（デモは一般的な 平日10・土日祝9・公休10）
+let facility = {
+  weekdayCounts: [9, 10, 10, 10, 10, 10, 9],
+  holidayCount: 9,
+  offTargetDays: 10,
+  maxConsecutive: 4,
+  teamDayMin: 2,
+  teamDayTarget: 3,
+  nightInterval: 3,
+  minNightsDefault: 2,
+  seniorHolidayRule: true
+};
+const MAXC = () => facility.maxConsecutive;
+
+// ===== 設定の保存・復元 =====
+function saveSettings() {
+  const data = {
+    staff: STAFF.map(s => ({ id: s.id, name: s.name, team: s.team })),
+    constraints: Object.fromEntries(
+      Object.entries(staffConstraints).map(([id, c]) => [id, {
+        nightRule: c.nightRule,
+        bannedPairs: c.bannedPairs,
+        shiftType: c.shiftType,
+        nightPref: c.nightPref,
+        noNyukyu: c.noNyukyu || false,
+        nightQuota: c.nightQuota ?? null,
+        role: c.role || 'staff',
+        absence: c.absence || null
+      }])
+    ),
+    nyukyuRule: { enabled: nyukyuRule.enabled, counts: [...nyukyuRule.counts] },
+    facility: { ...facility, weekdayCounts: [...facility.weekdayCounts] },
+    teams: [...TEAMS]
+  };
+  updateStore(d => { d.settings = data; }).catch(() => {});
+}
+
+function loadSettings() {
+  try {
+    const data = store?.settings;
+    if(data && Array.isArray(data.teams) && data.teams.length>=2) TEAMS = data.teams.slice();
+    // 保存済みスタッフ一覧があればそちらを正とする（削除も反映される）
+    if(data && Array.isArray(data.staff) && data.staff.length) {
+      STAFF = data.staff.map(s => ({ id: s.id, name: s.name, team: s.team }));
+      STAFF.sort((a,b) => a.id - b.id);
+    }
+    staffConstraints = {};
+    STAFF.forEach(s => {
+      if(!requests[s.id]) requests[s.id] = {};
+      staffConstraints[s.id] = { nightRule:'none', bannedPairs:[], shiftType: SHIFT_TYPE_DEFAULTS[s.id]||'regular', nightPref:'normal' };
+    });
+    if(data && data.constraints) {
+      Object.entries(data.constraints).forEach(([id, c]) => {
+        const n = parseInt(id);
+        if(staffConstraints[n]) {
+          staffConstraints[n].nightRule  = c.nightRule  ?? 'none';
+          staffConstraints[n].bannedPairs= c.bannedPairs ?? [];
+          staffConstraints[n].shiftType  = c.shiftType  ?? (SHIFT_TYPE_DEFAULTS[n]||'regular');
+          staffConstraints[n].nightPref  = c.nightPref  ?? 'normal';
+          staffConstraints[n].noNyukyu   = c.noNyukyu   ?? false;
+          staffConstraints[n].nightQuota = c.nightQuota ?? null;
+          staffConstraints[n].role       = c.role       ?? (staffConstraints[n].shiftType==='weekday_day' ? 'head' : 'staff');
+          staffConstraints[n].absence    = c.absence    ?? null;
+        }
+      });
+    }
+    if(data && data.nyukyuRule && Array.isArray(data.nyukyuRule.counts)) {
+      nyukyuRule = { enabled: data.nyukyuRule.enabled !== false, counts: data.nyukyuRule.counts.slice(0,7) };
+      while(nyukyuRule.counts.length < 7) nyukyuRule.counts.push(0);
+    }
+    if(data && data.facility) {
+      const f = data.facility;
+      if(Array.isArray(f.weekdayCounts) && f.weekdayCounts.length===7) facility.weekdayCounts = f.weekdayCounts.slice();
+      ['holidayCount','offTargetDays','maxConsecutive','teamDayMin','teamDayTarget','nightInterval','minNightsDefault'].forEach(k => {
+        if(typeof f[k] === 'number') facility[k] = f[k];
+      });
+      if(typeof f.seniorHolidayRule === 'boolean') facility.seniorHolidayRule = f.seniorHolidayRule;
+    }
+    return true;
+  } catch(e) { console.warn('設定の復元に失敗:', e); return false; }
+}
+
+function resetSettings() {
+  if(!confirm('保存済みの設定（スタッフ名・勤務タイプ・夜勤ルール）をすべてリセットしますか？\n※希望入力・シフトデータは残ります')) return;
+  updateStore(d => { d.settings = null; }).then(() => location.reload()).catch(() => {});
+}
+
+// 祝日は月ごとに保存
+function saveHolidays() {
+  const arr = [...holidays];
+  const key = monthKey();
+  updateStore(d => { monthData(d, key).holidays = arr; }).catch(() => {});
+}
+
+// ===== 初期化 =====
+function buildYearMonthSelect() {
+  const ys = document.getElementById('yearSelect');
+  ys.innerHTML = '';
+  const base = new Date().getFullYear();
+  const years = [...new Set([base-1, base, base+1, base+2, YEAR])].sort();
+  years.forEach(y => {
+    const o = document.createElement('option');
+    o.value = y; o.textContent = y; if(y===YEAR) o.selected=true; ys.appendChild(o);
+  });
+  const ms = document.getElementById('monthSelect');
+  ms.innerHTML = '';
+  for(let m=1;m<=12;m++){
+    const o = document.createElement('option');
+    o.value = m-1; o.textContent = m; if(m-1===MONTH) o.selected=true; ms.appendChild(o);
+  }
+}
+
+function renderReqLegends() {
+  const html = REQ_ORDER.map(k => {
+    const t = REQ_TYPES[k];
+    return `<div class="legend-item"><div class="legend-dot" style="background:${t.bg};border:1px solid ${t.bd};"></div>${t.label}</div>`;
+  }).join('');
+  document.querySelectorAll('.req-legend').forEach(el => el.innerHTML = html);
+}
+
+const APP_VERSION = 'Demo v7.8'; // チーム可変。架空データ・すべてブラウザ内で完結（外部送信なし）
+
+function init() {
+  document.querySelectorAll('.app-version').forEach(el => el.textContent = APP_VERSION);
+  const now = new Date();
+  YEAR = now.getFullYear(); MONTH = now.getMonth();
+  buildYearMonthSelect();
+  renderReqLegends();
+  STAFF.forEach(s => {
+    requests[s.id] = {};
+    staffConstraints[s.id] = {
+      nightRule: 'none',
+      bannedPairs: [],
+      shiftType: SHIFT_TYPE_DEFAULTS[s.id] || 'regular',
+      nightPref: 'normal'
+    };
+  });
+  updateDays();
+  tryAutoConnect(); // 接続完了後に applyStoreToState() が実行される
+}
+
+function buildStaffSelect() {
+  const sel = document.getElementById('staffSelect');
+  sel.innerHTML = '<option value="">スタッフを選択してください</option>';
+  STAFF.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s.id; o.textContent = `[${s.team}] ${s.name}`; sel.appendChild(o);
+  });
+}
+
+function updateDays() {
+  DAYS_IN_MONTH = new Date(YEAR, MONTH+1, 0).getDate();
+  document.getElementById('daysLabel').textContent = `（${DAYS_IN_MONTH}日間）`;
+  document.getElementById('statDays').textContent = DAYS_IN_MONTH;
+  document.getElementById('holidayMonthLabel').textContent = `${YEAR}年${MONTH+1}月`;
+}
+
+async function onMonthChange() {
+  YEAR = parseInt(document.getElementById('yearSelect').value);
+  MONTH = parseInt(document.getElementById('monthSelect').value);
+  // 月ごとのデータは共有フォルダに保存されているので、切り替えるだけで復元される
+  try { store = await readStoreFromDisk(); } catch(e) { console.warn(e); }
+  const key = monthKey();
+  updateStore(d => { d.currentMonth = key; }).catch(() => {}); // スタッフ側の入力対象月も切り替わる
+  updateDays();
+  loadMonthFromStore();
+  renderCalendar(); renderHolidayCal(); updateInputSummary(); updateStats();
+}
+
+function isOffDay(day) {
+  const dow = new Date(YEAR, MONTH, day).getDay();
+  return dow === 0 || dow === 6 || holidays.has(day);
+}
+
+// ===== タブ =====
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  const tabs = ['config','holiday','input','generate','check','help'];
+  const idx = tabs.indexOf(name);
+  document.querySelectorAll('.tab')[idx].classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+  if(name==='generate') updateStats();
+  if(name==='check') runValidation();
+}
+
+// ===== 祝日カレンダー =====
+function renderHolidayCal() {
+  const cal = document.getElementById('holidayCal');
+  const first = new Date(YEAR, MONTH, 1).getDay();
+  let html = '';
+  for(let i=0;i<first;i++) html += '<div class="hcal-day empty"></div>';
+  for(let d=1;d<=DAYS_IN_MONTH;d++){
+    const dow = new Date(YEAR, MONTH, d).getDay();
+    const isWE = dow===0 || dow===6;
+    const isHol = holidays.has(d);
+    const cls = isWE ? 'is-weekend' : isHol ? 'is-holiday' : '';
+    const dowCls = dow===0 ? 'sun' : dow===6 ? 'sat' : '';
+    const onclick = isWE ? '' : `onclick="toggleHoliday(${d})"`;
+    html += `<div class="hcal-day ${cls} ${dowCls}" ${onclick}>${d}</div>`;
+  }
+  cal.innerHTML = html;
+  document.getElementById('holidayCount').textContent =
+    holidays.size > 0 ? `祝日: ${[...holidays].sort((a,b)=>a-b).join('日、')}日` : '祝日なし';
+}
+
+function toggleHoliday(day) {
+  if(holidays.has(day)) holidays.delete(day); else holidays.add(day);
+  saveHolidays(); renderHolidayCal(); renderCalendar();
+}
+
+// ===== スタッフ設定 =====
+function renderConfigTable() {
+  const tbody = document.getElementById('configTableBody');
+  let curTeam = '';
+  const typeColors = { regular: '', triple: 'shift-type-triple', day_only: 'shift-type-day_only', weekday_day: 'shift-type-weekday_day' };
+  const isNoNight = t => t==='day_only' || t==='weekday_day';
+  const prefLabel = { less: '🔽 少なめ', normal: '　通常', more: '🔼 多め' };
+  const sortedStaff = [...STAFF].sort((a,b) => a.team===b.team ? a.id-b.id : (TEAMS.indexOf(a.team)-TEAMS.indexOf(b.team)));
+  tbody.innerHTML = sortedStaff.map(s => {
+    const c = staffConstraints[s.id];
+    let th = '';
+    if(s.team !== curTeam) {
+      curTeam = s.team;
+      th = `<tr style="background:#f9fafb;" ondragover="dragTeamHeadOver(event)" ondrop="dropStaffOnTeam(event,'${s.team}')"><td colspan="12" style="padding:5px 8px;font-size:12px;font-weight:600;color:#374151;">${s.team}チーム</td></tr>`;
+    }
+    const pc = c.bannedPairs.length;
+    const noNight = isNoNight(c.shiftType);
+    return `${th}<tr draggable="true" title="ドラッグで並び替え（他チームへの移動も可）"
+      ondragstart="dragStaffStart(event,${s.id})" ondragend="dragStaffEnd(event)"
+      ondragover="dragStaffOver(event,${s.id})" ondragleave="dragStaffLeave(event)"
+      ondrop="dropStaff(event,${s.id})">
+      <td style="color:#6b7280;white-space:nowrap;"><span class="drag-handle">☰</span> ${s.id}</td>
+      <td style="font-weight:500;min-width:90px;">
+        <span id="nameDisplay_${s.id}" onclick="startEditName(${s.id})" title="クリックして編集" style="cursor:pointer;border-bottom:1px dashed #9ca3af;">${s.name}</span>
+        <span id="nameEdit_${s.id}" style="display:none;">
+          <input id="nameInput_${s.id}" type="text" value="${s.name}" style="width:90px;padding:2px 4px;border:1px solid #3b82f6;border-radius:3px;font-size:12px;">
+          <button class="small success" style="padding:2px 6px;margin-left:2px;" onclick="saveName(${s.id})">✓</button>
+          <button class="small secondary" style="padding:2px 6px;" onclick="cancelEditName(${s.id})">✗</button>
+        </span>
+      </td>
+      <td>
+        <select onchange="setTeam(${s.id},this.value)" class="team-badge" style="border:1px solid #d1d5db;${teamBadgeStyle(s.team)}">
+          ${TEAMS.map(tm => `<option value="${tm}" ${s.team===tm?'selected':''}>${tm}</option>`).join('')}
+        </select>
+      </td>
+      <td>
+        <select onchange="setRole(${s.id},this.value)" title="土日祝は主任以上が日勤に最低1人必要になります">
+          <option value="staff"  ${(c.role||'staff')==='staff'?'selected':''}>一般</option>
+          <option value="senior" ${c.role==='senior'?'selected':''}>◎主任</option>
+          <option value="head"   ${c.role==='head'?'selected':''}>師長</option>
+        </select>
+      </td>
+      <td>
+        <select onchange="setShiftType(${s.id},this.value)" class="${typeColors[c.shiftType]||''}">
+          <option value="regular"     ${c.shiftType==='regular'?'selected':''}>二交代</option>
+          <option value="triple"      ${c.shiftType==='triple'?'selected':''}>三交代</option>
+          <option value="day_only"    ${c.shiftType==='day_only'?'selected':''}>日勤のみ</option>
+          <option value="weekday_day" ${c.shiftType==='weekday_day'?'selected':''}>平日日勤のみ</option>
+        </select>
+      </td>
+      <td>
+        <select onchange="setNightRule(${s.id},this.value)" ${noNight?'disabled':''}>
+          <option value="none"         ${c.nightRule==='none'?'selected':''}>制限なし</option>
+          <option value="weekend_only" ${c.nightRule==='weekend_only'?'selected':''}>土日のみ</option>
+          <option value="no_night"     ${c.nightRule==='no_night'?'selected':''}>完全不可</option>
+        </select>
+      </td>
+      <td>
+        <select onchange="setNightPref(${s.id},this.value)" ${noNight?'disabled':''}>
+          <option value="less"   ${c.nightPref==='less'?'selected':''}>🔽 少なめ</option>
+          <option value="normal" ${c.nightPref==='normal'?'selected':''}>　通常</option>
+          <option value="more"   ${c.nightPref==='more'?'selected':''}>🔼 多め</option>
+        </select>
+      </td>
+      <td>
+        <select onchange="setNightQuota(${s.id},this.value)" ${noNight||c.nightRule==='no_night'?'disabled':''} title="指定するとその回数ちょうどになるよう調整（△○合計）。指定なし＝最低2回のみ保証">
+          <option value="" ${c.nightQuota==null?'selected':''}>指定なし</option>
+          ${[0,1,2,3,4,5,6,7,8].map(n=>`<option value="${n}" ${c.nightQuota===n?'selected':''}>${n}回</option>`).join('')}
+        </select>
+      </td>
+      <td style="text-align:center;">
+        <input type="checkbox" ${!c.noNyukyu?'checked':''} ${c.shiftType==='weekday_day'?'disabled':''}
+          onchange="setNoNyukyu(${s.id}, !this.checked)"
+          title="チェックを外すと入浴介助に割り当てられません">
+      </td>
+      <td style="white-space:nowrap;">
+        <button class="small ${c.absence&&c.absence.from?'danger':'secondary'}" onclick="openAbsenceModal(${s.id})" title="育休・病休などの長期休業期間を設定">${c.absence&&c.absence.from?'休業中':'設定'}</button>
+        ${c.absence&&c.absence.from?`<div style="font-size:10px;color:#dc2626;" title="${c.absence.from}〜${c.absence.to}">${c.absence.from.slice(2)}〜<br>${c.absence.to.slice(2)}</div>`:''}
+      </td>
+      <td>
+        <button class="small secondary" onclick="openPairModal(${s.id})" ${noNight?'disabled':''}>設定</button>
+        ${pc>0?`<span class="pair-count">${pc}件</span>`:''}
+      </td>
+      <td style="white-space:nowrap;">
+        <button class="small secondary" style="padding:4px 6px;" onclick="moveStaff(${s.id},-1)" title="上と入れ替え（職番も入れ替わります）">▲</button>
+        <button class="small secondary" style="padding:4px 6px;" onclick="moveStaff(${s.id},1)" title="下と入れ替え（職番も入れ替わります）">▼</button>
+        <button class="small secondary" onclick="resetStaffPin(${s.id})" title="現在のログインID: ${staffLoginIds[s.id]||s.id}｜クリックでこの人だけID・PINを初期化（職番に戻す）">🔑</button>
+        <button class="small danger" onclick="removeStaff(${s.id})" title="削除">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+  document.getElementById('statStaff').textContent = STAFF.length;
+}
+
+function startEditName(id) {
+  document.getElementById('nameDisplay_'+id).style.display='none';
+  document.getElementById('nameEdit_'+id).style.display='inline';
+  document.getElementById('nameInput_'+id).focus();
+  document.getElementById('nameInput_'+id).select();
+}
+function saveName(id) {
+  const val = document.getElementById('nameInput_'+id).value.trim();
+  if(!val) return;
+  const s = STAFF.find(x=>x.id===id);
+  if(s) s.name = val;
+  document.getElementById('nameDisplay_'+id).style.display='';
+  document.getElementById('nameEdit_'+id).style.display='none';
+  document.getElementById('nameDisplay_'+id).textContent = val;
+  saveSettings(); buildStaffSelect();
+}
+function cancelEditName(id) {
+  document.getElementById('nameDisplay_'+id).style.display='';
+  document.getElementById('nameEdit_'+id).style.display='none';
+}
+
+function setShiftType(id, val) {
+  staffConstraints[id].shiftType = val;
+  if(val==='day_only'||val==='weekday_day') { staffConstraints[id].nightRule = 'no_night'; staffConstraints[id].bannedPairs = []; }
+  saveSettings(); renderConfigTable();
+}
+function setNightPref(id, val) { staffConstraints[id].nightPref = val; saveSettings(); }
+function setNoNyukyu(id, val)  { staffConstraints[id].noNyukyu = val; saveSettings(); }
+function setNightQuota(id, val) { staffConstraints[id].nightQuota = val==='' ? null : parseInt(val); saveSettings(); }
+
+function renderNyukyuRule() {
+  const cb = document.getElementById('nyukyuEnabled');
+  if(cb) cb.checked = nyukyuRule.enabled;
+  const box = document.getElementById('nyukyuDayInputs');
+  if(!box) return;
+  box.style.opacity = nyukyuRule.enabled ? '1' : '0.4';
+  box.innerHTML = DOW_FULL.map((dn, i) =>
+    `<label style="font-size:12px;display:flex;flex-direction:column;align-items:center;gap:2px;">
+      <span style="color:${i===0?'#ef4444':i===6?'#3b82f6':'#6b7280'};">${dn}</span>
+      <input type="number" min="0" max="9" value="${nyukyuRule.counts[i]||0}" ${nyukyuRule.enabled?'':'disabled'}
+        onchange="setNyukyuCount(${i}, this.value)"
+        style="width:44px;padding:4px;border:1px solid #d1d5db;border-radius:5px;font-size:13px;text-align:center;">
+    </label>`).join('');
+}
+function setNyukyuEnabled(v) { nyukyuRule.enabled = v; saveSettings(); renderNyukyuRule(); }
+function setNyukyuCount(dow, val) { nyukyuRule.counts[dow] = Math.max(0, parseInt(val)||0); saveSettings(); }
+
+function renderFacility() {
+  const box = document.getElementById('weekdayCountInputs');
+  if(box){
+    box.innerHTML = [1,2,3,4,5].map(i =>
+      `<label style="font-size:11px;display:flex;flex-direction:column;align-items:center;gap:2px;">${DOW_FULL[i]}
+        <input type="number" min="0" max="30" value="${facility.weekdayCounts[i]}" onchange="setWeekdayCount(${i},this.value)"
+          style="width:46px;padding:4px;border:1px solid #d1d5db;border-radius:5px;font-size:13px;text-align:center;">
+      </label>`).join('');
+  }
+  const set = (id, v) => { const el = document.getElementById(id); if(el) el.value = v; };
+  set('holidayCountInput', facility.holidayCount);
+  set('offTargetInput', facility.offTargetDays);
+  set('maxConsecInput', facility.maxConsecutive);
+  set('teamMinInput', facility.teamDayMin);
+  set('teamTargetInput', facility.teamDayTarget);
+  set('nightIntervalInput', facility.nightInterval);
+  set('minNightsInput', facility.minNightsDefault);
+  const sr = document.getElementById('seniorRuleInput'); if(sr) sr.checked = facility.seniorHolidayRule;
+}
+function setWeekdayCount(dow, val) { facility.weekdayCounts[dow] = Math.max(0, parseInt(val)||0); saveSettings(); }
+function setFacility(key, val) { facility[key] = Math.max(0, parseInt(val)||0); saveSettings(); }
+function setSeniorRule(v) { facility.seniorHolidayRule = v; saveSettings(); }
+
+// ===== チーム設定 =====
+function renderTeams() {
+  const inp = document.getElementById('teamsInput');
+  if(inp) inp.value = TEAMS.join(',');
+  const sel = document.getElementById('newStaffTeam');
+  if(sel) sel.innerHTML = TEAMS.map(t => `<option value="${t}">${t}</option>`).join('');
+}
+function applyTeamsFromInput() {
+  const raw = (document.getElementById('teamsInput').value || '').split(',').map(s => s.trim()).filter(Boolean);
+  const uniq = [...new Set(raw)];
+  const msg = document.getElementById('teamsMsg');
+  if(uniq.length < 2 || uniq.length > 8) { msg.textContent = '⚠️ チームは2〜8個で指定してください'; return; }
+  const sameSet = uniq.length===TEAMS.length && uniq.every((t,i)=>t===TEAMS[i]);
+  if(sameSet) { msg.textContent='（変更なし）'; return; }
+  const oldTeams = TEAMS.slice();
+  TEAMS = uniq;
+  // チーム数・名前が変わったら、表示順を保ったまま全員を新チームへ均等に振り分ける
+  // （師長など平日日勤のみは先頭チーム固定）
+  const ordered = [...STAFF].sort((a,b)=> {
+    const ta=oldTeams.indexOf(a.team), tb=oldTeams.indexOf(b.team);
+    return ta===tb ? a.id-b.id : ta-tb;
+  });
+  let k = 0;
+  ordered.forEach(s => {
+    if(staffConstraints[s.id]?.shiftType==='weekday_day') { s.team = TEAMS[0]; return; }
+    s.team = TEAMS[k % TEAMS.length]; k++;
+  });
+  saveSettings();
+  buildStaffSelect(); renderConfigTable(); renderTeams();
+  if(Object.keys(shift).length) renderShiftTable();
+  msg.textContent = `✅ ${TEAMS.length}チーム（${TEAMS.join('・')}）に設定し、全員を均等に振り分けました。個別の所属は各行のチーム欄で調整できます。`;
+}
+function setRole(id, val) { staffConstraints[id].role = val; saveSettings(); renderConfigTable(); }
+function isSeniorPlus(id) { const r = staffConstraints[id]?.role; return r==='senior' || r==='head'; }
+function setTeam(id, val) {
+  const s = STAFF.find(x=>x.id===id);
+  if(!s) return;
+  s.team = val;
+  saveSettings(); renderConfigTable(); buildStaffSelect();
+}
+
+// ===== 並び替え・職番振り直し =====
+// 職番はログインID・PIN・全月データのキーなので、変更時は全データを一括で付け替える
+const staffDisplayOrder = () => [...STAFF].sort((a,b) => a.team===b.team ? a.id-b.id : (TEAMS.indexOf(a.team)-TEAMS.indexOf(b.team)));
+
+function remapStaffIds(map) { // map: { 旧職番: 新職番 }
+  // 職番が変わってもログインPINは本人に固定する。
+  // PIN未設定（初期PIN=職番のまま）の人は、変更前の職番をPINとして確定させてから付け替える
+  Object.keys(map).forEach(oldId => {
+    if(parseInt(map[oldId]) !== parseInt(oldId) && staffPins[oldId] === undefined) {
+      staffPins[oldId] = String(oldId);
+    }
+  });
+  const m = id => map[id] !== undefined ? map[id] : parseInt(id);
+  const remapObj = obj => {
+    const r = {};
+    Object.entries(obj || {}).forEach(([k, v]) => { r[m(parseInt(k))] = v; });
+    return r;
+  };
+  // メモリ上の状態
+  STAFF.forEach(s => { s.id = m(s.id); });
+  STAFF.sort((a,b) => a.id - b.id);
+  staffConstraints = remapObj(staffConstraints);
+  Object.values(staffConstraints).forEach(c => { c.bannedPairs = (c.bannedPairs || []).map(p => m(p)); });
+  requests  = remapObj(requests);
+  shift     = remapObj(shift);
+  committed = remapObj(committed);
+  staffPins = remapObj(staffPins);
+  staffLoginIds = remapObj(staffLoginIds);
+  // 保存データ（設定・PIN・全月の希望/コメント/シフト）
+  const staffData = STAFF.map(s => ({ id: s.id, name: s.name, team: s.team }));
+  const consData = Object.fromEntries(Object.entries(staffConstraints).map(([id, c]) => [id, {
+    nightRule: c.nightRule, bannedPairs: c.bannedPairs, shiftType: c.shiftType,
+    nightPref: c.nightPref, noNyukyu: c.noNyukyu || false, nightQuota: c.nightQuota ?? null,
+    role: c.role || 'staff', absence: c.absence || null
+  }]));
+  const pinsData = { ...staffPins }, mp = masterPin, liData = { ...staffLoginIds };
+  updateStore(d => {
+    d.settings = { staff: staffData, constraints: consData };
+    d.pins = { staffPins: pinsData, masterPin: mp, staffLoginIds: liData };
+    Object.values(d.months || {}).forEach(mo => {
+      mo.requests = remapObj(mo.requests);
+      mo.comments = remapObj(mo.comments);
+      if(mo.savedShift && Object.keys(mo.savedShift).length) mo.savedShift = remapObj(mo.savedShift);
+    });
+  }).catch(() => {});
+  buildStaffSelect(); renderConfigTable(); renderCalendar(); updateInputSummary();
+  if(Object.keys(shift).length) renderShiftTable();
+}
+
+// ▲▼で隣（同チーム内）と入れ替え。職番も入れ替わる
+function moveStaff(id, dir) {
+  const sorted = staffDisplayOrder();
+  const idx = sorted.findIndex(s => s.id === id);
+  const target = sorted[idx + dir];
+  if(!target || target.team !== sorted[idx].team) return; // チームをまたぐ移動はチーム変更で行う
+  remapStaffIds({ [id]: target.id, [target.id]: id });
+}
+
+// ===== 休業期間設定 =====
+let absenceModalTargetId = null;
+
+function openAbsenceModal(id) {
+  absenceModalTargetId = id;
+  const s = STAFF.find(x => x.id === id);
+  document.getElementById('absenceModalName').textContent = `${s.name}（${s.team}チーム）`;
+  const a = staffConstraints[id]?.absence;
+  document.getElementById('absenceFrom').value = a?.from || '';
+  document.getElementById('absenceTo').value = a?.to || '';
+  document.getElementById('absenceModal').classList.add('open');
+}
+function closeAbsenceModal() {
+  document.getElementById('absenceModal').classList.remove('open');
+  absenceModalTargetId = null;
+}
+function setAbsencePeriod(id, from, to) {
+  staffConstraints[id].absence = (from && to) ? { from, to } : null;
+  saveSettings(); renderConfigTable();
+}
+function saveAbsenceFromModal() {
+  const from = document.getElementById('absenceFrom').value;
+  const to = document.getElementById('absenceTo').value;
+  if(!from || !to) { alert('開始日と終了日を両方入力してください'); return; }
+  if(from > to) { alert('終了日は開始日より後にしてください'); return; }
+  setAbsencePeriod(absenceModalTargetId, from, to);
+  closeAbsenceModal();
+}
+function clearAbsence() {
+  setAbsencePeriod(absenceModalTargetId, null, null);
+  closeAbsenceModal();
+}
+document.getElementById('absenceModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeAbsenceModal(); });
+
+// ===== ドラッグ&ドロップ並び替え =====
+let dragStaffId = null;
+
+function dragStaffStart(e, id) {
+  dragStaffId = id;
+  e.dataTransfer.effectAllowed = 'move';
+  e.currentTarget.classList.add('dragging');
+}
+function dragStaffEnd(e) {
+  dragStaffId = null;
+  document.querySelectorAll('#configTableBody tr').forEach(r => r.classList.remove('dragging','drag-top','drag-bottom'));
+}
+function dragStaffOver(e, id) {
+  if(dragStaffId === null || id === dragStaffId) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  const tr = e.currentTarget;
+  const rect = tr.getBoundingClientRect();
+  const after = e.clientY > rect.top + rect.height / 2;
+  tr.classList.toggle('drag-bottom', after);
+  tr.classList.toggle('drag-top', !after);
+}
+function dragStaffLeave(e) {
+  e.currentTarget.classList.remove('drag-top','drag-bottom');
+}
+function dropStaff(e, targetId) {
+  e.preventDefault();
+  if(dragStaffId === null || targetId === dragStaffId) { dragStaffEnd(e); return; }
+  const rect = e.currentTarget.getBoundingClientRect();
+  const after = e.clientY > rect.top + rect.height / 2;
+  placeStaff(dragStaffId, targetId, after);
+  dragStaffEnd(e);
+}
+function dragTeamHeadOver(e) {
+  if(dragStaffId !== null) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
+}
+function dropStaffOnTeam(e, team) {
+  e.preventDefault();
+  if(dragStaffId === null) return;
+  const dragged = STAFF.find(s => s.id === dragStaffId);
+  const order = staffDisplayOrder().filter(s => s.id !== dragStaffId);
+  dragged.team = team;
+  const idx = order.findIndex(s => s.team === team);
+  order.splice(idx === -1 ? order.length : idx, 0, dragged);
+  applyNewOrder(order);
+  dragStaffEnd(e);
+}
+
+// ドロップ位置にスタッフを配置（落とした位置のチームに変更）
+function placeStaff(dragId, targetId, after) {
+  const dragged = STAFF.find(s => s.id === dragId);
+  const order = staffDisplayOrder().filter(s => s.id !== dragId);
+  const tIdx = order.findIndex(s => s.id === targetId);
+  if(!dragged || tIdx === -1) return;
+  dragged.team = order[tIdx].team;
+  order.splice(tIdx + (after ? 1 : 0), 0, dragged);
+  applyNewOrder(order);
+}
+
+// 新しい表示順に合わせて職番を1から振り直して保存
+function applyNewOrder(order) {
+  const map = {};
+  order.forEach((s, i) => { map[s.id] = i + 1; });
+  if(order.some(s => map[s.id] !== s.id)) {
+    remapStaffIds(map); // 職番・PIN・全月データを一括で付け替え
+  } else {
+    saveSettings(); renderConfigTable(); buildStaffSelect();
+  }
+}
+
+// 表示順（Aチーム→B→C）で職番を1から振り直す
+function renumberAllStaff() {
+  const sorted = staffDisplayOrder();
+  const map = {};
+  sorted.forEach((s, i) => { map[s.id] = i + 1; });
+  const changes = sorted.filter(s => map[s.id] !== s.id);
+  if(!changes.length){ alert('職番はすでに上から連番になっています'); return; }
+  const list = changes.map(s => `${s.name}：${s.id}→${map[s.id]}`).join('\n');
+  if(!confirm(`表示順（Aチーム→B→C）に職番を1〜${sorted.length}で振り直します。\n\n⚠️ 職番はログインIDです。変わった人には新しい職番を伝えてください。\n（希望・シフトデータ・ログインPINはすべて本人にそのまま引き継がれます。PINは変わりません）\n\n${list}`)) return;
+  remapStaffIds(map);
+}
+
+function addStaff() {
+  const idVal = parseInt(document.getElementById('newStaffId').value);
+  const name  = document.getElementById('newStaffName').value.trim();
+  const team  = document.getElementById('newStaffTeam').value;
+  const msg   = document.getElementById('addStaffMsg');
+  if(!idVal || idVal < 1) { msg.textContent='⚠️ 有効な職番を入力してください'; return; }
+  if(!name)               { msg.textContent='⚠️ 名前を入力してください'; return; }
+  if(STAFF.find(s=>s.id===idVal)){ msg.textContent=`⚠️ 職番 ${idVal} は既に存在します`; return; }
+  STAFF.push({ id: idVal, name, team });
+  STAFF.sort((a,b)=>a.id-b.id);
+  requests[idVal] = {};
+  staffConstraints[idVal] = { nightRule: 'none', bannedPairs: [], shiftType: SHIFT_TYPE_DEFAULTS[idVal]||'regular', nightPref: 'normal' };
+  document.getElementById('newStaffId').value='';
+  document.getElementById('newStaffName').value='';
+  msg.textContent=`✅ ${name}（職番${idVal}・${team}チーム）を追加しました`;
+  saveSettings(); buildStaffSelect(); renderConfigTable();
+}
+
+function removeStaff(id) {
+  const s = STAFF.find(x=>x.id===id);
+  if(!s) return;
+  if(!confirm(`${s.name}（職番${id}）を削除しますか？`)) return;
+  STAFF = STAFF.filter(x=>x.id!==id);
+  delete requests[id]; delete staffConstraints[id];
+  // 他スタッフの禁止ペアからも除去
+  STAFF.forEach(o=>{ staffConstraints[o.id].bannedPairs=staffConstraints[o.id].bannedPairs.filter(p=>p!==id); });
+  saveSettings(); buildStaffSelect(); renderConfigTable();
+  if(Object.keys(shift).length) { delete shift[id]; renderShiftTable(); }
+}
+function setNightRule(id, val) { staffConstraints[id].nightRule = val; saveSettings(); }
+
+// ===== 禁止ペアモーダル =====
+let pairModalTargetId = null;
+function openPairModal(staffId) {
+  pairModalTargetId = staffId;
+  const s = STAFF.find(x => x.id===staffId);
+  document.getElementById('pairModalName').textContent = `${s.name}（${s.team}チーム）`;
+  const cur = staffConstraints[staffId].bannedPairs;
+  let curTeam='', html='';
+  [...STAFF].sort((a,b) => a.team===b.team ? a.id-b.id : (TEAMS.indexOf(a.team)-TEAMS.indexOf(b.team))).filter(x=>x.id!==staffId).forEach(o => {
+    if(o.team!==curTeam){ curTeam=o.team; html+=`<div class="pair-separator">${o.team}チーム</div>`; }
+    const chk = cur.includes(o.id)?'checked':'';
+    html+=`<label class="pair-item"><input type="checkbox" value="${o.id}" ${chk} onchange="togglePair(${staffId},${o.id},this.checked)"><span>${o.name}</span></label>`;
+  });
+  document.getElementById('pairList').innerHTML = html;
+  document.getElementById('pairModal').classList.add('open');
+}
+function togglePair(sid, oid, chk) {
+  const sp=staffConstraints[sid].bannedPairs, op=staffConstraints[oid].bannedPairs;
+  if(chk){ if(!sp.includes(oid))sp.push(oid); if(!op.includes(sid))op.push(sid); }
+  else { staffConstraints[sid].bannedPairs=sp.filter(x=>x!==oid); staffConstraints[oid].bannedPairs=op.filter(x=>x!==sid); }
+}
+function closePairModal() { document.getElementById('pairModal').classList.remove('open'); saveSettings(); renderConfigTable(); }
+document.getElementById('pairModal').addEventListener('click', e=>{ if(e.target===e.currentTarget) closePairModal(); });
+document.getElementById('reqPicker').addEventListener('click', e=>{ if(e.target===e.currentTarget) closeReqPicker(); });
+document.getElementById('shiftPicker').addEventListener('click', e=>{ if(e.target===e.currentTarget) closeShiftPicker(); });
+
+// ===== 希望カレンダー =====
+function renderCalendar() {
+  const staffId = parseInt(document.getElementById('staffSelect').value);
+  const grid = document.getElementById('calendarGrid');
+  const hCls = ['sun','','','','','','sat'];
+  grid.innerHTML = DOW.map((d,i)=>`<div class="cal-header ${hCls[i]}">${d}</div>`).join('');
+  const first = new Date(YEAR,MONTH,1).getDay();
+  for(let i=0;i<first;i++) grid.innerHTML+=`<div class="cal-day empty"></div>`;
+  for(let d=1;d<=DAYS_IN_MONTH;d++){
+    const dow=new Date(YEAR,MONTH,d).getDay();
+    const dowCls=dow===0?'sun':dow===6?'sat':'';
+    const req=staffId?(requests[staffId]?.[d]||''):'';
+    const reqCls=req&&REQ_TYPES[req]?REQ_TYPES[req].cls:'';
+    const reqLabel=req&&REQ_TYPES[req]?`<div style="font-size:9px;">${REQ_TYPES[req].short}</div>`:'';
+    const holMark=holidays.has(d)&&dow!==0&&dow!==6?'holiday-mark':'';
+    const holDot=holidays.has(d)&&dow!==0&&dow!==6?'<span class="holiday-dot"></span>':'';
+    grid.innerHTML+=`<div class="cal-day ${dowCls} ${holMark} ${reqCls}" onclick="openReqPicker(${d})">${d}${reqLabel}${holDot}</div>`;
+  }
+  updateRequestCount(staffId);
+}
+
+// ===== シフト手動編集（師長） =====
+const SHIFT_EDIT_OPTIONS = [
+  ['day',    '日勤',        'white',   '#d1d5db', '#374151'],
+  ['jun',    '準夜（△）',  '#ede9fe', '#7c3aed', '#5b21b6'],
+  ['deep',   '深夜（○）',  '#dbeafe', '#2563eb', '#1e40af'],
+  ['V',      '公休（V）',   '#fef3c7', '#f59e0b', '#92400e'],
+  ['yukyuu', '有給',        '#e0f2fe', '#0ea5e9', '#0369a1'],
+  ['summer', '夏休み',      '#ccfbf1', '#14b8a6', '#0f766e'],
+  ['nyukyu', '入浴介助',    '#fce7f3', '#db2777', '#9d174d'],
+  ['menjo',  '職務免除',    '#e5e7eb', '#9ca3af', '#374151'],
+  ['absence','休業',        '#f3f4f6', '#9ca3af', '#6b7280'],
+];
+let shiftPickTarget = null;
+let manualEdited = false;
+
+function openShiftPicker(staffId, day) {
+  if(!shift[staffId] || !Object.keys(shift).length) return;
+  shiftPickTarget = { staffId, day };
+  const s = STAFF.find(x => x.id === staffId);
+  const cur = shift[staffId][day] || '';
+  document.getElementById('shiftPickerTitle').textContent = `${s ? s.name : ''}：${MONTH+1}月${day}日（現在: ${SHIFT_LABELS[cur] || 'なし'}）`;
+  document.getElementById('shiftPickerBtns').innerHTML = SHIFT_EDIT_OPTIONS.map(([k, label, bg, bd, fg]) => {
+    const sel = cur === k ? `outline:3px solid ${bd};` : '';
+    return `<button class="req-pick-btn" style="background:${bg};border-color:${bd};color:${fg};${sel}" onclick="applyPickedShift('${k}')">${SHIFT_LABELS[k] || ''}　${label}</button>`;
+  }).join('');
+  document.getElementById('shiftPicker').classList.add('open');
+}
+function applyPickedShift(v) {
+  if(!shiftPickTarget) return;
+  const { staffId, day } = shiftPickTarget;
+  if(v) shift[staffId][day] = v; else delete shift[staffId][day];
+  manualEdited = true;
+  renderShiftTable();
+  const snapshot = JSON.parse(JSON.stringify(shift));
+  const key = monthKey();
+  const wasFinal = store && monthData(store).finalized;
+  updateStore(d => { const m = monthData(d, key); m.savedShift = snapshot; m.finalized = false; })
+    .then(() => updateFinalizeLabel()).catch(() => {});
+  document.getElementById('generateMsg').textContent = '✏️ 手動編集を保存しました。③チェックタブで確認してください。' + (wasFinal ? '（確定は解除されました。再度「確定」を押してください）' : '');
+  showRequestViolations();
+  closeShiftPicker();
+}
+function closeShiftPicker() {
+  document.getElementById('shiftPicker').classList.remove('open');
+  shiftPickTarget = null;
+}
+
+// その日の他の人の保存済み希望を名前入りでまとめる（選択メニューに表示）
+function othersRequestInfo(staffId, day){
+  const allReqs = store ? monthData(store).requests : {};
+  const team = STAFF.find(x => x.id === staffId)?.team;
+  const OFFS = ['holiday','summer','yukyuu','menjo'];
+  const JUNS = ['req_jun','jun_or_day','jun_or_v'];
+  const DEEPS = ['req_deep','deep_or_day','deep_or_v'];
+  const offs = [], juns = [], deeps = [];
+  STAFF.forEach(o => {
+    if(o.id === staffId) return;
+    const rq = (allReqs[o.id] || {})[day];
+    if(!rq) return;
+    if(OFFS.includes(rq)) offs.push(`${o.name}(${REQ_TYPES[rq].short})`);
+    if(o.team === team && JUNS.includes(rq)) juns.push(o.name);
+    if(o.team === team && DEEPS.includes(rq)) deeps.push(o.name);
+  });
+  const parts = [];
+  if(offs.length) parts.push(`🟡 休み系: ${offs.join('・')}`);
+  if(juns.length) parts.push(`🟣 同チームの△希望: ${juns.join('・')}`);
+  if(deeps.length) parts.push(`🔵 同チームの○希望: ${deeps.join('・')}`);
+  return parts.join('<br>');
+}
+
+// ===== 希望タイプ選択モーダル（スタッフ画面・師長画面共用） =====
+let reqPickTarget = null;
+
+function openReqPicker(day) {
+  const isStaffView = document.getElementById('staffView').style.display === 'block';
+  const staffId = isStaffView ? currentUserId : parseInt(document.getElementById('staffSelect').value);
+  if(!staffId){ alert('スタッフを選択してください'); return; }
+  reqPickTarget = { staffId, day, isStaffView };
+  const st = staffConstraints[staffId]?.shiftType || 'regular';
+  const noNight = st==='day_only' || st==='weekday_day';
+  const opts = ['holiday','summer','yukyuu','menjo','req_day','iinkai'];
+  if(!staffConstraints[staffId]?.noNyukyu && st!=='weekday_day') opts.push('req_nyukyu');
+  if(!noNight){
+    opts.push('req_jun','jun_or_day','jun_or_v');
+    if(st==='triple') opts.push('req_deep','deep_or_day','deep_or_v');
+    opts.push('jun_ng','deep_ng');
+  }
+  const cur = requests[staffId]?.[day];
+  const s = STAFF.find(x => x.id === staffId);
+  document.getElementById('reqPickerTitle').textContent = `${s ? s.name + '：' : ''}${MONTH+1}月${day}日の希望`;
+  const info = othersRequestInfo(staffId, day);
+  document.getElementById('reqPickerOthers').innerHTML =
+    info ? `<div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:6px 8px;"><b>この日のみんなの希望</b><br>${info}</div>` : '';
+  // グループ見出し付きでボタンを並べる
+  const groups = [
+    ['休み・休暇', ['holiday','summer','yukyuu','menjo']],
+    ['日勤・業務', ['req_day','iinkai','req_nyukyu']],
+    ['夜勤',       ['req_jun','jun_or_day','jun_or_v','req_deep','deep_or_day','deep_or_v']],
+    ['夜勤の不可', ['jun_ng','deep_ng']],
+  ];
+  document.getElementById('reqPickerBtns').innerHTML = groups.map(([gname, keys]) => {
+    const ks = keys.filter(k => opts.includes(k));
+    if(!ks.length) return '';
+    return `<div class="req-group-head">${gname}</div>` + ks.map(k => {
+      const t = REQ_TYPES[k];
+      const sel = cur === k ? `outline:3px solid ${t.bd};` : '';
+      return `<button class="req-pick-btn" style="background:${t.bg};border-color:${t.bd};color:${t.fg};${sel}" onclick="applyPickedReq('${k}')">${t.short}　${t.label}</button>`;
+    }).join('');
+  }).join('');
+  document.getElementById('reqPicker').classList.add('open');
+}
+
+function applyPickedReq(type) {
+  if(!reqPickTarget) return;
+  const { staffId, day, isStaffView } = reqPickTarget;
+  if(!requests[staffId]) requests[staffId] = {};
+  if(type) requests[staffId][day] = type; else delete requests[staffId][day];
+  if(isStaffView) {
+    renderStaffReqView(); // 共有フォルダへの保存は「💾 保存」ボタンで実行
+  } else {
+    saveRequestFor(staffId); // 師長画面は即保存
+    renderCalendar(); updateInputSummary();
+  }
+  closeReqPicker();
+}
+
+function closeReqPicker() {
+  document.getElementById('reqPicker').classList.remove('open');
+  reqPickTarget = null;
+}
+
+// 指定スタッフの希望のみを共有フォルダに保存（他スタッフの同時保存を潰さない）
+function saveRequestFor(staffId) {
+  const r = { ...(requests[staffId] || {}) };
+  const key = monthKey();
+  updateStore(d => { monthData(d, key).requests[staffId] = r; }).catch(() => {});
+}
+
+// 希望の件数を「休み希望2日 △希望1日 …」形式でまとめる
+function summarizeReq(r) {
+  const cnt = {};
+  Object.values(r || {}).forEach(v => cnt[v] = (cnt[v] || 0) + 1);
+  return REQ_ORDER.filter(k => cnt[k]).map(k => `${REQ_TYPES[k].label}${cnt[k]}日`).join('　');
+}
+
+function updateRequestCount(staffId) {
+  if(!staffId){document.getElementById('requestCount').textContent='';return;}
+  document.getElementById('requestCount').textContent = summarizeReq(requests[staffId]) || '希望なし';
+}
+function updateInputSummary() {
+  const comments = store ? (monthData(store).comments || {}) : {};
+  const entered=STAFF.filter(s=>Object.keys(requests[s.id]||{}).length>0 || (comments[s.id]||'').trim());
+  const el=document.getElementById('inputSummary');
+  if(!entered.length){el.textContent='まだ入力がありません';return;}
+  el.innerHTML=entered.map(s=>{
+    const cm=(comments[s.id]||'').trim();
+    const cmHtml=cm?`<div style="font-size:11px;color:#0369a1;padding-left:12px;">💬 ${cm}</div>`:'';
+    return `<div style="padding:2px 0;">[${s.team}] ${s.name}：${summarizeReq(requests[s.id])||'（コメントのみ）'}${cmHtml}</div>`;
+  }).join('');
+
+  // 同チーム・同日の夜勤希望の重複を警告（枠は1つなので1人しか叶わない）
+  const JUNS = ['req_jun','jun_or_day','jun_or_v'];
+  const DEEPS = ['req_deep','deep_or_day','deep_or_v'];
+  const confs = [];
+  for(let d=1; d<=DAYS_IN_MONTH; d++){
+    TEAMS.forEach(team => {
+      const j = STAFF.filter(s=>s.team===team && JUNS.includes(requests[s.id]?.[d]));
+      const dp = STAFF.filter(s=>s.team===team && DEEPS.includes(requests[s.id]?.[d]));
+      if(j.length>1) confs.push(`${d}日 ${team}：△希望が${j.length}人（${j.map(x=>x.name).join('・')}）`);
+      if(dp.length>1) confs.push(`${d}日 ${team}：○希望が${dp.length}人（${dp.map(x=>x.name).join('・')}）`);
+    });
+  }
+  if(confs.length){
+    el.innerHTML += `<div style="margin-top:8px;padding:8px;background:#fef3c7;border-radius:6px;font-size:12px;color:#92400e;">⚠️ 夜勤希望の重複（枠は各チーム1つ。夜勤回数が少ない人が優先されます）<br>${confs.join('<br>')}</div>`;
+  }
+}
+function updateStats() {
+  let t=0; STAFF.forEach(s=>t+=Object.keys(requests[s.id]||{}).length);
+  document.getElementById('statRequests').textContent=t;
+  document.getElementById('statDays').textContent=DAYS_IN_MONTH;
+  document.getElementById('statStaff').textContent=STAFF.length;
+}
+
+// ===== シフト生成 =====
+function generateShift() {
+  if(manualEdited && !confirm('手動編集した内容は再生成で消えます。よろしいですか？')) return;
+  manualEdited = false;
+  if(Object.keys(shift).length) undoShift = JSON.parse(JSON.stringify(shift)); // 「直前に戻す」用
+  tripleSwitchLog = []; // 三交代で揃えられず二交代セットに切り替えた記録
+  shift = {}; committed = {};
+  // committed[staffId][day] = 'deep'|'V'
+  STAFF.forEach(s => { shift[s.id]={}; committed[s.id]={}; });
+  PREV_TAIL = computePrevTail(); // 前月末の夜勤・連勤を引き継ぐ
+
+  // Step1: 休業期間（最優先）→ 希望反映 ＋ 平日日勤のみスタッフの土日祝V
+  STAFF.forEach(s => {
+    for(let d=1; d<=DAYS_IN_MONTH; d++) if(isAbsentOn(s.id, d)) shift[s.id][d]='absence';
+    Object.entries(requests[s.id]||{}).forEach(([d,type]) => {
+      const day = parseInt(d);
+      if(shift[s.id][day]) return; // 休業中の希望は無視
+      if(type==='summer')       shift[s.id][day]='summer';
+      else if(type==='holiday') shift[s.id][day]='V';
+      else if(type==='yukyuu')  shift[s.id][day]='yukyuu';
+      else if(type==='menjo')   shift[s.id][day]='menjo';
+      // req_day / req_jun / req_deep / jun_ng / deep_ng は空欄のまま（割当時に考慮する）
+    });
+    // 月またぎ引き継ぎ（△○Vセットを前月末から継続する）
+    const pvLast = prevMonthShiftAt(s.id, 0); // 前月末日の勤務
+    const stType = staffConstraints[s.id].shiftType;
+    if(pvLast==='deep' && !shift[s.id][1]) {
+      shift[s.id][1]='V'; // 深夜明けV
+    } else if(pvLast==='jun') {
+      if(stType==='regular' && !shift[s.id][1]) {
+        shift[s.id][1]='deep'; // 二交代：前月末△→1日は必ず○（明けVはStep4で入る）
+      } else if(stType==='triple' && !shift[s.id][1]) {
+        shift[s.id][1]='V';    // 三交代：△後V
+      }
+    }
+    if(staffConstraints[s.id].shiftType==='weekday_day') {
+      for(let d=1;d<=DAYS_IN_MONTH;d++){
+        if(isOffDay(d) && !shift[s.id][d]) shift[s.id][d]='V';
+      }
+    }
+  });
+
+  // Step2a: △○希望を最優先で確定（同チーム同日の希望重複時は回数が少ない人を優先）
+  presetRequestedNights();
+
+  // Step2: 夜勤割り当て（準夜→深夜の順）
+  for(let d=1;d<=DAYS_IN_MONTH;d++){
+    assignJun(d);
+    assignDeep(d);
+  }
+
+  // Step2a3: △/V・○/V希望で夜勤にならなかった日はV（公休）にする
+  STAFF.forEach(s => {
+    Object.entries(requests[s.id]||{}).forEach(([dd, rq]) => {
+      if(rq!=='jun_or_v' && rq!=='deep_or_v') return;
+      const day = parseInt(dd);
+      if(!shift[s.id][day]) shift[s.id][day] = 'V';
+    });
+  });
+
+  // Step2a2: 二交代の単発○をセット化して解消（前日の準夜を本人に付け替える）
+  repairSoloDeeps();
+
+  // Step2b: 夜勤最低回数の保証（△○合計で月2回。多い人から枠を移譲）
+  ensureMinNights();
+
+  // Step3: コミットV反映（三交代の△後V・○前V）
+  STAFF.forEach(s => {
+    Object.entries(committed[s.id]).forEach(([d, type]) => {
+      const day = parseInt(d);
+      if(!shift[s.id][day] && type==='V') shift[s.id][day]='V';
+    });
+  });
+
+  // Step4: 深夜明けV（全員）
+  STAFF.forEach(s => {
+    for(let d=1;d<DAYS_IN_MONTH;d++){
+      if(shift[s.id][d]==='deep' && !shift[s.id][d+1]) shift[s.id][d+1]='V';
+    }
+  });
+
+  // Step5: 入浴介助（チーム制限なし。ルールで有効な場合のみ・曜日別人数）
+  if(nyukyuRule.enabled){
+    for(let d=1;d<=DAYS_IN_MONTH;d++){
+      const dow=new Date(YEAR,MONTH,d).getDay();
+      const cnt=nyukyuCountForDow(dow);
+      if(cnt>0) assignNyukyu(d,cnt);
+    }
+  }
+
+  // Step6: 残りを日勤
+  STAFF.forEach(s => {
+    for(let d=1;d<=DAYS_IN_MONTH;d++){
+      if(!shift[s.id][d]) shift[s.id][d]='day';
+    }
+  });
+
+  // Step7: 公休を分散配置（日勤が多い人＝夜勤が少ない人を先に処理して余裕のあるうちにV確保）
+  const spreadOrder = [...STAFF].sort((a,b) => {
+    const dA = Object.values(shift[a.id]).filter(v=>v==='day').length;
+    const dB = Object.values(shift[b.id]).filter(v=>v==='day').length;
+    return dB - dA;
+  });
+  spreadOrder.forEach(s => spreadVDays(s.id));
+
+  // Step8: 最大4連勤強制（日勤9人下限保護あり）
+  enforceMaxConsec();
+
+  // Step9: 日勤上限11人調整（月末スパイク解消）
+  globalBalanceNikkin();
+
+  // Step10: チーム別日勤の最低2人保証（理想3人はStep7/9のスコアリングで考慮済み）
+  ensureTeamDayMin();
+
+  // Step10b: 土日祝は主任以上が日勤に最低1人（主任の休みと一般の日勤を同日交換で確保）
+  ensureSeniorOnHolidays();
+
+  // Step10c: 入浴回数の偶数化（奇数回の2人の間で枠を移し替え、半日公休の端数を解消）
+  evenOutNyukyu();
+
+  // Step11: 公休を目標値（通常10日）ぴったりに揃える。超過分は有給化・不足分は追加確保
+  normalizeOffDays();
+
+  // Step11b: 公休調整で配置が変わった後に入浴偶数化をもう一周（収束しなかった分の再挑戦）→ 公休を再調整
+  evenOutNyukyu();
+  normalizeOffDays();
+
+  renderShiftTable();
+
+  // 生成結果を共有フォルダに保存（次回開いたとき復元される）。再生成したら確定は解除
+  const snapshot = JSON.parse(JSON.stringify(shift));
+  const key = monthKey();
+  updateStore(d => { const m = monthData(d, key); m.savedShift = snapshot; m.finalized = false; })
+    .then(() => updateFinalizeLabel()).catch(() => {});
+
+  document.getElementById('generateMsg').textContent='✅ 生成完了。③チェックタブで確認し、問題なければ「確定してスタッフに公開」を押してください。';
+  showRequestViolations();
+}
+
+// --- 日勤系希望（その日は日勤にすべき希望）の判定 ---
+function wantsDay(id, d) {
+  const rq = requests[id]?.[d];
+  return rq==='req_day' || rq==='jun_or_day' || rq==='deep_or_day' || rq==='req_nyukyu' || rq==='iinkai';
+}
+
+// --- 候補共通フィルタ（interval: 夜勤インターバル日数。デフォルト3）---
+// forRequest=true は△○希望の事前確定用（本人の日勤系or希望チェックを免除）
+function isNightAvailable(s, day, isWE, interval=facility.nightInterval, forRequest=false) {
+  if(shift[s.id][day]) return false;                   // 当日割当済み
+  if(committed[s.id][day]) return false;               // コミット済み（VまたはDeep）
+  if(!forRequest && wantsDay(s.id, day)) return false; // 日勤系希望の日は夜勤に入れない
+  // 土日祝：主任以上を全員同時に夜勤へ出さない（日勤に最低1人残すため）
+  if(!forRequest && facility.seniorHolidayRule && isWE && isSeniorPlus(s.id) && !anotherSeniorFreeOn(s.id, day)) return false;
+  const _st=staffConstraints[s.id].shiftType;
+  if(_st==='day_only'||_st==='weekday_day') return false;
+  const rule=staffConstraints[s.id].nightRule;
+  if(rule==='no_night') return false;
+  if(rule==='weekend_only'&&!isWE) return false;
+  // 前後N日以内に夜勤があれば割り当てない（前月末・確定済みの△○希望も考慮）
+  for(let i=1; i<=interval; i++){
+    const pd = day - i;
+    const pv = pd >= 1 ? shift[s.id][pd] : prevMonthShiftAt(s.id, pd);
+    if(pv==='jun' || pv==='deep') return false;
+    const nd = day + i;
+    if(nd <= DAYS_IN_MONTH){
+      const nv = shift[s.id][nd];
+      if(nv==='jun' || nv==='deep') return false;
+    }
+  }
+  for(const pid of staffConstraints[s.id].bannedPairs){
+    if(shift[pid]?.[day]==='jun'||shift[pid]?.[day]==='deep') return false;
+  }
+  return true;
+}
+
+// --- △○希望の事前確定（Step2の前に実行し、希望を最優先で守る） ---
+function presetRequestedNights() {
+  for(let d=1; d<=DAYS_IN_MONTH; d++){
+    const dow = new Date(YEAR,MONTH,d).getDay();
+    const isWE = dow===0||dow===6||holidays.has(d);
+    TEAMS.forEach(team => {
+      // △希望（req_jun / jun_or_day）
+      if(!STAFF.some(x => x.team===team && shift[x.id][d]==='jun')){
+        const cands = STAFF.filter(s => {
+          if(s.team!==team) return false;
+          const rq = requests[s.id]?.[d];
+          if(rq!=='req_jun' && rq!=='jun_or_day' && rq!=='jun_or_v') return false;
+          const st = staffConstraints[s.id].shiftType;
+          if(st!=='regular' && st!=='triple') return false;
+          if(!isNightAvailable(s, d, isWE, 3, true)) return false;
+          if(d < DAYS_IN_MONTH){ // 月末最終日の△は翌月に引き継がれるため翌日チェック不要
+            if(shift[s.id][d+1] || committed[s.id][d+1]) return false;
+            if(st==='regular'){
+              if(requests[s.id]?.[d+1]==='deep_ng' || wantsDay(s.id, d+1)) return false; // 翌日○のため
+              if(d+2<=DAYS_IN_MONTH){
+                if(wantsDay(s.id, d+2)) return false;                                    // 翌々日明けVのため
+                const nx2 = shift[s.id][d+2];
+                if(nx2 && nx2!=='V') return false;
+              }
+            }
+            if(st==='triple' && wantsDay(s.id, d+1)) return false; // 翌日Vのため
+          }
+          return true;
+        }).sort((a,b)=>junSortKey(a.id)-junSortKey(b.id));
+        if(cands.length){
+          const p = cands[0];
+          shift[p.id][d]='jun';
+          if(d < DAYS_IN_MONTH){
+            if(staffConstraints[p.id].shiftType==='regular') committed[p.id][d+1]='deep';
+            else {
+              committed[p.id][d+1]='V';
+              // 三交代の希望△にも、翌日○の三交代ペアを可能なら先取り確保
+              const pr = findTripleDeepPartner(team, d+1, p.id);
+              if(pr){
+                shift[pr.id][d+1]='deep';
+                if(!shift[pr.id][d] && !committed[pr.id][d]) committed[pr.id][d]='V';
+              }
+            }
+          }
+        }
+      }
+      // ○希望（req_deep / deep_or_day・三交代のみ。二交代のコミット○がある日は不可）
+      const deepTaken = STAFF.some(x => x.team===team && (shift[x.id][d]==='deep' || committed[x.id][d]==='deep'));
+      if(!deepTaken){
+        const cands = STAFF.filter(s => {
+          if(s.team!==team) return false;
+          const rq = requests[s.id]?.[d];
+          if(rq!=='req_deep' && rq!=='deep_or_day' && rq!=='deep_or_v') return false;
+          if(staffConstraints[s.id].shiftType!=='triple') return false;
+          if(!isNightAvailable(s, d, isWE, 3, true)) return false;
+          if(d>1){
+            const prev = shift[s.id][d-1];
+            if(prev && prev!=='V' && prev!=='summer') return false;      // ○の前日は休み
+            if(committed[s.id][d-1]==='deep') return false;
+            if(!prev && wantsDay(s.id, d-1)) return false;               // 前日Vコミットが日勤系希望と矛盾
+          } else if(PREV_TAIL) {
+            const pv = prevMonthShiftAt(s.id, 0);
+            if(pv && pv!=='V' && pv!=='summer' && pv!=='yukyuu' && pv!=='menjo' && pv!=='absence') return false;
+          }
+          if(d<DAYS_IN_MONTH){
+            if(wantsDay(s.id, d+1)) return false;    // 翌日明けVのため
+            const nx = shift[s.id][d+1];
+            if(nx && nx!=='V') return false;         // 明けVを置けない日はNG
+          }
+          return true;
+        }).sort((a,b)=>deepSortKey(a.id)-deepSortKey(b.id));
+        if(cands.length){
+          const p = cands[0];
+          shift[p.id][d]='deep';
+          if(d>1 && !shift[p.id][d-1] && !committed[p.id][d-1]) committed[p.id][d-1]='V';
+        }
+      }
+    });
+  }
+}
+
+// --- 準夜割り当て ---
+function assignJun(day) {
+  const dow = new Date(YEAR,MONTH,day).getDay();
+  const isWE = dow===0||dow===6||holidays.has(day);
+
+  TEAMS.forEach(team => {
+    if(STAFF.some(x => x.team===team && shift[x.id][day]==='jun')) return; // 希望で確定済み
+
+    const filterCandidates = (interval) => STAFF.filter(s => {
+      if(s.team!==team) return false;
+      if(!isNightAvailable(s, day, isWE, interval)) return false;
+      if(requests[s.id]?.[day]==='jun_ng') return false;    // その日は準夜不可の希望
+      if(requests[s.id]?.[day]==='deep_or_v') return false; // ○かV希望の日に準夜は入れない
+      const st = staffConstraints[s.id].shiftType;
+      // 夜勤回数指定がある人は、その回数を超える割当はしない（二交代セットは2回分）
+      const q = nightQuotaScaled(s.id);
+      if(q != null && nightCount(s.id) + (st==='regular' && day<DAYS_IN_MONTH ? 2 : 1) > q) return false;
+      const rqNext = requests[s.id]?.[day+1];
+      if(st==='regular' && day < DAYS_IN_MONTH) {
+        // 二交代：翌日が空きかつコミットなしであること（翌日○担当するため）
+        // ※月末最終日の△は許可（翌月1日の○は月またぎ処理で自動セット）
+        if(shift[s.id][day+1] || committed[s.id][day+1]) return false;
+        if(rqNext==='deep_ng' || wantsDay(s.id, day+1)) return false;      // 翌日○になるため
+        if(day+2<=DAYS_IN_MONTH) {
+          if(wantsDay(s.id, day+2)) return false;                          // 翌々日が明けVになるため
+          const nx2 = shift[s.id][day+2];
+          if(nx2 && nx2!=='V') return false;                               // 明けVを置けない日はNG
+        }
+        // 主任：セットで潰れる翌日○・翌々日明けVの土日祝もチェック
+        if(facility.seniorHolidayRule && isSeniorPlus(s.id)){
+          if(!anotherSeniorFreeOn(s.id, day+1)) return false;
+          if(day+2<=DAYS_IN_MONTH && !anotherSeniorFreeOn(s.id, day+2)) return false;
+        }
+      }
+      if(st==='triple' && isSeniorPlus(s.id) && day < DAYS_IN_MONTH && !anotherSeniorFreeOn(s.id, day+1)) return false; // △後Vの土日祝
+      if(st==='triple' && day < DAYS_IN_MONTH) {
+        // 三交代：翌日が空きかつコミットなし（翌日Vにするため）
+        // ※月末最終日の△は許可（翌月1日のVは月またぎ処理で自動セット）
+        if(shift[s.id][day+1] || committed[s.id][day+1]) return false;
+        if(wantsDay(s.id, day+1)) return false; // 翌日Vになるため日勤系希望と矛盾
+      }
+      return true;
+    });
+
+    // インターバル3→1→0の順で緩和しながら候補を探す（準夜は必ず1名確保）
+    let candidates = filterCandidates(facility.nightInterval);
+    if(!candidates.length && facility.nightInterval>1) candidates = filterCandidates(1);
+    if(!candidates.length) candidates = filterCandidates(0);
+
+    // 翌日の深夜を担える三交代がいない見込みの日は、二交代を優先する
+    // （二交代はセットで翌日○まで埋まるため、二交代の単発○を発生させない）
+    let preferRegular = false;
+    if(day < DAYS_IN_MONTH){
+      preferRegular = !STAFF.some(o => {
+        if(o.team!==team) return false;
+        const oc = staffConstraints[o.id];
+        if(oc.shiftType!=='triple' || oc.nightRule==='no_night') return false;
+        if(shift[o.id][day+1] || committed[o.id][day+1]) return false;   // 翌日埋まり
+        if(isAbsentOn(o.id, day+1)) return false;                        // 休業
+        if(requests[o.id]?.[day+1]==='deep_ng' || wantsDay(o.id, day+1)) return false; // ○✕・日勤系希望
+        const q = nightQuotaScaled(o.id);
+        if(q != null && nightCount(o.id) + 1 > q) return false;          // 回数指定の上限
+        return true;
+      });
+    }
+    // 準夜は△希望優先、次いで△回数が少ない順でソート
+    candidates.sort((a,b) => {
+      const aReq = requests[a.id]?.[day]==='req_jun' ? -1000 : 0;
+      const bReq = requests[b.id]?.[day]==='req_jun' ? -1000 : 0;
+      const aBias = preferRegular && staffConstraints[a.id].shiftType==='regular' ? -100 : 0;
+      const bBias = preferRegular && staffConstraints[b.id].shiftType==='regular' ? -100 : 0;
+      const aIin = (requests[a.id]?.[day]==='iinkai' || requests[a.id]?.[day+1]==='iinkai') ? 2000 : 0; // 委員会希望は後回し
+      const bIin = (requests[b.id]?.[day]==='iinkai' || requests[b.id]?.[day+1]==='iinkai') ? 2000 : 0;
+      return (junSortKey(a.id)+aReq+aBias+aIin) - (junSortKey(b.id)+bReq+bBias+bIin);
+    });
+
+    if(candidates.length>0){
+      // 三交代の△は「翌日の○を担う三交代」をペアで同時確保できる場合のみ採用する
+      // （三交代の夜を三交代で完結させる。確保できない場合は二交代のセットを優先）
+      let picked = null, partner = null;
+      for(const cand of candidates){
+        if(staffConstraints[cand.id].shiftType !== 'triple'){ picked = cand; break; }
+        if(day >= DAYS_IN_MONTH){ picked = cand; break; } // 月末△は翌月処理に任せる
+        partner = findTripleDeepPartner(team, day+1, cand.id);
+        if(partner){ picked = cand; break; }
+        partner = null;
+      }
+      if(!picked) picked = candidates[0]; // 誰もペアを組めない場合は従来どおり（修復・警告に任せる）
+
+      shift[picked.id][day]='jun';
+      const st=staffConstraints[picked.id].shiftType;
+      if(day < DAYS_IN_MONTH) { // 月末最終日の翌日分は翌月生成時の月またぎ処理が引き継ぐ
+        if(st==='regular') {
+          committed[picked.id][day+1]='deep'; // 二交代：翌日○確定
+        } else if(st==='triple') {
+          committed[picked.id][day+1]='V';   // 三交代：△後は必ずV
+          if(partner){
+            shift[partner.id][day+1]='deep'; // ペアの○を先取りで確定
+            if(!shift[partner.id][day] && !committed[partner.id][day]) committed[partner.id][day]='V'; // ○前日休み
+          }
+        }
+      }
+    }
+  });
+}
+
+// --- 三交代の△に対する「翌日○」の相棒探し（見つかった場合のみ三交代の△を許可） ---
+function findTripleDeepPartner(team, d, excludeId) {
+  if(d > DAYS_IN_MONTH) return null;
+  // その日の深夜がすでに確定・コミット済みなら不要（＝ペア確保不能扱いにしない）
+  if(STAFF.some(x => x.team===team && (shift[x.id][d]==='deep' || committed[x.id][d]==='deep'))) return null;
+  const dow = new Date(YEAR, MONTH, d).getDay();
+  const isWE = dow===0 || dow===6 || holidays.has(d);
+  for(const iv of [3, 1, 0]){
+    const pool = STAFF.filter(o => {
+      if(o.id===excludeId || o.team!==team) return false;
+      if(staffConstraints[o.id].shiftType!=='triple') return false;
+      if(!isNightAvailable(o, d, isWE, iv)) return false;
+      if(requests[o.id]?.[d]==='deep_ng' || requests[o.id]?.[d]==='jun_or_v') return false;
+      // 本人の夜勤希望を潰さない（当日の△系希望、前日=Vコミット日・翌日=明けV日の夜勤希望）
+      const NW = rq => rq==='req_jun'||rq==='jun_or_day'||rq==='jun_or_v'||rq==='req_deep'||rq==='deep_or_day'||rq==='deep_or_v';
+      const rqd = requests[o.id]?.[d];
+      if(rqd==='req_jun'||rqd==='jun_or_day') return false;
+      if(d-1 >= 1 && !shift[o.id][d-1] && NW(requests[o.id]?.[d-1])) return false;
+      if(d+1 <= DAYS_IN_MONTH && NW(requests[o.id]?.[d+1])) return false;
+      const q = nightQuotaScaled(o.id);
+      if(q != null && nightCount(o.id) + 1 > q) return false;
+      // ○前日（＝△の日）が休みまたは空きであること
+      const prev = d-1 >= 1 ? shift[o.id][d-1] : prevMonthShiftAt(o.id, 0);
+      if(prev && prev!=='V' && prev!=='summer') return false;
+      if(d-1 >= 1 && committed[o.id][d-1]==='deep') return false;
+      if(d-1 >= 1 && !shift[o.id][d-1] && wantsDay(o.id, d-1)) return false;
+      // 明けVが置けること
+      if(d < DAYS_IN_MONTH){
+        const nx = shift[o.id][d+1];
+        if((nx && nx!=='V') || wantsDay(o.id, d+1)) return false;
+      }
+      return true;
+    }).sort((a,b) => deepSortKey(a.id) - deepSortKey(b.id));
+    if(pool.length) return pool[0];
+  }
+  return null;
+}
+
+// --- 深夜割り当て ---
+function assignDeep(day) {
+  const dow = new Date(YEAR,MONTH,day).getDay();
+  const isWE = dow===0||dow===6||holidays.has(day);
+
+  TEAMS.forEach(team => {
+    if(STAFF.some(x => x.team===team && shift[x.id][day]==='deep')) return; // 希望で確定済み
+
+    // 優先①：二交代コミット済みスタッフ（前日の△から連続）
+    const committedPerson = STAFF.find(s =>
+      s.team===team && committed[s.id][day]==='deep' && !shift[s.id][day]
+    );
+    if(committedPerson){
+      shift[committedPerson.id][day]='deep';
+      return;
+    }
+
+    // 優先②：三交代スタッフ（○は独立、ただし前日がV/空であること）
+    const tripleCands = (interval) => STAFF.filter(s => {
+      if(s.team!==team) return false;
+      if(staffConstraints[s.id].shiftType!=='triple') return false;
+      if(!isNightAvailable(s, day, isWE, interval)) return false;
+      if(requests[s.id]?.[day]==='deep_ng') return false;  // その日は深夜不可の希望
+      if(requests[s.id]?.[day]==='jun_or_v') return false; // △かV希望の日に深夜は入れない
+      const q = nightQuotaScaled(s.id);
+      if(q != null && nightCount(s.id) + 1 > q) return false; // 回数指定を超えない
+      if(day<DAYS_IN_MONTH) {
+        if(wantsDay(s.id, day+1)) return false; // 翌日が明けVになるため
+        const nx = shift[s.id][day+1];
+        if(nx && nx!=='V') return false;        // 明けVを置けない日はNG
+      }
+      // 主任：○で潰れる前日V・翌日明けVの土日祝もチェック
+      if(facility.seniorHolidayRule && isSeniorPlus(s.id)){
+        if(day<DAYS_IN_MONTH && !anotherSeniorFreeOn(s.id, day+1)) return false;
+        if(day>1 && !shift[s.id][day-1] && !anotherSeniorFreeOn(s.id, day-1)) return false;
+      }
+      // 三交代：○の前日はV/空が必要
+      if(day>1){
+        const prev=shift[s.id][day-1];
+        if(prev && prev!=='V' && prev!=='summer') return false;
+        if(committed[s.id][day-1]==='deep') return false; // 前日深夜コミットはNG
+        if(!prev && wantsDay(s.id, day-1)) return false;  // 前日Vコミットが日勤系希望と矛盾
+      } else if(PREV_TAIL) {
+        // 1日の○は前月末日が休み（V/夏/有/免/休業/空）であること
+        const pv = prevMonthShiftAt(s.id, 0);
+        if(pv && pv!=='V' && pv!=='summer' && pv!=='yukyuu' && pv!=='menjo' && pv!=='absence') return false;
+      }
+      return true;
+    });
+    // インターバル3→1→0で緩和しながら三交代候補を探す
+    let candidates = tripleCands(facility.nightInterval);
+    if(!candidates.length && facility.nightInterval>1) candidates = tripleCands(1);
+    if(!candidates.length) candidates = tripleCands(0);
+    // 深夜は○希望優先、次いで○回数が少ない順でソート
+    candidates.sort((a,b) => {
+      const aReq = requests[a.id]?.[day]==='req_deep' ? -1000 : 0;
+      const bReq = requests[b.id]?.[day]==='req_deep' ? -1000 : 0;
+      const aIin = (requests[a.id]?.[day]==='iinkai' || requests[a.id]?.[day+1]==='iinkai') ? 2000 : 0; // 委員会希望は後回し
+      const bIin = (requests[b.id]?.[day]==='iinkai' || requests[b.id]?.[day+1]==='iinkai') ? 2000 : 0;
+      return (deepSortKey(a.id)+aReq+aIin) - (deepSortKey(b.id)+bReq+bIin);
+    });
+
+    if(candidates.length>0){
+      const picked=candidates[0];
+      shift[picked.id][day]='deep';
+      // 三交代：○の前日をVにコミット（まだ未割当なら）
+      if(day>1 && !shift[picked.id][day-1] && !committed[picked.id][day-1]){
+        committed[picked.id][day-1]='V';
+      }
+      return;
+    }
+
+    // 最終手段：二交代の単発○で必ず充当する（基本は発生させない方針。
+    // 準夜選定時の二交代優先で回避されるため、ここに来るのは candidates が空の例外時のみ。
+    // 発生した場合は「単独深夜」としてチェックタブに警告が出る）
+    const regCands = (interval) => STAFF.filter(s => {
+      if(s.team!==team) return false;
+      if(staffConstraints[s.id].shiftType!=='regular') return false;
+      if(!isNightAvailable(s, day, isWE, interval)) return false;
+      if(requests[s.id]?.[day]==='deep_ng' || requests[s.id]?.[day]==='jun_or_v') return false;
+      if(day<DAYS_IN_MONTH){
+        const nx = shift[s.id][day+1];
+        if((nx && nx!=='V') || wantsDay(s.id, day+1)) return false; // 明けVを置けない日はNG
+      }
+      return true;
+    });
+    let fallback = regCands(facility.nightInterval);
+    if(!fallback.length && facility.nightInterval>1) fallback = regCands(1);
+    if(!fallback.length) fallback = regCands(0);
+    // 前日が空いていて後からセット化（repairSoloDeeps）できる人を優先
+    const canPair = s => day>1 && !shift[s.id][day-1] && !committed[s.id][day-1] &&
+      requests[s.id]?.[day-1]!=='jun_ng' && !wantsDay(s.id, day-1);
+    fallback.sort((a,b)=>{
+      const aw = canPair(a) ? 0 : 1, bw = canPair(b) ? 0 : 1;
+      if(aw!==bw) return aw-bw;
+      return deepSortKey(a.id)-deepSortKey(b.id);
+    });
+    if(fallback.length){
+      shift[fallback[0].id][day]='deep';
+    }
+  });
+}
+
+// --- 二交代の単発○（前日△なし）の修復 ---
+// 深夜充当で単発○になった二交代 r について、前日の準夜（多くは三交代 j ）を
+// r 本人に付け替えて △○セットにする。j の夜勤減は ensureMinNights で再調整される。
+// 三交代の△を外した場合は tripleSwitchLog に記録し、チェックタブに警告表示する
+let tripleSwitchLog = [];
+function repairSoloDeeps() {
+  for(let d=2; d<=DAYS_IN_MONTH; d++){
+    TEAMS.forEach(team => {
+      const solo = STAFF.find(s =>
+        s.team===team && shift[s.id][d]==='deep' &&
+        staffConstraints[s.id].shiftType==='regular' &&
+        shift[s.id][d-1]!=='jun'
+      );
+      if(!solo) return;
+      const j = STAFF.find(s => s.team===team && shift[s.id][d-1]==='jun');
+      if(!j) return;
+      // j の準夜が本人希望なら動かさない
+      const jrq = requests[j.id]?.[d-1];
+      if(jrq==='req_jun' || jrq==='jun_or_day') return;
+
+      // j の準夜と△後Vコミットを一旦外して試す（失敗したら戻す）
+      delete shift[j.id][d-1];
+      const jHadCmt = committed[j.id][d]==='V' && !shift[j.id][d];
+      if(jHadCmt) delete committed[j.id][d];
+
+      const canJun = (r, dd) => {
+        if(shift[r.id][dd] || committed[r.id][dd]) return false;
+        if(requests[r.id]?.[dd]==='jun_ng' || wantsDay(r.id, dd)) return false;
+        const p1 = dd-1>=1 ? shift[r.id][dd-1] : prevMonthShiftAt(r.id, dd-1);
+        if(p1==='jun' || p1==='deep') return false; // 連続夜勤は避ける
+        for(const pid of staffConstraints[r.id].bannedPairs){
+          if(shift[pid]?.[dd]==='jun' || shift[pid]?.[dd]==='deep') return false;
+        }
+        return true;
+      };
+
+      // ①単発○の本人を前日準夜に付け替えてセット化
+      if(canJun(solo, d-1)){
+        shift[solo.id][d-1]='jun';
+        committed[solo.id][d]='deep';
+        if(staffConstraints[j.id].shiftType==='triple')
+          tripleSwitchLog.push({ day: d-1, team, jname: j.name, rname: solo.name });
+        return;
+      }
+      // ②別の二交代にセットを丸ごと任せ、単発○を解消
+      const r2 = STAFF.find(o => {
+        if(o.id===solo.id || o.id===j.id || o.team!==team) return false;
+        if(staffConstraints[o.id].shiftType!=='regular') return false;
+        if(!canJun(o, d-1)) return false;
+        if(shift[o.id][d] || committed[o.id][d]) return false;
+        if(requests[o.id]?.[d]==='deep_ng' || wantsDay(o.id, d)) return false;
+        if(d < DAYS_IN_MONTH){
+          const nx = shift[o.id][d+1];
+          if((nx && nx!=='V') || wantsDay(o.id, d+1)) return false; // 明けVが置けない
+        }
+        const q = nightQuotaScaled(o.id);
+        if(q != null && nightCount(o.id) + 2 > q) return false;
+        return true;
+      });
+      if(r2){
+        delete shift[solo.id][d];
+        shift[r2.id][d-1]='jun';
+        shift[r2.id][d]='deep';
+        committed[r2.id][d]='deep';
+        if(staffConstraints[j.id].shiftType==='triple')
+          tripleSwitchLog.push({ day: d-1, team, jname: j.name, rname: r2.name });
+        return;
+      }
+      // 修復不能：元に戻す（単独深夜としてチェックタブに警告が出る）
+      shift[j.id][d-1]='jun';
+      if(jHadCmt) committed[j.id][d]='V';
+    });
+  }
+}
+
+// --- 入浴回数の偶数化 ---
+// 奇数回の人が2人いれば、片方の入浴枠をもう片方に移して両者を偶数にする。
+// 月の入浴枠合計が奇数のときだけ、最後の1人は奇数のまま残る（チェックタブに警告）
+function evenOutNyukyu() {
+  let guard = 0;
+  while(guard++ < 60){
+    const odds = STAFF.filter(s => nyukyuCount(s.id) % 2 === 1);
+    if(odds.length < 2) break;
+    let moved = false;
+    outer:
+    for(const a of odds){
+      for(const b of odds){
+        if(a.id === b.id) continue;
+        const bc = staffConstraints[b.id];
+        if(bc.noNyukyu || bc.shiftType==='weekday_day') continue;
+        for(let d=1; d<=DAYS_IN_MONTH; d++){
+          if(shift[a.id][d]!=='nyukyu') continue;
+          if(requests[a.id]?.[d]==='req_nyukyu') continue; // 入浴希望で入った枠は動かさない
+          if(shift[b.id][d]!=='day') continue;
+          const brq = requests[b.id]?.[d];
+          if(brq==='jun_or_day' || brq==='deep_or_day' || brq==='iinkai') continue;
+          if(isAbsentOn(b.id, d)) continue;
+          if(isLastSeniorOn(d, b.id)) continue;               // 土日祝の最後の主任日勤は外さない
+          if(teamDayCount(b.team, d, b.id) < facility.teamDayMin) continue;      // bのチーム日勤を維持
+          // a は日勤へ、b が入浴へ（その日の日勤合計・勤務日数は不変）
+          shift[a.id][d]='day';
+          shift[b.id][d]='nyukyu';
+          moved = true;
+          break outer;
+        }
+      }
+    }
+    if(!moved){
+      // 直接ペアが組めない場合：奇数の人の枠を偶数の人へ移して組み合わせを変える。
+      // 巡回に嵌らないよう移し先はランダムに選ぶ（最大30回）
+      if(!evenOutNyukyu._reloc) evenOutNyukyu._reloc = 0;
+      if(evenOutNyukyu._reloc >= 30) break;
+      const options = [];
+      for(const a of odds){
+        for(let d=1; d<=DAYS_IN_MONTH; d++){
+          if(shift[a.id][d]!=='nyukyu' || requests[a.id]?.[d]==='req_nyukyu') continue;
+          for(const c of STAFF){
+            if(c.id===a.id || nyukyuCount(c.id) % 2 === 1) continue;
+            const cc = staffConstraints[c.id];
+            if(cc.noNyukyu || cc.shiftType==='weekday_day') continue;
+            if(shift[c.id][d]!=='day') continue;
+            const crq = requests[c.id]?.[d];
+            if(crq==='jun_or_day' || crq==='deep_or_day' || crq==='iinkai') continue;
+            if(isAbsentOn(c.id, d) || isLastSeniorOn(d, c.id)) continue;
+            if(teamDayCount(c.team, d, c.id) < facility.teamDayMin) continue;
+            options.push([a, d, c]);
+          }
+        }
+      }
+      if(options.length){
+        const [a, d, c] = options[Math.floor(Math.random() * options.length)];
+        shift[a.id][d]='day'; shift[c.id][d]='nyukyu';
+        evenOutNyukyu._reloc++;
+        moved = true;
+      }
+      if(!moved) break;
+    }
+  }
+  evenOutNyukyu._reloc = 0;
+}
+
+// --- 公休を目標値ぴったりに揃える最終ステップ ---
+// 超過分：自動で入ったV（希望休・明けV・△○前後Vではないもの）を有給に変換
+// 不足分：spreadVDaysをもう一度試行。それでも合わない場合はバリデーションに表示される
+function normalizeOffDays() {
+  STAFF.forEach(s => {
+    if(staffConstraints[s.id].shiftType==='weekday_day') return;
+    const tgt = offTarget(s.id);
+    let guard = 0;
+    while(countOff(s.id) - tgt >= 1 && guard++ < 15){
+      const d = findRemovableV(s.id);
+      if(!d) break;
+      shift[s.id][d] = 'yukyuu';
+    }
+    if(countOff(s.id) < tgt){
+      spreadVDays(s.id);
+      // それでも足りない場合：同じ日に自動有給の人と交代してVを確保（人数維持）
+      let guard2 = 0;
+      while(countOff(s.id) < tgt && guard2++ < 5){
+        if(!fillVBySwap(s)) break;
+      }
+    }
+  });
+}
+
+// s の日勤日を1つVにする代わりに、同じ日の自動有給の人に出勤してもらう
+function fillVBySwap(s){
+  for(let d=1; d<=DAYS_IN_MONTH; d++){
+    if(shift[s.id][d]!=='day' || wantsDay(s.id, d)) continue;
+    if(teamDayCount(s.team, d, s.id) < facility.teamDayMin) continue;
+    if(isLastSeniorOn(d, s.id)) continue; // 土日祝の最後の主任日勤は外さない
+    const p = STAFF.find(o => {
+      if(o.id===s.id) return false;
+      if(shift[o.id][d]!=='yukyuu') return false;
+      if(requests[o.id]?.[d]==='yukyuu') return false; // 希望の有給は動かさない
+      if(staffConstraints[o.id].shiftType==='weekday_day') return false;
+      shift[o.id][d]='day';
+      const ok = getStreakUnits(o.id, d) <= MAXC();
+      shift[o.id][d]='yukyuu';
+      return ok;
+    });
+    if(p){
+      shift[p.id][d]='day';
+      shift[s.id][d]='V';
+      return true;
+    }
+  }
+  return false;
+}
+// そのVが「動かしてよい自動V」か（希望休・明けV・△○前後V・月またぎVは不可）
+function isRemovableVAt(id, d){
+  if(shift[id][d]!=='V') return false;
+  const rq = requests[id]?.[d];
+  if(rq==='holiday'||rq==='summer'||rq==='jun_or_v'||rq==='deep_or_v') return false; // 希望由来のVは残す
+  if(d>1 && shift[id][d-1]==='deep') return false;
+  if(d===1){
+    const pv = prevMonthShiftAt(id, 0);
+    if(pv==='deep' || pv==='jun') return false;
+  }
+  if(staffConstraints[id].shiftType==='triple'){
+    if(d>1 && shift[id][d-1]==='jun') return false;
+    if(d<DAYS_IN_MONTH && shift[id][d+1]==='deep') return false;
+  }
+  return true;
+}
+function findRemovableV(id){
+  // 第1候補：自動で入ったV（明けV・△○前後V以外）
+  for(let d=DAYS_IN_MONTH; d>=1; d--){
+    if(isRemovableVAt(id, d)) return d;
+  }
+  // 第2候補：明けV・△○前後V等も有給への「振替」なら可（休み自体は保たれるため）。
+  // 希望由来のV（休み希望・△/V・○/V）だけは残す
+  for(let d=DAYS_IN_MONTH; d>=1; d--){
+    if(shift[id][d]!=='V') continue;
+    const rq = requests[id]?.[d];
+    if(rq==='holiday'||rq==='summer'||rq==='jun_or_v'||rq==='deep_or_v') continue;
+    return d;
+  }
+  return null;
+}
+
+// --- 夜勤回数（指定なし=最低2回のみ保証 / 指定あり=その回数ちょうどに調整） ---
+// 夜勤可能な二交代・三交代スタッフが対象。休業がある月は在籍日数で緩和
+function nightWorkableDays(id) {
+  let workable = 0;
+  for(let d=1; d<=DAYS_IN_MONTH; d++) if(!isAbsentOn(id, d)) workable++;
+  return workable;
+}
+// 指定回数（休業按分後）。未指定・夜勤不可はnull
+function nightQuotaScaled(id) {
+  const c = staffConstraints[id];
+  if(c.nightQuota == null) return null;
+  if(c.shiftType!=='regular' && c.shiftType!=='triple') return null;
+  if(c.nightRule==='no_night') return null;
+  const workable = nightWorkableDays(id);
+  return workable >= DAYS_IN_MONTH ? c.nightQuota : Math.round(c.nightQuota * workable / DAYS_IN_MONTH);
+}
+// 最低保証回数：指定ありはその回数、指定なしは2回（休業按分）
+function minNightsFor(id) {
+  const c = staffConstraints[id];
+  if(c.shiftType!=='regular' && c.shiftType!=='triple') return 0;
+  if(c.nightRule==='no_night') return 0;
+  const q = nightQuotaScaled(id);
+  if(q != null) return q;
+  const workable = nightWorkableDays(id);
+  const dflt = facility.minNightsDefault;
+  if(workable >= DAYS_IN_MONTH) return dflt;
+  return Math.round(dflt * workable / DAYS_IN_MONTH);
+}
+
+function ensureMinNights() {
+  STAFF.forEach(s => {
+    const minN = minNightsFor(s.id);
+    if(minN === 0) return;
+    let guard = 0;
+    while(nightCount(s.id) < minN && guard++ < 8) {
+      if(!transferNightTo(s, minN)) break; // 移譲元が見つからなければ諦める（バリデーションで警告）
+    }
+  });
+}
+
+// 夜勤回数の多い同チーム・同タイプの人から1枠（二交代は△○セット）を s に移す
+function transferNightTo(s, minN) {
+  const st = staffConstraints[s.id].shiftType;
+  const donors = STAFF.filter(o =>
+    o.id !== s.id && o.team === s.team &&
+    staffConstraints[o.id].shiftType === st &&
+    nightCount(o.id) - (st==='regular' ? 2 : 1) >= Math.max(2, minNightsFor(o.id))
+  ).sort((a,b) => nightCount(b.id) - nightCount(a.id));
+
+  for(const donor of donors){
+    for(let d=1; d<=DAYS_IN_MONTH; d++){
+      const drq = requests[donor.id]?.[d];
+      if(drq==='req_jun'||drq==='jun_or_day'||drq==='req_deep'||drq==='deep_or_day') continue; // 希望で入った夜勤は動かさない
+      const dow = new Date(YEAR,MONTH,d).getDay();
+      const isWE = dow===0||dow===6||holidays.has(d);
+
+      if(st==='regular'){
+        if(shift[donor.id][d]!=='jun' || shift[donor.id][d+1]!=='deep') continue;
+        if(shift[s.id][d] || shift[s.id][d+1] || committed[s.id][d] || committed[s.id][d+1]) continue;
+        if(requests[s.id]?.[d]==='jun_ng' || requests[s.id]?.[d+1]==='deep_ng') continue;
+        if(d+2<=DAYS_IN_MONTH){
+          const nx2 = shift[s.id][d+2];
+          if((nx2 && nx2!=='V') || wantsDay(s.id, d+2)) continue; // 明けVが置けない
+        }
+        // ドナーを一時的に外して受け手の可否判定（禁止ペア等）
+        shift[donor.id][d]=''; shift[donor.id][d+1]='';
+        const ok = isNightAvailable(s, d, isWE, 3, false);
+        if(ok){
+          delete shift[donor.id][d]; delete shift[donor.id][d+1];
+          delete committed[donor.id][d+1];
+          shift[s.id][d]='jun'; shift[s.id][d+1]='deep';
+          committed[s.id][d+1]='deep';
+          return true;
+        }
+        shift[donor.id][d]='jun'; shift[donor.id][d+1]='deep';
+      } else {
+        // 三交代：△（翌日Vコミット）を移す
+        if(shift[donor.id][d]==='jun'){
+          if(d < DAYS_IN_MONTH && !shift[s.id][d] && !committed[s.id][d] &&
+             !shift[s.id][d+1] && !committed[s.id][d+1] && !wantsDay(s.id, d+1) &&
+             requests[s.id]?.[d]!=='jun_ng'){
+            shift[donor.id][d]='';
+            const ok = isNightAvailable(s, d, isWE, 3, false);
+            if(ok){
+              delete shift[donor.id][d];
+              if(committed[donor.id][d+1]==='V') delete committed[donor.id][d+1];
+              shift[s.id][d]='jun'; committed[s.id][d+1]='V';
+              return true;
+            }
+            shift[donor.id][d]='jun';
+          }
+        }
+        // 三交代：○（前日Vコミット）を移す
+        if(shift[donor.id][d]==='deep'){
+          if(shift[s.id][d] || committed[s.id][d] || requests[s.id]?.[d]==='deep_ng') continue;
+          if(d>1){
+            const pv = shift[s.id][d-1];
+            if(pv && pv!=='V' && pv!=='summer') continue;
+            if(!pv && wantsDay(s.id, d-1)) continue;
+            if(committed[s.id][d-1]==='deep') continue;
+          }
+          if(d<DAYS_IN_MONTH){
+            const nx = shift[s.id][d+1];
+            if((nx && nx!=='V') || wantsDay(s.id, d+1)) continue;
+          }
+          shift[donor.id][d]='';
+          const ok = isNightAvailable(s, d, isWE, 3, false);
+          if(ok){
+            delete shift[donor.id][d];
+            if(d>1 && committed[donor.id][d-1]==='V') delete committed[donor.id][d-1];
+            shift[s.id][d]='deep';
+            if(d>1 && !shift[s.id][d-1] && !committed[s.id][d-1]) committed[s.id][d-1]='V';
+            return true;
+          }
+          shift[donor.id][d]='deep';
+        }
+      }
+    }
+  }
+  return false;
+}
+
+// --- 入浴介助（半日公休扱い。2回で公休1日分になるため同一人物のペアを優先） ---
+function assignNyukyu(day, count) {
+  // 平日日勤のみスタッフ（師長など）は入浴介助に入らない
+  const candidates = STAFF.filter(s =>
+    !shift[s.id][day] && staffConstraints[s.id].shiftType !== 'weekday_day' && !staffConstraints[s.id].noNyukyu &&
+    requests[s.id]?.[day] !== 'iinkai' // 委員会の日は入浴に入らない
+  );
+  candidates.sort((a,b) => {
+    const aR = requests[a.id]?.[day]==='req_nyukyu' ? 0 : 1;
+    const bR = requests[b.id]?.[day]==='req_nyukyu' ? 0 : 1;
+    if(aR !== bR) return aR - bR;   // 入浴希望者を最優先
+    const aI = requests[a.id]?.[day]==='iinkai' ? 1 : 0;
+    const bI = requests[b.id]?.[day]==='iinkai' ? 1 : 0;
+    if(aI !== bI) return aI - bI;   // 委員会の日は入浴を後回し
+    const ca = nyukyuCount(a.id), cb = nyukyuCount(b.id);
+    const oa = ca % 2, ob = cb % 2;
+    if(oa !== ob) return ob - oa;   // 奇数回の人を優先（2回セットを完成させる）
+    if(ca !== cb) return ca - cb;   // 次に回数が少ない人
+    return Math.random() - 0.5;
+  });
+  for(let i=0;i<Math.min(count,candidates.length);i++) shift[candidates[i].id][day]='nyukyu';
+}
+
+// --- 前月末の勤務引き継ぎ ---
+// 前月の保存済みシフトの末尾4日分（[前月末日, 末日-1, 末日-2, 末日-3]）
+let PREV_TAIL = null;
+function computePrevTail() {
+  try {
+    let py = YEAR, pm = MONTH - 1;
+    if(pm < 0){ pm = 11; py--; }
+    const key = `${py}-${String(pm+1).padStart(2,'0')}`;
+    const mo = store?.months?.[key];
+    if(!mo || !mo.savedShift || !Object.keys(mo.savedShift).length) return null;
+    const pdays = new Date(py, pm+1, 0).getDate();
+    const tail = {};
+    Object.entries(mo.savedShift).forEach(([id, days]) => {
+      tail[parseInt(id)] = [0,1,2,3].map(i => days[pdays - i] || '');
+    });
+    return tail;
+  } catch(e) { return null; }
+}
+// 月をまたいだ前日の勤務を取得（d=0が前月末日、d=-1がその前日…）
+function prevMonthShiftAt(staffId, d) {
+  const t = PREV_TAIL && PREV_TAIL[staffId];
+  return (t && -d >= 0 && -d < t.length) ? t[-d] : '';
+}
+
+// --- 休業期間の判定 ---
+function isAbsentOn(id, day) {
+  const a = staffConstraints[id]?.absence;
+  if(!a || !a.from || !a.to) return false;
+  const ds = `${YEAR}-${String(MONTH+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+  return a.from <= ds && ds <= a.to;
+}
+// 公休目標：通常10日。休業がある月は在籍日数に応じて按分
+function offTarget(id) {
+  const base = facility.offTargetDays;
+  let absent = 0;
+  for(let d=1; d<=DAYS_IN_MONTH; d++) if(isAbsentOn(id, d)) absent++;
+  if(absent === 0) return base;
+  return Math.round(base * (DAYS_IN_MONTH - absent) / DAYS_IN_MONTH);
+}
+
+// --- 日勤の必要人数（土日祝9・木曜11・その他平日10） ---
+function requiredDayCount(d) {
+  if(isOffDay(d)) return facility.holidayCount;
+  return facility.weekdayCounts[new Date(YEAR, MONTH, d).getDay()] ?? 10;
+}
+
+// --- 土日祝の主任確保用ヘルパー ---
+// excludeId 以外に、その日「日勤に立てる主任」が残っているか（Step2の夜勤割当用）
+function anotherSeniorFreeOn(excludeId, d) {
+  if(d < 1 || d > DAYS_IN_MONTH) return true;
+  if(!isOffDay(d)) return true; // 平日は師長がいるので制約なし
+  return STAFF.some(o => {
+    if(o.id===excludeId || !isSeniorPlus(o.id)) return false;
+    const oc = staffConstraints[o.id];
+    if(oc.shiftType==='weekday_day') return false;
+    if(isAbsentOn(o.id, d)) return false;
+    if(committed[o.id]?.[d]) return false;      // ○コミット・Vコミット済みは不可
+    const v = shift[o.id][d];
+    if(v && v!=='day') return false;            // 夜勤・休み等で埋まっている
+    const rq = requests[o.id]?.[d];
+    if(rq==='holiday'||rq==='summer'||rq==='yukyuu'||rq==='menjo'||rq==='jun_or_v'||rq==='deep_or_v') return false; // 休み系希望
+    return true;
+  });
+}
+// excludeId を除いた「その日の主任以上の日勤者数」
+function seniorDayCount(d, excludeId=null) {
+  return STAFF.filter(s => s.id!==excludeId && isSeniorPlus(s.id) && shift[s.id][d]==='day').length;
+}
+// 土日祝に、この人（主任）を日勤から外すと主任ゼロになるか
+function isLastSeniorOn(d, id) {
+  return facility.seniorHolidayRule && isOffDay(d) && isSeniorPlus(id) && seniorDayCount(d, id) < 1;
+}
+
+// --- チーム別日勤人数（excludeId を除いて数える） ---
+function teamDayCount(team, d, excludeId=null) {
+  return STAFF.filter(s => s.team===team && s.id!==excludeId && shift[s.id][d]==='day').length;
+}
+
+// --- 連続勤務日数（△も○も各1勤務としてカウント。前月末からの連勤も引き継ぐ） ---
+function getStreakUnits(staffId, day) {
+  const val = d => d >= 1 ? shift[staffId][d] : prevMonthShiftAt(staffId, d);
+  const isOff = d => {
+    if(d > DAYS_IN_MONTH) return true;
+    if(d < -2) return true; // 前月は末尾3日まで遡って判定
+    const v = val(d);
+    return !v || v==='V' || v==='summer' || v==='yukyuu' || v==='menjo' || v==='absence';
+  };
+  if(isOff(day)) return 0;
+  let left = day; while(!isOff(left-1)) left--;
+  let right = day; while(!isOff(right+1)) right++;
+  return right - left + 1;
+}
+
+// --- 公休分散（連勤解消優先 → 連休にならないよう均等配置） ---
+function spreadVDays(staffId) {
+  if(staffConstraints[staffId].shiftType==='weekday_day') return;
+  const myTeam = STAFF.find(s=>s.id===staffId)?.team;
+  let needed = Math.max(0, offTarget(staffId) - countOff(staffId));
+  if(needed===0) return;
+
+  // 有効候補日（日勤かつ他の日勤が9人以上残り、チーム日勤も最低1人残る日）
+  const getCandidates = () => {
+    const res = [];
+    for(let d=1; d<=DAYS_IN_MONTH; d++){
+      if(shift[staffId][d]!=='day') continue;
+      if(wantsDay(staffId, d)) continue; // 日勤系希望の日はVに変換しない
+      if(requests[staffId]?.[d]==='iinkai') continue; // 委員会の日はできるだけ日勤のまま
+      if(isLastSeniorOn(d, staffId)) continue; // 土日祝の最後の主任日勤は外さない
+      const others = STAFF.filter(s=>s.id!==staffId&&shift[s.id][d]==='day').length;
+      const tOthers = teamDayCount(myTeam, d, staffId);
+      if(tOthers < facility.teamDayMin) continue; // チーム日勤の最低人数を維持
+      const floor = requiredDayCount(d);
+      if(others >= floor){
+        res.push({d, others, over: others-floor, streak: getStreakUnits(staffId, d), tOk: tOthers>=facility.teamDayTarget?1:0});
+      }
+    }
+    return res;
+  };
+
+  // 隣接V日を避けるフィルタ（連休防止）
+  const noAdjV = cands => cands.filter(x => {
+    const p = x.d > 1 ? shift[staffId][x.d-1] : null;
+    const n = x.d < DAYS_IN_MONTH ? shift[staffId][x.d+1] : null;
+    return p !== 'V' && n !== 'V';
+  });
+
+  // チーム3人維持できる日優先→連勤が長い日優先→超過が多い日優先でVを1つ選ぶ
+  const pickBest = (cands) => {
+    const pool = noAdjV(cands).length ? noAdjV(cands) : cands; // 連休防止を優先、無理なら緩和
+    pool.sort((a,b) => (b.tOk-a.tOk) || b.streak-a.streak || b.over-a.over);
+    return pool[0] || null;
+  };
+
+  // Pass1: 5連勤以上を解消
+  let retry = true;
+  while(retry && needed > 0){
+    retry = false;
+    const best = pickBest(getCandidates().filter(x=>x.streak>=5));
+    if(best){ shift[staffId][best.d]='V'; needed--; retry=true; }
+  }
+  if(needed===0) return;
+
+  // Pass2: 4連勤以上を解消
+  retry = true;
+  while(retry && needed > 0){
+    retry = false;
+    const best = pickBest(getCandidates().filter(x=>x.streak>=4));
+    if(best){ shift[staffId][best.d]='V'; needed--; retry=true; }
+  }
+  if(needed===0) return;
+
+  // Pass3: 残りを均等配置（連休にならないよう隣接V回避しながら連勤が長い日優先）
+  while(needed > 0){
+    const cands = getCandidates();
+    if(!cands.length) break;
+    const best = pickBest(cands);
+    if(!best) break;
+    shift[staffId][best.d]='V'; needed--;
+  }
+}
+
+// --- 最大4連勤強制（日勤9人下限を保護しながらV化） ---
+function enforceMaxConsec() {
+  STAFF.forEach(s => {
+    if(staffConstraints[s.id].shiftType==='weekday_day') return;
+    let changed = true;
+    while(changed) {
+      changed = false;
+      for(let d=1; d<=DAYS_IN_MONTH; d++) {
+        const v = shift[s.id][d];
+        if(!v || v==='V' || v==='summer' || v==='yukyuu' || v==='menjo' || v==='absence') continue;
+        if(v==='deep' && shift[s.id][d-1]==='jun') continue;
+        if(getStreakUnits(s.id, d) > MAXC()) {
+          if((v==='day' || v==='nyukyu') && !wantsDay(s.id, d) && !isLastSeniorOn(d, s.id)) {
+            // 日勤人数下限（平日10・土日祝9）を守ってV化
+            const others=STAFF.filter(x=>x.id!==s.id&&shift[x.id][d]==='day').length;
+            if(others >= requiredDayCount(d) && teamDayCount(s.team, d, s.id) >= facility.teamDayMin) {
+              shift[s.id][d] = countOff(s.id) < offTarget(s.id) ? 'V' : 'yukyuu';
+              changed=true; break;
+            }
+            // 人数に余裕がない場合：V日を2日ペアで交換して連勤を切る（両者の人数・公休を完全維持）
+            // d日: s(day→V) / 相手(V→day)、e日: s(V→day) / 相手(day→V)
+            if(v==='day' && teamDayCount(s.team, d, s.id) >= facility.teamDayMin && trySwapVDay(s, d)){
+              changed=true; break;
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+// --- 土日祝の主任以上日勤1人保証 ---
+// 主任（土日に出られる主任以上）が1人も設定されていなければルール自体を無効化
+function hasWeekendSeniors() {
+  return facility.seniorHolidayRule && STAFF.some(s => isSeniorPlus(s.id) && staffConstraints[s.id].shiftType!=='weekday_day');
+}
+
+function ensureSeniorOnHolidays() {
+  if(!hasWeekendSeniors()) return;
+  for(let d=1; d<=DAYS_IN_MONTH; d++){
+    if(!isOffDay(d)) continue; // 土日祝のみ（平日は師長がいる）
+    if(STAFF.some(s => isSeniorPlus(s.id) && shift[s.id][d]==='day')) continue;
+    let done = false;
+    for(const sen of STAFF){
+      if(done) break;
+      if(!isSeniorPlus(sen.id)) continue;
+      if(staffConstraints[sen.id].shiftType==='weekday_day') continue; // 師長（平日のみ）は対象外
+      const cur = shift[sen.id][d];
+      if(cur!=='V' && cur!=='yukyuu') continue;
+      if(cur==='V' && !isRemovableVAt(sen.id, d)) continue;           // 希望休・明けV等は動かさない
+      if(cur==='yukyuu' && requests[sen.id]?.[d]==='yukyuu') continue; // 希望有給は動かさない
+      // 主任が働いた場合の連勤チェック
+      shift[sen.id][d]='day';
+      const okS = getStreakUnits(sen.id, d) <= MAXC();
+      shift[sen.id][d]=cur;
+      if(!okS) continue;
+      // 代わりに休む一般スタッフ（同日の日勤者）を探す
+      for(const p of STAFF){
+        if(p.id===sen.id || isSeniorPlus(p.id)) continue;
+        if(shift[p.id][d]!=='day' || wantsDay(p.id, d)) continue;
+        if(staffConstraints[p.id].shiftType==='weekday_day') continue;
+        if(teamDayCount(p.team, d, p.id) < facility.teamDayMin) continue;
+        shift[sen.id][d]='day';
+        shift[p.id][d]=cur; // 主任の休み種別（V/有給）をそのまま引き継ぐ。過不足はStep11で調整
+        done = true; break;
+      }
+    }
+    // 確保できない場合はバリデーションでエラー表示される
+  }
+}
+
+// --- V日の2日ペア交換（sのd日を休みにするため、相手とV/dayを丸ごと入れ替える） ---
+function trySwapVDay(s, d) {
+  for(const p of STAFF){
+    if(p.id===s.id) continue;
+    if(staffConstraints[p.id].shiftType==='weekday_day') continue;
+    if(!isRemovableVAt(p.id, d)) continue;
+    // 相手がd日に働いた場合の連勤チェック
+    shift[p.id][d]='day';
+    const pOk = getStreakUnits(p.id, d) <= 4;
+    shift[p.id][d]='V';
+    if(!pOk) continue;
+    // 交換相手日 e を探す：sが動かせるVを持ち、相手がその日dayで、外しても支障がない日
+    for(let e=1; e<=DAYS_IN_MONTH; e++){
+      if(e===d) continue;
+      if(!isRemovableVAt(s.id, e)) continue;
+      if(shift[p.id][e]!=='day' || wantsDay(p.id, e)) continue;
+      if(teamDayCount(p.team, e, p.id) < facility.teamDayMin) continue; // 相手チームの人数維持
+      if(isLastSeniorOn(e, p.id)) continue; // 土日祝の最後の主任日勤は外さない
+      // sがe日に働いた場合の連勤チェック
+      shift[s.id][e]='day';
+      const sOk = getStreakUnits(s.id, e) <= 4;
+      shift[s.id][e]='V';
+      if(!sOk) continue;
+      // 実行
+      shift[s.id][d]='V';   shift[p.id][d]='day';
+      shift[s.id][e]='day'; shift[p.id][e]='V';
+      return true;
+    }
+  }
+  return false;
+}
+
+// --- 日勤人数の上限調整（平日10人・土日祝9人、超過分は有給休暇に変換） ---
+function globalBalanceNikkin() {
+  for(let pass=0; pass<10; pass++) {
+    for(let d=1; d<=DAYS_IN_MONTH; d++) {
+      const maxDay = requiredDayCount(d);
+      let cnt = STAFF.filter(s=>shift[s.id][d]==='day').length;
+      if(cnt <= maxDay) continue;
+      const excess = cnt - maxDay;
+      // 公休が少ない人（V余裕あり）→V、それ以外→有給
+      const candidates = STAFF.filter(s => {
+        if(shift[s.id][d] !== 'day') return false;
+        if(staffConstraints[s.id].shiftType === 'weekday_day') return false;
+        if(wantsDay(s.id, d)) return false; // 日勤系希望の日は変換しない
+        if(requests[s.id]?.[d]==='iinkai') return false; // 委員会の日はできるだけ日勤のまま
+        if(teamDayCount(s.team, d, s.id) < facility.teamDayMin) return false; // チーム日勤の最低人数を維持
+        if(isLastSeniorOn(d, s.id)) return false; // 土日祝の最後の主任日勤は外さない
+        return true;
+      });
+      // チームに余裕がある人優先 → V余裕あり→V優先（V少ない順）。V=10済み→有給（有給少ない順で均等化）
+      candidates.sort((a,b) => {
+        const aT = teamDayCount(a.team, d, a.id) >= 3 ? 1 : 0;
+        const bT = teamDayCount(b.team, d, b.id) >= 3 ? 1 : 0;
+        if(aT !== bT) return bT - aT; // 抜けてもチーム3人残る人を先に
+        const aOff=countOff(a.id), bOff=countOff(b.id);
+        const aTgt=offTarget(a.id), bTgt=offTarget(b.id);
+        if(aOff < aTgt && bOff >= bTgt) return -1;
+        if(aOff >= aTgt && bOff < bTgt) return 1;
+        if(aOff < aTgt) return aOff - bOff;
+        return yukyuuCount(a.id) - yukyuuCount(b.id); // 有給が少ない人優先
+      });
+      for(let i=0; i<Math.min(excess, candidates.length); i++) {
+        shift[candidates[i].id][d] = countOff(candidates[i].id) < offTarget(candidates[i].id) ? 'V' : 'yukyuu';
+      }
+    }
+  }
+}
+
+// --- チーム別日勤の最低2人保証（不足日はV日スワップで修復） ---
+function ensureTeamDayMin() {
+  const MIN_TEAM_DAY = facility.teamDayMin;
+  for(let d=1; d<=DAYS_IN_MONTH; d++){
+    TEAMS.forEach(team => {
+      let guard = 0;
+      while(teamDayCount(team, d) < MIN_TEAM_DAY && guard++ < 5){
+        // その日V・自動付与有給の人を日勤に戻す候補（希望休・明けV・三交代の前後V・平日日勤のみは除外）
+        const cands = STAFF.filter(s => {
+          if(s.team!==team) return false;
+          if(shift[s.id][d]!=='V' && shift[s.id][d]!=='yukyuu') return false;
+          if(staffConstraints[s.id].shiftType==='weekday_day') return false;
+          const rq = requests[s.id]?.[d];
+          if(rq==='holiday'||rq==='summer'||rq==='yukyuu'||rq==='menjo'||rq==='jun_or_v'||rq==='deep_or_v') return false;
+          if(d>1 && shift[s.id][d-1]==='deep') return false; // 深夜明けV
+          if(d===1){
+            const pv = prevMonthShiftAt(s.id, 0);
+            if(pv==='deep' || pv==='jun') return false;      // 月またぎの明けV・△後Vは動かさない
+          }
+          if(staffConstraints[s.id].shiftType==='triple'){
+            if(d>1 && shift[s.id][d-1]==='jun') return false;                 // △後V
+            if(d<DAYS_IN_MONTH && shift[s.id][d+1]==='deep') return false;     // ○前V
+          }
+          return true;
+        });
+        if(cands.length){
+          // 日勤にしたとき連勤が最短になる人を選ぶ
+          let best=null, bestStreak=Infinity;
+          cands.forEach(s => {
+            const orig = shift[s.id][d];
+            shift[s.id][d]='day';
+            const st=getStreakUnits(s.id,d);
+            shift[s.id][d]=orig;
+            if(st<bestStreak){ bestStreak=st; best=s; }
+          });
+          const wasV = shift[best.id][d]==='V';
+          shift[best.id][d]='day';
+          // Vを崩した場合は公休数維持のため別の日勤日をVに振り替える（チーム3人→2人の順で緩和）
+          if(wasV){
+            const trySwap = (minTeam) => {
+              for(let d2=1; d2<=DAYS_IN_MONTH; d2++){
+                if(d2===d || shift[best.id][d2]!=='day') continue;
+                if(wantsDay(best.id, d2)) continue;
+                if(isLastSeniorOn(d2, best.id)) continue;
+                if(STAFF.filter(x=>x.id!==best.id&&shift[x.id][d2]==='day').length < requiredDayCount(d2)) continue;
+                if(teamDayCount(team, d2, best.id) < minTeam) continue;
+                shift[best.id][d2]='V';
+                return true;
+              }
+              return false;
+            };
+            trySwap(facility.teamDayTarget) || trySwap(facility.teamDayMin); // 振替先がなければ公休不足としてバリデーションに出る
+          }
+          continue;
+        }
+        // 候補なし → 入浴介助（入休）を他チームの日勤者と交代してみる
+        const myNyu = STAFF.find(s => s.team===team && shift[s.id][d]==='nyukyu');
+        if(myNyu){
+          const other = STAFF.filter(s =>
+            s.team!==team && shift[s.id][d]==='day' &&
+            staffConstraints[s.id].shiftType!=='weekday_day' &&
+            !staffConstraints[s.id].noNyukyu &&
+            teamDayCount(s.team, d, s.id) >= facility.teamDayMin
+          ).sort((a,b)=>teamDayCount(b.team,d,b.id)-teamDayCount(a.team,d,a.id))[0];
+          if(other){
+            shift[myNyu.id][d]='day';
+            shift[other.id][d]='nyukyu';
+            continue;
+          }
+        }
+        break; // 修復不能（バリデーションでエラー表示される）
+      }
+    });
+  }
+}
+
+function pickSpread(arr, count) {
+  if(arr.length<=count) return [...arr];
+  const result=[];
+  const step=arr.length/count;
+  for(let i=0;i<count;i++){
+    const idx=Math.min(Math.round(i*step+(Math.random()-0.5)*step*0.4), arr.length-1);
+    result.push(arr[Math.max(0,idx)]);
+  }
+  const unique=[...new Set(result)];
+  if(unique.length<count){
+    const rem=arr.filter(d=>!unique.includes(d)).sort(()=>Math.random()-0.5);
+    unique.push(...rem.slice(0,count-unique.length));
+  }
+  return unique.sort((a,b)=>a-b);
+}
+
+function nightCount(id)  { return Object.values(shift[id]||{}).filter(v=>v==='jun'||v==='deep').length; }
+function yukyuuCount(id){ return Object.values(shift[id]||{}).filter(v=>v==='yukyuu').length; }
+function junCount(id)   { return Object.values(shift[id]||{}).filter(v=>v==='jun').length; }
+function deepCount(id)  { return Object.values(shift[id]||{}).filter(v=>v==='deep').length; }
+// 公休カウント：V・夏休み＝1日、入浴介助（入休）＝半日（0.5日）換算
+function countOff(id)   {
+  const vals = Object.values(shift[id]||{});
+  return vals.filter(v=>v==='V'||v==='summer').length + vals.filter(v=>v==='nyukyu').length * 0.5;
+}
+function nyukyuCount(id){ return Object.values(shift[id]||{}).filter(v=>v==='nyukyu').length; }
+
+// 夜勤希望バイアス：「少なめ」→実回数より多く見せる（後回し）「多め」→少なく見せる（優先）
+function prefBias(id) {
+  const p = staffConstraints[id]?.nightPref || 'normal';
+  if(p==='less') return 3;
+  if(p==='more') return -3;
+  return 0;
+}
+function nightSortKey(id) { return nightCount(id) + prefBias(id); }
+function junSortKey(id)   { return junCount(id)   + prefBias(id); }
+function deepSortKey(id)  { return deepCount(id)  + prefBias(id); }
+
+function resetShift() {
+  if(Object.keys(shift).length && !confirm('保存済みのシフトも削除されます。リセットしますか？')) return;
+  shift={};
+  const key = monthKey();
+  updateStore(d => { const m = monthData(d, key); m.savedShift = null; m.finalized = false; })
+    .then(() => updateFinalizeLabel()).catch(() => {});
+  resetShiftView();
+}
+
+// ===== 確定（スタッフへの公開） =====
+function finalizeShift() {
+  if(!Object.keys(shift).length){ alert('先にシフトを生成してください'); return; }
+  const key = monthKey();
+  const snap = JSON.parse(JSON.stringify(shift));
+  updateStore(d => { const m = monthData(d, key); m.savedShift = snap; m.finalized = true; })
+    .then(() => {
+      updateFinalizeLabel();
+      document.getElementById('generateMsg').textContent = '✅ 確定しました。スタッフがログインすると自分のシフトを見られます。';
+    }).catch(() => {});
+}
+function updateFinalizeLabel() {
+  const el = document.getElementById('finalizeStatus');
+  if(!el) return;
+  const fin = store && monthData(store).finalized;
+  el.textContent = fin ? '✅ 確定済み（スタッフに公開中）' : '⏳ 未確定（スタッフには公開されていません）';
+  el.style.color = fin ? '#059669' : '#b45309';
+}
+
+// ===== 直前の生成結果と入れ替え（メモリ内・再読み込みで消える） =====
+let undoShift = null;
+function undoGenerate() {
+  if(!undoShift || !Object.keys(undoShift).length){
+    alert('戻せる直前の状態がありません（ページ再読み込み後は使えません）');
+    return;
+  }
+  const cur = JSON.parse(JSON.stringify(shift));
+  shift = {};
+  Object.entries(undoShift).forEach(([id, days]) => { shift[parseInt(id)] = { ...days }; });
+  undoShift = cur; // もう一度押すと入れ替わる
+  manualEdited = true;
+  renderShiftTable();
+  const key = monthKey();
+  const snap = JSON.parse(JSON.stringify(shift));
+  updateStore(d => { const m = monthData(d, key); m.savedShift = snap; m.finalized = false; })
+    .then(() => updateFinalizeLabel()).catch(() => {});
+  document.getElementById('generateMsg').textContent = '↩ 直前の状態と入れ替えました（もう一度押すと戻ります）。';
+  showRequestViolations();
+}
+
+// ===== 印刷 =====
+function printShift() {
+  if(!Object.keys(shift).length){ alert('先にシフトを生成してください'); return; }
+  document.getElementById('printTitle').textContent = `${YEAR}年${MONTH+1}月 勤務表`;
+  document.body.classList.add('printing');
+  const cleanup = () => document.body.classList.remove('printing');
+  window.addEventListener('afterprint', cleanup, { once: true });
+  window.print();
+  setTimeout(cleanup, 2000); // afterprint非対応環境の保険
+}
+
+function resetShiftView() {
+  shift={};
+  document.getElementById('shiftTable').innerHTML='<tr><td style="color:#9ca3af;font-size:12px;">生成ボタンを押してください</td></tr>';
+  document.getElementById('generateMsg').textContent='';
+}
+
+// ===== シフト表レンダリング =====
+function renderShiftTable() {
+  const days=Array.from({length:DAYS_IN_MONTH},(_,i)=>i+1);
+  let html='<thead><tr><th>No</th><th>名前</th><th>T</th>';
+  days.forEach(d=>{
+    const dow=new Date(YEAR,MONTH,d).getDay();
+    const isHol=holidays.has(d)&&dow!==0&&dow!==6;
+    const cls=dow===0?'sun':dow===6?'sat':isHol?'hol':'';
+    html+=`<th class="${cls}">${d}<br><span style="font-size:9px">${DOW[dow]}${isHol?'🔶':''}</span></th>`;
+  });
+  html+='<th>日勤</th><th>準夜</th><th>深夜</th><th>公休</th><th>有給</th></thead><tbody>';
+
+  STAFF.forEach(s=>{
+    const roleMark = staffConstraints[s.id]?.role==='senior' ? '◎' : staffConstraints[s.id]?.role==='head' ? '★' : '';
+    html+=`<tr><td>${s.id}</td><td style="text-align:left;padding-left:4px;${teamBarStyle(s.team)}" title="${roleMark?'主任以上':''}">${roleMark}${s.name}</td><td>${s.team}</td>`;
+    let cnt={day:0,jun:0,deep:0,yukyuu:0};
+    days.forEach(d=>{
+      const v=shift[s.id]?.[d]||'';
+      const off=isOffDay(d)&&v==='day';
+      const rq = requests[s.id]?.[d];
+      const rt = rq ? REQ_TYPES[rq] : null;
+      const rqStyle = rt ? `box-shadow:inset 0 0 0 2px ${rt.bd};` : '';
+      html+=`<td class="${v}${off?' off-day':''}" onclick="openShiftPicker(${s.id},${d})" style="cursor:pointer;${rqStyle}" title="${s.name} ${d}日${rt?`〔希望: ${rt.label}〕`:''}：クリックで手動編集">${SHIFT_LABELS[v]||v}</td>`;
+      if(cnt[v]!==undefined) cnt[v]++;
+    });
+    html+=`<td>${cnt.day}</td><td>${cnt.jun}</td><td>${cnt.deep}</td><td>${countOff(s.id)}</td><td>${cnt.yukyuu||0}</td></tr>`;
+  });
+  // 日勤数集計行
+  html+='<tfoot><tr style="background:#f0f9ff;font-weight:600;">';
+  html+='<td colspan="3" style="text-align:left;padding-left:6px;font-size:11px;">日勤数</td>';
+  days.forEach(d=>{
+    const cnt=STAFF.filter(s=>shift[s.id]?.[d]==='day').length;
+    // 必要人数（土日祝9・木曜11・他平日10）ちょうど=緑、+1=黄（人数確保等）、それ以外=赤
+    const reqN = requiredDayCount(d);
+    const bg = cnt===reqN ? '#d1fae5' : cnt===reqN+1 ? '#fef3c7' : '#fee2e2';
+    html+=`<td style="background:${bg};font-weight:700;">${cnt}</td>`;
+  });
+  html+='<td colspan="5"></td></tr>';
+  // チーム別日勤数（2人未満=赤・2人=黄・3人以上=緑）
+  TEAMS.forEach(team=>{
+    html+='<tr style="font-size:10px;">';
+    html+=`<td colspan="3" style="text-align:left;padding-left:6px;">└ ${team}チーム日勤</td>`;
+    days.forEach(d=>{
+      const c=STAFF.filter(s=>s.team===team&&shift[s.id]?.[d]==='day').length;
+      const bg=c<facility.teamDayMin?'#fee2e2':c<facility.teamDayTarget?'#fef3c7':'#d1fae5';
+      html+=`<td style="background:${bg};">${c}</td>`;
+    });
+    html+='<td colspan="5"></td></tr>';
+  });
+  html+='</tfoot>';
+  document.getElementById('shiftTable').innerHTML=html;
+}
+
+// ===== CSV出力 =====
+function exportCSV() {
+  if(!Object.keys(shift).length){alert('先にシフトを生成してください');return;}
+  const days=Array.from({length:DAYS_IN_MONTH},(_,i)=>i+1);
+  let csv='No,名前,チーム';
+  days.forEach(d=>{const dow=DOW[new Date(YEAR,MONTH,d).getDay()];csv+=`,${d}(${dow})`;});
+  csv+=',日勤,準夜,深夜,公休\n';
+  STAFF.forEach(s=>{
+    let cnt={day:0,jun:0,deep:0};
+    csv+=`${s.id},"${s.name}",${s.team}`;
+    days.forEach(d=>{
+      const v=shift[s.id]?.[d]||'';
+      csv+=`,${SHIFT_LABELS[v]||v}`;
+      if(cnt[v]!==undefined) cnt[v]++;
+    });
+    csv+=`,${cnt.day},${cnt.jun},${cnt.deep},${countOff(s.id)}\n`;
+  });
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`シフト_${YEAR}年${MONTH+1}月.csv`;
+  a.click();
+}
+
+// ===== バリデーション =====
+function runValidation() {
+  if(!Object.keys(shift).length){
+    document.getElementById('validationResult').textContent='シフトを生成してからチェックしてください';
+    document.getElementById('nikkinStats').innerHTML='';
+    document.getElementById('nightStats').textContent='データなし';
+    return;
+  }
+  const violations=[], warns=[];
+
+  // 連続勤務チェック（△+○ペアは1ユニット）
+  STAFF.forEach(s=>{
+    if(staffConstraints[s.id].shiftType==='weekday_day') return;
+    let maxStreak=0;
+    for(let d=1;d<=DAYS_IN_MONTH;d++){
+      const v=shift[s.id][d];
+      if(!v||v==='V'||v==='summer'||v==='yukyuu'||v==='menjo'||v==='absence') continue;
+      if(v==='deep'&&shift[s.id][d-1]==='jun') continue; // ○はスキップ
+      const streak=getStreakUnits(s.id,d);
+      if(streak>maxStreak) maxStreak=streak;
+    }
+    if(maxStreak>MAXC()) violations.push(`${s.name}：最大${maxStreak}連勤（上限${MAXC()}日。△○も各1勤務で計算）`);
+    else if(maxStreak===MAXC()) warns.push(`${s.name}：${maxStreak}連勤あり（上限ぎりぎり）`);
+  });
+
+  // 深夜明けの休み（公休10日調整でVが有給に振り替わることがあるため、V・有給・夏を休み扱い）
+  const isRestCell = v => v==='V' || v==='yukyuu' || v==='summer';
+  STAFF.forEach(s=>{
+    for(let d=1;d<DAYS_IN_MONTH;d++){
+      if(shift[s.id][d]==='deep' && !isRestCell(shift[s.id][d+1]))
+        violations.push(`${s.name}：${d}日(深夜)翌日が休み(V/有給)になっていない`);
+    }
+  });
+
+  // 月またぎの△○Vセット（前月末からの継続）
+  if(PREV_TAIL){
+    STAFF.forEach(s=>{
+      const pv = prevMonthShiftAt(s.id, 0);
+      const d1 = shift[s.id][1];
+      if(!d1 || d1==='absence') return;
+      const st = staffConstraints[s.id].shiftType;
+      if(pv==='deep' && !isRestCell(d1))
+        violations.push(`${s.name}：前月末日が深夜（○）のため1日は休み(V/有給)が必要`);
+      if(pv==='jun' && st==='regular' && d1!=='deep')
+        violations.push(`${s.name}：前月末日が準夜（△・二交代）のため1日は○が必要`);
+      if(pv==='jun' && st==='triple' && !isRestCell(d1))
+        violations.push(`${s.name}：前月末日が準夜（△・三交代）のため1日は休み(V/有給)が必要`);
+    });
+  }
+
+  // 二交代：△→○連続チェック
+  STAFF.forEach(s=>{
+    if(staffConstraints[s.id].shiftType!=='regular') return;
+    for(let d=1;d<=DAYS_IN_MONTH;d++){
+      if(shift[s.id][d]==='jun'){
+        // 月末最終日の△は翌月1日に○が入る（月またぎ処理）ため対象外
+        if(d<DAYS_IN_MONTH && shift[s.id][d+1]!=='deep')
+          violations.push(`${s.name}：${d}日(△)の翌日が○になっていない（二交代）`);
+      }
+      if(shift[s.id][d]==='deep'){
+        const prevJun = d===1 ? prevMonthShiftAt(s.id,0)==='jun' : shift[s.id][d-1]==='jun';
+        if(!prevJun)
+          warns.push(`${s.name}：${d}日(○)の前日に△なし（単独深夜）`);
+      }
+    }
+  });
+
+  // 三交代：△後V・○前Vチェック
+  STAFF.forEach(s=>{
+    if(staffConstraints[s.id].shiftType!=='triple') return;
+    for(let d=1;d<=DAYS_IN_MONTH;d++){
+      if(shift[s.id][d]==='jun'){
+        if(d<DAYS_IN_MONTH && !isRestCell(shift[s.id][d+1]))
+          violations.push(`${s.name}：${d}日(△)の翌日が休み(V/有給)になっていない（三交代）`);
+      }
+      if(shift[s.id][d]==='deep'){
+        if(d>1 && !isRestCell(shift[s.id][d-1]))
+          violations.push(`${s.name}：${d}日(○)の前日が休み(V/有給)になっていない（三交代）`);
+      }
+    }
+  });
+
+  // 三交代：△と○の回数偏りチェック
+  STAFF.filter(s=>staffConstraints[s.id].shiftType==='triple').forEach(s=>{
+    const jc=junCount(s.id), dc=deepCount(s.id);
+    if(Math.abs(jc-dc)>1) warns.push(`${s.name}：△${jc}回・○${dc}回（均等でない）`);
+  });
+
+  // チーム別準夜・深夜1人ずつ
+  for(let d=1;d<=DAYS_IN_MONTH;d++){
+    TEAMS.forEach(team=>{
+      const j=STAFF.filter(s=>s.team===team&&shift[s.id][d]==='jun').length;
+      const dp=STAFF.filter(s=>s.team===team&&shift[s.id][d]==='deep').length;
+      if(j!==1) violations.push(`${d}日 ${team}チーム：準夜${j}人（1人必要）`);
+      if(dp!==1) violations.push(`${d}日 ${team}チーム：深夜${dp}人（1人必要）`);
+    });
+  }
+
+  // 入浴介助人数（有効な場合のみ）
+  if(nyukyuRule.enabled){
+    for(let d=1;d<=DAYS_IN_MONTH;d++){
+      const dow=new Date(YEAR,MONTH,d).getDay();
+      const need=nyukyuCountForDow(dow);
+      if(need<=0) continue;
+      const nc=STAFF.filter(s=>shift[s.id][d]==='nyukyu').length;
+      if(nc!==need) violations.push(`${d}日(${DOW_FULL[dow]})：入浴介助${nc}人（${need}人必要）`);
+    }
+  }
+
+  // 入浴介助の奇数回チェック（入浴2回＝公休1日のセットが崩れている人）
+  STAFF.forEach(s=>{
+    const n=nyukyuCount(s.id);
+    if(n%2===1) warns.push(`${s.name}：入浴介助${n}回（奇数のため半日公休0.5日分が残っています）`);
+  });
+
+  // 日勤人数（土日祝9・木曜11・その他平日10ちょうど）
+  for(let d=1;d<=DAYS_IN_MONTH;d++){
+    const off=isOffDay(d);
+    const req=requiredDayCount(d);
+    const label=off?'土日祝':(req===11?'木曜':'平日');
+    const nc=STAFF.filter(s=>shift[s.id][d]==='day').length;
+    if(nc<req) violations.push(`${d}日(${label})：日勤${nc}人（${req}人必要）`);
+    else if(nc>req) warns.push(`${d}日(${label})：日勤${nc}人（${req}人に統一。人数確保のための超過）`);
+  }
+
+  // 土日祝の主任以上日勤1人（主任が未設定の場合はチェックしない）
+  if(hasWeekendSeniors()){
+    for(let d=1;d<=DAYS_IN_MONTH;d++){
+      if(!isOffDay(d)) continue;
+      if(!STAFF.some(s => isSeniorPlus(s.id) && shift[s.id][d]==='day'))
+        violations.push(`${d}日(土日祝)：主任以上の日勤がいません`);
+    }
+  } else {
+    warns.push('役職（主任）が未設定のため、土日祝の主任日勤チェックは無効です。スタッフ設定で主任を指定してください');
+  }
+
+  // チーム別日勤人数（最低2人・目標3人）
+  for(let d=1;d<=DAYS_IN_MONTH;d++){
+    TEAMS.forEach(team=>{
+      const c=STAFF.filter(s=>s.team===team&&shift[s.id][d]==='day').length;
+      if(c<facility.teamDayMin) violations.push(`${d}日 ${team}チーム：日勤${c}人（最低${facility.teamDayMin}人必要）`);
+      else if(c<facility.teamDayTarget) warns.push(`${d}日 ${team}チーム：日勤${c}人（目標${facility.teamDayTarget}人）`);
+    });
+  }
+
+  // 公休10日（平日日勤のみスタッフは除外。休業がある月は在籍日数で按分した目標と比較）
+  STAFF.forEach(s=>{
+    if(staffConstraints[s.id].shiftType==='weekday_day') return;
+    const vc=countOff(s.id), tgt=offTarget(s.id);
+    const tgtLabel = tgt===facility.offTargetDays ? `${tgt}日必要` : `休業考慮で${tgt}日必要`;
+    if(vc<tgt) violations.push(`${s.name}：公休${vc}日（${tgtLabel}）`);
+    if(vc>tgt) warns.push(`${s.name}：公休${vc}日（目標${tgt}日）`);
+  });
+
+  // 夜勤ルール違反
+  STAFF.forEach(s=>{
+    const st=staffConstraints[s.id];
+    if(st.shiftType==='day_only'||st.shiftType==='weekday_day'){
+      for(let d=1;d<=DAYS_IN_MONTH;d++){
+        if(shift[s.id][d]==='jun'||shift[s.id][d]==='deep')
+          violations.push(`${s.name}(${st.shiftType==='weekday_day'?'平日日勤のみ':'日勤のみ'})：${d}日に夜勤`);
+      }
+    }
+    if(st.shiftType==='weekday_day'){
+      // 土日祝はV以外になっていないか
+      for(let d=1;d<=DAYS_IN_MONTH;d++){
+        if(isOffDay(d)&&shift[s.id][d]!=='V'&&shift[s.id][d]!=='summer')
+          violations.push(`${s.name}(平日日勤のみ)：${d}日(土日祝)にVが入っていない`);
+      }
+    }
+    if(st.nightRule==='weekend_only'){
+      for(let d=1;d<=DAYS_IN_MONTH;d++){
+        const dow=new Date(YEAR,MONTH,d).getDay();
+        if(!(dow===0||dow===6||holidays.has(d))&&(shift[s.id][d]==='jun'||shift[s.id][d]==='deep'))
+          violations.push(`${s.name}(土日のみ)：${d}日(平日)に夜勤`);
+      }
+    }
+  });
+
+  // 禁止ペア
+  const chk=new Set();
+  STAFF.forEach(s=>{
+    staffConstraints[s.id].bannedPairs.forEach(pid=>{
+      const key=[s.id,pid].sort().join('-');
+      if(chk.has(key)) return; chk.add(key);
+      const p=STAFF.find(x=>x.id===pid);
+      for(let d=1;d<=DAYS_IN_MONTH;d++){
+        const sn=shift[s.id][d]==='jun'||shift[s.id][d]==='deep';
+        const pn=shift[pid]?.[d]==='jun'||shift[pid]?.[d]==='deep';
+        if(sn&&pn) violations.push(`${d}日：${s.name}と${p?.name}が同日夜勤（禁止ペア）`);
+      }
+    });
+  });
+
+  // 夜勤回数（指定なし=最低2回 / 指定あり=その回数ちょうど）
+  STAFF.forEach(s=>{
+    const minN = minNightsFor(s.id);
+    const n = nightCount(s.id);
+    if(minN > 0 && n < minN) violations.push(`${s.name}：夜勤${n}回（最低${minN}回必要）`);
+    const q = nightQuotaScaled(s.id);
+    if(q != null && n > q) warns.push(`${s.name}：夜勤${n}回（指定${q}回。希望や枠充当で超過）`);
+  });
+
+  // 三交代で揃えられなかった夜（今回の生成での切り替え記録）
+  tripleSwitchLog.forEach(e => {
+    warns.push(`${e.day}日 ${e.team}チーム：三交代だけで夜を揃えられず、${e.jname}の△を外して${e.rname}の二交代セットに切り替えました`);
+  });
+
+  // 夜勤均等（夜勤希望「通常」のスタッフのみで判定）
+  const normalStaff = STAFF.filter(s => {
+    const c = staffConstraints[s.id];
+    return c.shiftType!=='day_only' && c.shiftType!=='weekday_day' && c.nightRule!=='no_night' && c.nightPref==='normal' && c.nightQuota==null;
+  });
+  if(normalStaff.length>1){
+    const ncs=normalStaff.map(s=>nightCount(s.id));
+    const mx=Math.max(...ncs), mn=Math.min(...ncs);
+    if(mx-mn>2) warns.push(`夜勤回数の偏りが大きい（「通常」スタッフ内：最大${mx}回 / 最小${mn}回）`);
+  }
+
+  // 結果表示
+  const el=document.getElementById('validationResult');
+  if(!violations.length&&!warns.length){
+    el.innerHTML='<div class="ok">✅ 問題なし。すべての条件を満たしています。</div>';
+  } else {
+    let html=`<div style="font-size:12px;color:#6b7280;margin-bottom:8px;">❌ エラー${violations.length}件　⚠️ 警告${warns.length}件</div><ul class="violations">`;
+    violations.forEach(v=>html+=`<li>❌ ${v}</li>`);
+    warns.forEach(w=>html+=`<li class="warn">⚠️ ${w}</li>`);
+    el.innerHTML=html+'</ul>';
+  }
+
+  // 日勤人数サマリ
+  const nkEl=document.getElementById('nikkinStats');
+  let nkHtml='<div style="display:flex;flex-wrap:wrap;gap:4px;">';
+  for(let d=1;d<=DAYS_IN_MONTH;d++){
+    const nc=STAFF.filter(s=>shift[s.id][d]==='day').length;
+    const reqN = requiredDayCount(d);
+    const bg = nc===reqN ? '#d1fae5' : nc===reqN+1 ? '#fef3c7' : '#fee2e2';
+    const dow=new Date(YEAR,MONTH,d).getDay();
+    nkHtml+=`<div style="background:${bg};border-radius:4px;padding:3px 6px;font-size:11px;text-align:center;">
+      <div style="font-weight:600;">${d}(${DOW[dow]})</div><div>${nc}人</div></div>`;
+  }
+  nkEl.innerHTML=nkHtml+'</div>';
+
+  // 夜勤統計（チーム別、三交代は△/○別表示、最大連勤数も表示）
+  const ntEl=document.getElementById('nightStats');
+  let ntHtml='';
+  TEAMS.forEach(team=>{
+    ntHtml+=`<div style="font-weight:600;margin-top:8px;color:#444;">${team}チーム</div>`;
+    STAFF.filter(s=>s.team===team).forEach(s=>{
+      const st=staffConstraints[s.id].shiftType;
+      const tag=st==='triple'?'<span style="font-size:10px;color:#7c3aed;">[三]</span>':st==='day_only'?'<span style="font-size:10px;color:#059669;">[日]</span>':st==='weekday_day'?'<span style="font-size:10px;color:#d97706;">[平]</span>':'<span style="font-size:10px;color:#6b7280;">[二]</span>';
+      // 最大連勤ユニット数
+      let maxStr=0;
+      if(st!=='weekday_day'&&st!=='day_only'){
+        for(let d=1;d<=DAYS_IN_MONTH;d++){
+          const v=shift[s.id][d];
+          if(!v||v==='V'||v==='summer'||v==='yukyuu'||v==='menjo'||v==='absence') continue;
+          if(v==='deep'&&shift[s.id][d-1]==='jun') continue;
+          const str=getStreakUnits(s.id,d);
+          if(str>maxStr) maxStr=str;
+        }
+      }
+      const strColor=maxStr>4?'#dc2626':maxStr===4?'#d97706':'#059669';
+      const strBadge=st!=='weekday_day'&&st!=='day_only'?`<span style="color:${strColor};font-size:10px;margin-left:4px;">最大${maxStr}連</span>`:'';
+      if(st==='triple'){
+        const jc=junCount(s.id), dc=deepCount(s.id);
+        const balanced=Math.abs(jc-dc)<=1;
+        const balIcon=balanced?'':'⚠️';
+        ntHtml+=`<div class="night-row"><span>${s.name}${tag}${strBadge}</span><span style="font-weight:600;">△${jc} ○${dc} ${balIcon}</span></div>`;
+      } else {
+        ntHtml+=`<div class="night-row"><span>${s.name}${tag}${strBadge}</span><span style="font-weight:600;">${nightCount(s.id)}回</span></div>`;
+      }
+    });
+  });
+  ntEl.innerHTML=ntHtml;
+}
+
+// ===== 希望未反映チェック =====
+function showRequestViolations() {
+  const warnings = [];
+  STAFF.forEach(s => {
+    const reqs = requests[s.id] || {};
+    Object.entries(reqs).forEach(([dayStr, req]) => {
+      const d = parseInt(dayStr);
+      const actual = shift[s.id]?.[d];
+      if(req === 'req_jun' && actual !== 'jun') {
+        warnings.push(`${s.name}（${d}日）：△希望 → 実際: ${SHIFT_LABELS[actual] || '未割当'}`);
+      } else if(req === 'req_deep' && actual !== 'deep') {
+        warnings.push(`${s.name}（${d}日）：○希望 → 実際: ${SHIFT_LABELS[actual] || '未割当'}`);
+      } else if(req === 'holiday' && actual && actual!=='V' && actual!=='yukyuu' && actual!=='summer') {
+        warnings.push(`${s.name}（${d}日）：休み希望 → 実際: ${SHIFT_LABELS[actual] || actual}`);
+      } else if(req === 'req_day' && actual !== 'day' && actual !== 'nyukyu') {
+        warnings.push(`${s.name}（${d}日）：日勤希望 → 実際: ${SHIFT_LABELS[actual] || '未割当'}`);
+      } else if(req === 'jun_ng' && actual === 'jun') {
+        warnings.push(`${s.name}（${d}日）：△不可希望なのに準夜が入っている`);
+      } else if(req === 'deep_ng' && actual === 'deep') {
+        warnings.push(`${s.name}（${d}日）：○不可希望なのに深夜が入っている`);
+      } else if(req === 'jun_or_day' && !['jun','day','nyukyu'].includes(actual)) {
+        warnings.push(`${s.name}（${d}日）：△か日勤希望 → 実際: ${SHIFT_LABELS[actual] || '未割当'}`);
+      } else if(req === 'deep_or_day' && !['deep','day','nyukyu'].includes(actual)) {
+        warnings.push(`${s.name}（${d}日）：○か日勤希望 → 実際: ${SHIFT_LABELS[actual] || '未割当'}`);
+      } else if(req === 'jun_or_v' && !['jun','V'].includes(actual)) {
+        warnings.push(`${s.name}（${d}日）：△か休み希望 → 実際: ${SHIFT_LABELS[actual] || '未割当'}`);
+      } else if(req === 'deep_or_v' && !['deep','V'].includes(actual)) {
+        warnings.push(`${s.name}（${d}日）：○か休み希望 → 実際: ${SHIFT_LABELS[actual] || '未割当'}`);
+      } else if(req === 'req_nyukyu' && actual !== 'nyukyu') {
+        warnings.push(`${s.name}（${d}日）：入浴希望 → 実際: ${SHIFT_LABELS[actual] || '未割当'}`);
+      } else if(req === 'iinkai' && actual !== 'day') {
+        warnings.push(`${s.name}（${d}日）：委員会 → 実際: ${SHIFT_LABELS[actual] || '未割当'}（優先度低のため他ルールを優先）`);
+      } else if(req === 'yukyuu' && actual !== 'yukyuu') {
+        warnings.push(`${s.name}（${d}日）：有給希望 → 実際: ${SHIFT_LABELS[actual] || '未割当'}`);
+      } else if(req === 'menjo' && actual !== 'menjo') {
+        warnings.push(`${s.name}（${d}日）：職務免除 → 実際: ${SHIFT_LABELS[actual] || '未割当'}`);
+      } else if(req === 'summer' && actual !== 'summer') {
+        warnings.push(`${s.name}（${d}日）：夏休み希望 → 実際: ${SHIFT_LABELS[actual] || '未割当'}`);
+      }
+    });
+  });
+  const card = document.getElementById('requestViolationsCard');
+  const list = document.getElementById('requestViolationsList');
+  if(warnings.length) {
+    list.innerHTML = warnings.map(w=>`<li>${w}</li>`).join('');
+    card.style.display = '';
+  } else {
+    card.style.display = 'none';
+  }
+}
+
+// ===== 認証・ログインID・PIN管理 =====
+let staffPins = {};      // { staffId: PIN }
+let staffLoginIds = {};  // { staffId: 自由設定のログインID（英数字。数字のみは不可） }
+let masterPin = '0000';
+let currentUserId = null;
+
+function savePins() {
+  const sp = { ...staffPins }, mp = masterPin, li = { ...staffLoginIds };
+  updateStore(d => { d.pins = { staffPins: sp, masterPin: mp, staffLoginIds: li }; }).catch(() => {});
+}
+
+// 師長用：その個人のログインID・PINを初期化（両方とも職番に戻す）
+function resetStaffPin(staffId) {
+  const s = STAFF.find(x => x.id === staffId);
+  if(!confirm(`${s ? s.name : staffId} のログインID・PINを初期化しますか？\n（ログインID＝職番「${staffId}」、PIN＝「${staffId}」に戻ります。他の人には影響しません）`)) return;
+  delete staffPins[staffId];
+  delete staffLoginIds[staffId];
+  savePins();
+  renderConfigTable();
+}
+
+// スタッフ用：自分のログインIDを設定（英数字3〜20文字。数字のみは職番と紛らわしいため不可）
+function changeMyLoginId() {
+  const cur = staffLoginIds[currentUserId] || '';
+  const v = prompt('新しいログインID（半角英数字3〜20文字。数字のみは不可）\n空にすると職番に戻ります', cur);
+  if(v === null) return;
+  const id = v.trim();
+  if(id === ''){
+    delete staffLoginIds[currentUserId];
+    savePins();
+    alert('ログインIDを職番に戻しました。');
+    return;
+  }
+  if(!/^[A-Za-z0-9_-]{3,20}$/.test(id)){ alert('半角英数字（-_可）3〜20文字で入力してください'); return; }
+  if(/^\d+$/.test(id)){ alert('数字のみのIDは職番と紛らわしいため使えません。英字を含めてください'); return; }
+  const dup = Object.entries(staffLoginIds).find(([sid, lid]) => lid === id && parseInt(sid) !== currentUserId);
+  if(dup){ alert('そのIDはすでに使われています'); return; }
+  staffLoginIds[currentUserId] = id;
+  savePins();
+  alert(`ログインIDを「${id}」に設定しました。次回からこのIDでログインできます（職番でもログイン可）。\n職番が変わってもこのIDは変わりません。`);
+}
+
+function changeMasterPinPrompt() {
+  const p = prompt('新しい師長PIN（4桁の数字）を入力してください');
+  if(p === null) return;
+  if(!/^\d{4}$/.test(p)) { alert('4桁の数字で入力してください'); return; }
+  masterPin = p;
+  savePins();
+  alert('師長PINを変更しました');
+}
+
+function changeMyPin() {
+  const p = prompt('新しいPIN（4桁の数字）を入力してください');
+  if(p === null) return;
+  if(!/^\d{4}$/.test(p)) { alert('4桁の数字で入力してください'); return; }
+  changeStaffPin(currentUserId, p);
+  alert('PINを変更しました。次回からこのPINでログインしてください。');
+}
+
+function getStaffPin(staffId) {
+  // デフォルトPINは職番の文字列
+  return staffPins[staffId] !== undefined ? staffPins[staffId] : String(staffId);
+}
+
+async function doLogin() {
+  const idStr = document.getElementById('loginId').value.trim();
+  const pin   = document.getElementById('loginPin').value.trim();
+  if(idStr === '') { showLoginError('職番またはログインIDを入力してください'); return; }
+  // 数字＝職番、英数字＝自由設定のログインID
+  let id;
+  if(/^\d+$/.test(idStr)) {
+    id = parseInt(idStr);
+  } else {
+    const hit = Object.entries(staffLoginIds).find(([sid, lid]) => lid === idStr);
+    if(!hit) { showLoginError('ログインIDが見つかりません'); return; }
+    id = parseInt(hit[0]);
+  }
+
+  if(id === 0) {
+    // 師長ログイン
+    if(pin !== masterPin) { showLoginError('PINが違います'); return; }
+    currentUserId = 0;
+    document.getElementById('loginOverlay').style.display = 'none';
+    document.getElementById('appView').style.display = 'block';
+    document.getElementById('staffView').style.display = 'none';
+    document.getElementById('currentUserLabel').textContent = '👤 師長';
+    loadAllStaffRequests();
+    return;
+  }
+
+  // スタッフログイン
+  const staff = STAFF.find(s => s.id === id);
+  if(!staff) { showLoginError('職番が見つかりません'); return; }
+  if(pin !== getStaffPin(id)) { showLoginError('PINが違います'); return; }
+
+  currentUserId = id;
+  // 最新データを読み直す（別のPCで保存した自分の希望を反映）
+  try {
+    store = await readStoreFromDisk();
+    const m = monthData(store);
+    requests[id] = { ...(m.requests[id] || {}) };
+  } catch(e) { console.warn(e); }
+  document.getElementById('loginOverlay').style.display = 'none';
+  document.getElementById('appView').style.display = 'none';
+  document.getElementById('staffView').style.display = 'block';
+  document.getElementById('staffViewName').textContent = `${staff.name} さん`;
+  document.getElementById('staffViewMonth').textContent = `${YEAR}年${MONTH+1}月`;
+  document.getElementById('staffViewHeading').textContent = `希望入力（${YEAR}年${MONTH+1}月）`;
+  renderStaffReqView();
+  renderStaffShift();
+}
+
+function showLoginError(msg) {
+  const el = document.getElementById('loginError');
+  el.textContent = msg;
+  setTimeout(() => el.textContent = '', 3000);
+}
+
+function doLogout() {
+  // デモは開始画面（「試す」ボタン）に戻る
+  currentUserId = null;
+  document.getElementById('appView').style.display = 'none';
+  document.getElementById('staffView').style.display = 'none';
+  document.getElementById('loginOverlay').style.display = 'none';
+  document.getElementById('connectOverlay').style.display = 'flex';
+}
+
+// PINを変更（師長が使用）
+function changeStaffPin(staffId, newPin) {
+  staffPins[staffId] = newPin;
+  savePins();
+}
+
+function changeMasterPin(newPin) {
+  masterPin = newPin;
+  savePins();
+}
+
+// ===== スタッフ希望入力ビュー =====
+function renderStaffReqView() {
+  renderStaffReqView._clashes = [];
+  // 曜日ヘッダー
+  const hEl = document.getElementById('staffReqCalHeader');
+  hEl.innerHTML = '';
+  ['日','月','火','水','木','金','土'].forEach((d, i) => {
+    const el = document.createElement('div');
+    el.className = 'cal-header' + (i===0?' sun':i===6?' sat':'');
+    el.textContent = d;
+    hEl.appendChild(el);
+  });
+
+  // 日付グリッド
+  const cal = document.getElementById('staffReqCal');
+  cal.innerHTML = '';
+  const firstDow = new Date(YEAR, MONTH, 1).getDay();
+  for(let i=0; i<firstDow; i++){
+    const el = document.createElement('div'); el.className='cal-day empty'; cal.appendChild(el);
+  }
+  const myReqs = requests[currentUserId] || {};
+  // 他の人の保存済み希望（紙の希望表と同じように「誰がどこに書いているか」を見せる）
+  const allReqs = store ? monthData(store).requests : {};
+  const myTeam = STAFF.find(x => x.id === currentUserId)?.team;
+  const OFFS = ['holiday','summer','yukyuu','menjo'];
+  const JUNS = ['req_jun','jun_or_day','jun_or_v'];
+  const DEEPS = ['req_deep','deep_or_day','deep_or_v'];
+  for(let d=1; d<=DAYS_IN_MONTH; d++){
+    const dow = new Date(YEAR, MONTH, d).getDay();
+    const isWE = dow===0||dow===6||holidays.has(d);
+    const req = myReqs[d];
+    const el = document.createElement('div');
+    let cls = 'cal-day';
+    if(dow===0) cls+=' sun'; else if(dow===6) cls+=' sat';
+    if(isWE) cls+=' holiday-mark';
+    if(req && REQ_TYPES[req]) cls += ' ' + REQ_TYPES[req].cls;
+    el.className = cls;
+    const label = req && REQ_TYPES[req] ? REQ_TYPES[req].short : '';
+
+    // 他の人の状況を集計
+    const offNames = [], junNames = [], deepNames = [];
+    STAFF.forEach(o => {
+      if(o.id === currentUserId) return;
+      const orq = (allReqs[o.id] || {})[d];
+      if(!orq) return;
+      if(OFFS.includes(orq)) offNames.push(`${o.name}(${REQ_TYPES[orq].short})`);
+      if(o.team === myTeam && JUNS.includes(orq)) junNames.push(o.name);
+      if(o.team === myTeam && DEEPS.includes(orq)) deepNames.push(o.name);
+    });
+    let others = '';
+    if(offNames.length) others += `<span style="color:${offNames.length>=4?'#dc2626':'#6b7280'};font-weight:${offNames.length>=4?'700':'400'};">休${offNames.length}</span>`;
+    if(junNames.length) others += `<span style="color:#7c3aed;font-weight:700;"> △</span>`;
+    if(deepNames.length) others += `<span style="color:#2563eb;font-weight:700;"> ○</span>`;
+    const tips = [];
+    if(offNames.length) tips.push(`休み系希望: ${offNames.join('・')}`);
+    if(junNames.length) tips.push(`同チームの△希望: ${junNames.join('・')}`);
+    if(deepNames.length) tips.push(`同チームの○希望: ${deepNames.join('・')}`);
+    el.title = tips.join('\n');
+
+    // 自分の夜勤希望が同チームの誰かと重なっている日 → 赤枠＋⚠で強調
+    let clash = '';
+    if(req && JUNS.includes(req) && junNames.length){
+      clash = `⚠ ${d}日：△希望が ${junNames.join('・')} さんと重なっています`;
+    } else if(req && DEEPS.includes(req) && deepNames.length){
+      clash = `⚠ ${d}日：○希望が ${deepNames.join('・')} さんと重なっています`;
+    }
+    if(clash){
+      el.style.outline = '3px solid #dc2626';
+      renderStaffReqView._clashes.push(clash);
+    }
+
+    el.innerHTML = `<div style="font-weight:600;">${d}</div><div style="font-size:9px;margin-top:1px;min-height:11px;">${label}</div><div style="font-size:9px;min-height:11px;">${others}${clash?'<span style="color:#dc2626;font-weight:700;">⚠</span>':''}</div>`;
+    el.onclick = () => openReqPicker(d);
+    cal.appendChild(el);
+  }
+
+  // 重なり警告ボックス
+  const box = document.getElementById('staffConflictBox');
+  if(renderStaffReqView._clashes.length){
+    box.innerHTML = renderStaffReqView._clashes.join('<br>');
+    box.style.display = '';
+  } else {
+    box.style.display = 'none';
+  }
+
+  // コメント復元
+  document.getElementById('staffComment').value = store ? (monthData(store).comments[currentUserId] || '') : '';
+}
+
+// 他の人の最新希望を読み込んで表示を更新（自分の未保存の入力は保持される）
+async function refreshStaffView() {
+  try { store = await readStoreFromDisk(); } catch(e) { console.warn(e); }
+  renderStaffReqView();
+  renderStaffShift();
+}
+
+// 確定済みシフトを本人に表示（未確定なら非表示）
+function renderStaffShift() {
+  const card = document.getElementById('staffShiftCard');
+  const m = store ? monthData(store) : null;
+  const mine = (m && m.finalized && m.savedShift) ? m.savedShift[currentUserId] : null;
+  if(!mine){ card.style.display = 'none'; return; }
+  card.style.display = '';
+  document.getElementById('staffShiftTitle').textContent = `${YEAR}年${MONTH+1}月のシフト（確定版）`;
+  const hEl = document.getElementById('staffShiftCalHeader');
+  hEl.innerHTML = '';
+  DOW.forEach((dn, i) => {
+    const e = document.createElement('div');
+    e.className = 'cal-header' + (i===0?' sun':i===6?' sat':'');
+    e.textContent = dn;
+    hEl.appendChild(e);
+  });
+  const cal = document.getElementById('staffShiftCal');
+  cal.innerHTML = '';
+  const first = new Date(YEAR, MONTH, 1).getDay();
+  for(let i=0; i<first; i++){ const e=document.createElement('div'); e.className='cal-day empty'; cal.appendChild(e); }
+  const colorMap = Object.fromEntries(SHIFT_EDIT_OPTIONS.map(([k, l, bg, bd, fg]) => [k, { bg, bd, fg }]));
+  for(let d=1; d<=DAYS_IN_MONTH; d++){
+    const v = mine[d] || '';
+    const c = colorMap[v] || { bg:'white', bd:'#e5e7eb', fg:'#374151' };
+    const e = document.createElement('div');
+    e.className = 'cal-day';
+    e.style.cssText = `background:${c.bg};border-color:${c.bd};color:${c.fg};cursor:default;`;
+    e.innerHTML = `<div style="font-weight:600;">${d}</div><div style="font-size:10px;font-weight:700;min-height:12px;">${SHIFT_LABELS[v]||''}</div>`;
+    cal.appendChild(e);
+  }
+}
+
+// （希望の変更は openReqPicker / applyPickedReq で行う）
+
+function saveStaffRequest() {
+  const uid = currentUserId;
+  const myReq = { ...(requests[uid] || {}) };
+  const comment = document.getElementById('staffComment').value;
+  const key = monthKey();
+  updateStore(d => {
+    const m = monthData(d, key);
+    m.requests[uid] = myReq;
+    m.comments[uid] = comment;
+  }).then(() => {
+    const msg = document.getElementById('staffSaveMsg');
+    msg.textContent = '✅ 共有フォルダに保存しました';
+    msg.style.opacity = '1';
+    setTimeout(() => msg.style.opacity='0', 2500);
+  }).catch(() => {});
+}
+
+// 師長ログイン時に全スタッフの希望を最新データから読み込む
+async function loadAllStaffRequests() {
+  try { store = await readStoreFromDisk(); } catch(e) { console.warn(e); }
+  loadMonthFromStore();
+  renderCalendar(); renderHolidayCal(); updateInputSummary(); updateStats();
+}
+
+init();
+</script>
+</body>
+</html>
