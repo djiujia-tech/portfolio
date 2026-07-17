@@ -582,6 +582,7 @@ body {
 
 .top-kv-button-wrapper {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 12px;
   margin-top: 8px;
@@ -605,6 +606,7 @@ body {
 /* KV上のゴーストボタン(無料相談)は白枠で可読性を確保 */
 .top-kv-button-wrapper .m_button {
   border-color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
 }
 .top-kv-button-wrapper .m_button__brack {
   border-color: var(--primary-color);
