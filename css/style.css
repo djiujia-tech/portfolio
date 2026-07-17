@@ -601,6 +601,10 @@ body {
   .top-kv-button-wrapper {
     gap: 20px;
   }
+  /* 2つのボタンを等幅にそろえる */
+  .top-kv-button-wrapper .m_button {
+    flex: 1 1 0;
+  }
 }
 
 /* KV上のゴーストボタン(無料相談)は白枠で可読性を確保 */
@@ -900,6 +904,12 @@ body {
   margin-top: 16px;
   color: var(--black-color);
   border-color: var(--black-color);
+}
+
+/* Productセクションのカードは「詳しく見る」ボタンを中央寄せ（Works事例は左寄せのまま） */
+.top-service .top-works__item .m_button,
+#product .top-works__item .m_button {
+  align-self: center;
 }
 
 .top-works__button-wrapper {
