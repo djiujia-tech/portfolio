@@ -923,8 +923,10 @@ body {
   align-self: center;
 }
 
-/* 制作実績・プロダクト一覧ページ(works.html)はボタンをテキスト真下・中央寄せ＋上に余白 */
-.works-list .top-works__item .m_button {
+/* 一覧カードのボタンはテキスト真下・中央寄せ＋上に余白
+   （works.htmlの一覧 と トップの制作事例セクションの両方） */
+.works-list .top-works__item .m_button,
+.top-works .top-works__item .m_button {
   align-self: center;
   margin-top: 40px;
 }
