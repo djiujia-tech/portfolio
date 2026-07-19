@@ -1613,22 +1613,24 @@ body {
   display: block;
 }
 
-/* KVをモックアップ(フレーム入りFV)で全体表示する版：切り抜かず画像全体を見せる */
-.works-detail__kv--frame {
+/* KVで実際のFV(ファーストビュー)を切り抜かず全体表示する版 */
+.works-detail__kv--full {
   height: auto;
   max-width: 1200px;
   margin-inline: auto;
   overflow: visible;
-  /* 固定ヘッダー分の余白を確保して、モックアップ上部が隠れないようにする */
+  /* 固定ヘッダー分の余白を確保して、画像上部が隠れないようにする */
   padding: 96px 16px 0;
 }
 @media (min-width: 768px) {
-  .works-detail__kv--frame {
+  .works-detail__kv--full {
     padding: 168px 24px 0;
   }
 }
-.works-detail__kv--frame .works-detail__kv-img {
+.works-detail__kv--full .works-detail__kv-img {
   height: auto;
+  border-radius: 6px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
 }
 
 .works-detail__title-wrapper {
