@@ -587,14 +587,26 @@ body {
   gap: 12px;
   margin-top: 8px;
 }
-/* SPはボタンを横並びで収める */
+/* SPはボタンを横並びで収める(文字がはみ出さないよう字間・サイズを詰める) */
 @media (max-width: 767px) {
   .top-kv-button-wrapper .m_button {
     flex: 1;
     min-width: 0;
-    padding: 14px 8px;
-    font-size: 14px;
+    padding: 14px 6px;
+    font-size: 13px;
+    letter-spacing: 0.02em;
     white-space: nowrap;
+  }
+}
+/* 極小画面(iPhone SE等)はさらに詰めてはみ出しを防ぐ */
+@media (max-width: 359px) {
+  .top-kv-button-wrapper {
+    gap: 8px;
+  }
+  .top-kv-button-wrapper .m_button {
+    font-size: 12px;
+    letter-spacing: 0;
+    padding: 14px 4px;
   }
 }
 @media (min-width: 768px) {
