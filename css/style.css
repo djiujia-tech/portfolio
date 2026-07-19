@@ -1886,6 +1886,149 @@ body {
   border-color: var(--primary-color);
 }
 
+/*---------- モニター院募集 ----------*/
+.monitor {
+  background: #fff;
+}
+.monitor__inner {
+  max-width: calc(var(--content-width) + 32px);
+  margin-inline: auto;
+  padding: 40px 16px;
+}
+@media (min-width: 768px) {
+  .monitor__inner {
+    padding: 56px 40px;
+  }
+}
+.monitor__card {
+  position: relative;
+  border: 2px solid var(--accent-color);
+  border-radius: 12px;
+  background: #fff8f3;
+  padding: 44px 20px 36px;
+  text-align: center;
+}
+@media (min-width: 768px) {
+  .monitor__card {
+    padding: 52px 40px 44px;
+  }
+}
+.monitor__badge {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent-color);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  padding: 5px 18px;
+  border-radius: 100vh;
+  white-space: nowrap;
+}
+.monitor__title {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+@media (min-width: 768px) {
+  .monitor__title {
+    font-size: 28px;
+  }
+}
+.monitor__lead {
+  margin-top: 14px;
+  font-size: 14px;
+  line-height: 1.9;
+  color: #555;
+}
+.monitor__offer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 24px auto 0;
+  max-width: 560px;
+  text-align: left;
+  list-style: none;
+  padding: 0;
+}
+.monitor__offer li {
+  background: #fff;
+  border: 1px solid var(--gray-color02);
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.monitor__offer strong {
+  color: var(--accent-color);
+}
+.monitor__note {
+  margin-top: 18px;
+  font-size: 12px;
+  color: var(--gray-color04);
+}
+.monitor__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 28px;
+}
+.monitor__buttons .m_button__line {
+  background: #06c755;
+  border-color: #06c755;
+}
+
+/*---------- FAQ ----------*/
+.faq {
+  background: var(--gray-color03);
+}
+.faq__list {
+  max-width: calc(var(--content-width-sm) + 32px);
+  margin: 24px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.faq__item {
+  background: #fff;
+  border: 1px solid var(--gray-color02);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.faq__q {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+}
+.faq__q::-webkit-details-marker {
+  display: none;
+}
+.faq__q::after {
+  content: "+";
+  color: var(--primary-color);
+  font-size: 22px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.faq__item[open] .faq__q::after {
+  content: "−";
+}
+.faq__a {
+  padding: 0 20px 18px;
+  font-size: 14px;
+  line-height: 1.9;
+  color: #555;
+}
+
 /*---------- top: 制作の流れ ----------*/
 .top-flow {
   background: var(--gray-color03);
