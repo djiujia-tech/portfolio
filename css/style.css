@@ -924,6 +924,12 @@ body {
   align-self: center;
 }
 
+/* 制作実績・プロダクト一覧ページ(works.html)は全カードのボタンを中央寄せ＋上に余白 */
+.works-list .top-works__item .m_button {
+  align-self: center;
+  margin-top: 28px;
+}
+
 .top-works__button-wrapper {
   display: flex;
   justify-content: center;
