@@ -1613,6 +1613,24 @@ body {
   display: block;
 }
 
+/* KVをモックアップ(フレーム入りFV)で全体表示する版：切り抜かず画像全体を見せる */
+.works-detail__kv--frame {
+  height: auto;
+  max-width: 1200px;
+  margin-inline: auto;
+  overflow: visible;
+  /* 固定ヘッダー分の余白を確保して、モックアップ上部が隠れないようにする */
+  padding: 96px 16px 0;
+}
+@media (min-width: 768px) {
+  .works-detail__kv--frame {
+    padding: 168px 24px 0;
+  }
+}
+.works-detail__kv--frame .works-detail__kv-img {
+  height: auto;
+}
+
 .works-detail__title-wrapper {
   display: flex;
   align-items: center;
