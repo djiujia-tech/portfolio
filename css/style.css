@@ -918,15 +918,14 @@ body {
   border-color: var(--black-color);
 }
 
-/* Productセクションのカードは「詳しく見る」ボタンを中央寄せ（Works事例は左寄せのまま） */
-.top-service .top-works__item .m_button,
-#product .top-works__item .m_button {
+/* ホームページのProductセクションのみボタンを中央寄せ */
+.top-service .top-works__item .m_button {
   align-self: center;
 }
 
-/* 制作実績・プロダクト一覧ページ(works.html)は全カードのボタンを中央寄せ＋上に余白 */
+/* 制作実績・プロダクト一覧ページ(works.html)はボタンをテキスト真下・左寄せ＋上に余白 */
 .works-list .top-works__item .m_button {
-  align-self: center;
+  align-self: flex-start;
   margin-top: 40px;
 }
 
