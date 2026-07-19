@@ -56,29 +56,23 @@ nav.addEventListener("click", (e) => {
 
 // スクロールでヘッダー背景・ハンバーガーの色を切り替え
 const header = document.querySelector(".l-header");
+const kv = document.querySelector(".top-kv") ?? document.querySelector(".cue-kv");
 
-// FVがないページは最初から白背景（.cue-kvがあるページは除外）
-if (!document.querySelector(".top-kv") && !document.querySelector(".cue-kv")) {
-  header.classList.add("is-scrolled");
-}
-window.addEventListener("scroll", () => {
-  // KV(ファーストビュー)はビューポートより高いため、透明ヘッダーのままだと
-  // スクロール中にKVの見出しがヘッダー下へ潜り込んで重なる。
-  // ヘッダー1つ分スクロールした時点で白背景へ切り替え、重なりを防ぐ。
-  const threshold = header.offsetHeight;
+const updateHeader = () => {
+  // KVがないページ(下層)は常に白背景＝背景に合わせて常時表示。
+  // KVページはヘッダー1つ分スクロールした時点で白背景へ切り替え、
+  // 見出しがヘッダー下へ潜り込んで重なるのを防ぐ。
+  const solid = !kv || window.scrollY > header.offsetHeight;
+  header.classList.toggle("is-scrolled", solid);
 
-  if (window.scrollY > threshold) {
-    header.classList.add("is-scrolled");
-    hamburger.querySelectorAll("span").forEach((span) => {
-      span.style.background = "var(--black-color)";
-    });
-  } else {
-    header.classList.remove("is-scrolled");
-    hamburger.querySelectorAll("span").forEach((span) => {
-      span.style.background = "var(--primary-color)";
-    });
-  }
-});
+  const spanColor = solid ? "var(--black-color)" : "var(--primary-color)";
+  hamburger.querySelectorAll("span").forEach((span) => {
+    span.style.background = spanColor;
+  });
+};
+
+updateHeader();
+window.addEventListener("scroll", updateHeader);
 
 /*---------- スクロールで各セクションをふわっと表示 ----------*/
 const revealEls = document.querySelectorAll(
