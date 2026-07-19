@@ -2114,6 +2114,18 @@ body {
   border-color: #06c755;
 }
 
+.post__cta-sim {
+  margin-top: 16px;
+  font-size: 13px;
+}
+.post__cta-sim a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+.post__cta-sim a:hover {
+  text-decoration: underline;
+}
+
 /* 著者ボックス */
 .post__author {
   display: flex;
