@@ -1847,6 +1847,11 @@ body {
   gap: 16px;
   margin-top: 8px;
 }
+/* 2つのボタンを等幅にそろえる(SPは縦積み・PCは横並びでも同じ幅) */
+.top-contact__buttons .m_button {
+  width: 240px;
+  max-width: 100%;
+}
 
 /*---------- スクロール表示アニメーション ----------*/
 @media (prefers-reduced-motion: no-preference) {

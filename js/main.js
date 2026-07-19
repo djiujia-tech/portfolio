@@ -62,10 +62,10 @@ if (!document.querySelector(".top-kv") && !document.querySelector(".cue-kv")) {
   header.classList.add("is-scrolled");
 }
 window.addEventListener("scroll", () => {
-  const mvHeight = (document.querySelector(".top-kv") ?? document.querySelector(".cue-kv"))?.offsetHeight ?? 0;
-
-  // ヘッダーがKVを抜ける前に白背景へ切り替え、コンテンツとの重なりを防ぐ
-  const threshold = Math.max(mvHeight - header.offsetHeight, 0);
+  // KV(ファーストビュー)はビューポートより高いため、透明ヘッダーのままだと
+  // スクロール中にKVの見出しがヘッダー下へ潜り込んで重なる。
+  // ヘッダー1つ分スクロールした時点で白背景へ切り替え、重なりを防ぐ。
+  const threshold = header.offsetHeight;
 
   if (window.scrollY > threshold) {
     header.classList.add("is-scrolled");
