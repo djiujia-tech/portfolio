@@ -2337,3 +2337,52 @@ body {
 .l-header.is-scrolled .l-header-logo_img--d {
   display: block;
 }
+
+/*---------- SP固定CTAバー ----------*/
+.sp-cta-bar {
+  display: none;
+}
+@media (max-width: 767px) {
+  .sp-cta-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: var(--z-index-page-top);
+    display: flex;
+    gap: 8px;
+    padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(130%);
+    transition: transform 0.3s ease;
+  }
+  .sp-cta-bar.is-visible {
+    transform: none;
+  }
+  .sp-cta-bar__btn {
+    flex: 1 1 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 13px 8px;
+    border-radius: 100vh;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #fff;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .sp-cta-bar__btn--line {
+    background: #06c755;
+  }
+  .sp-cta-bar__btn--form {
+    background: var(--primary-color);
+  }
+  /* フッターが固定バーに隠れないよう余白を確保 */
+  .l-footer {
+    padding-bottom: 80px;
+  }
+}

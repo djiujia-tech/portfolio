@@ -125,3 +125,18 @@ accordions.forEach((accordion) => {
     accordion.setAttribute("aria-expanded", body.classList.contains("is-open"));
   });
 });
+
+/*---------- SP固定CTAバーの表示制御（ヒーローを過ぎたら表示） ----------*/
+const spCtaBar = document.querySelector(".sp-cta-bar");
+if (spCtaBar) {
+  const heroEl =
+    document.querySelector(".top-kv") ??
+    document.querySelector(".cue-kv") ??
+    document.querySelector(".works-detail__kv");
+  const toggleSpCta = () => {
+    const threshold = heroEl ? heroEl.offsetHeight * 0.6 : 240;
+    spCtaBar.classList.toggle("is-visible", window.scrollY > threshold);
+  };
+  toggleSpCta();
+  window.addEventListener("scroll", toggleSpCta, { passive: true });
+}
