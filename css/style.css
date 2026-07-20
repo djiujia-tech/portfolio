@@ -1584,6 +1584,36 @@ body {
   color: #666;
 }
 
+/* LINEを優先で見せる版（フォームの上に配置） */
+.contact__line--primary {
+  margin-top: 24px;
+  padding: 28px 24px;
+  border-top: none;
+  background: #f1fbf5;
+  border: 1px solid #bce8cc;
+  border-radius: 12px;
+}
+.contact__line--primary .contact__line-text {
+  font-size: 15px;
+  color: #333;
+  line-height: 1.8;
+}
+.contact__or {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 32px 0 24px;
+  color: var(--gray-color04);
+  font-size: 13px;
+}
+.contact__or::before,
+.contact__or::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--gray-color02);
+}
+
 .m_button__line {
   min-width: 200px;
   background-color: #06C755;
