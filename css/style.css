@@ -538,8 +538,9 @@ body {
   .top-kv-visual {
     order: 3;
   }
+  /* SPではサブコピーを非表示にして、ボタンまでをFVに収める */
   .top-kv-copy-sub {
-    order: 4;
+    display: none;
   }
   .top-kv-button-wrapper {
     order: 5;
