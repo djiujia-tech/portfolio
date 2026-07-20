@@ -516,6 +516,10 @@ body {
 /* SP: コピーを絞り、実績ビジュアルをファーストビュー内(H1直下)に引き上げる。
    copy_boxをdisplay:contentsで透過し、visualをH1とサブの間にorderで差し込む */
 @media (max-width: 767px) {
+  /* SPはFVを全画面(縦100%)にして、下に次セクションの白がのぞかないようにする */
+  .top-kv {
+    min-height: 100svh;
+  }
   .top-kv__inner {
     align-items: center;
     text-align: center;
