@@ -252,8 +252,42 @@ body {
 .l-footer__copyright {
   text-align: center;
   font-size: 12px;
-  color: var(--gray-color02);
+  color: var(--gray-color04);
   padding-block: 16px;
+}
+
+/* キーボード操作時のフォーカスを明示（アクセシビリティ） */
+:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/*---------- ブログ: 関連記事 ----------*/
+.post__related {
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid var(--gray-color02);
+}
+.post__related-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+.post__related-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  list-style: none;
+  padding: 0;
+}
+.post__related-list a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-size: 15px;
+  line-height: 1.6;
+}
+.post__related-list a:hover {
+  text-decoration: underline;
 }
 
 /* フッターのSNSリンク */
