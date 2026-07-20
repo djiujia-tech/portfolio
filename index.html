@@ -45,7 +45,7 @@
 
     <!-- css -->
     <link rel="stylesheet" href="css/reset.css" />
-    <link rel="stylesheet" href="css/style.css?v=20260719n" />
+    <link rel="stylesheet" href="css/style.css?v=20260719o" />
 
     <!-- 構造化データ -->
     <script type="application/ld+json">
@@ -585,9 +585,24 @@
         <small>© 2026 Gaku</small>
       </p>
     </footer>
-    <script src="js/main.js?v=20260719m" defer></script>
+    <script src="js/main.js?v=20260719o" defer></script>
     <div class="sp-cta-bar" aria-label="お問い合わせ">
       <a href="contact.html" class="sp-cta-bar__btn sp-cta-bar__btn--form">無料相談</a>
+    </div>
+
+    <!-- PC限定・離脱時ポップアップ -->
+    <div class="roi-popup" id="roiPopup" role="dialog" aria-modal="true" aria-labelledby="roiPopupTitle">
+      <div class="roi-popup__overlay" data-close></div>
+      <div class="roi-popup__card">
+        <button class="roi-popup__close" type="button" aria-label="閉じる" data-close>×</button>
+        <p class="roi-popup__eyebrow">お帰りの前に、30秒だけ</p>
+        <h2 class="roi-popup__title" id="roiPopupTitle">あなたの院では、いくら変わる？</h2>
+        <p class="roi-popup__text">
+          CUE導入の費用対効果（年間の差額）を、業種別にシミュレーションできます。入力は月間予約数と客単価だけ。
+        </p>
+        <a href="cue-roi.html" class="m_button m_button__brack roi-popup__cta">ROIを試算する（無料）</a>
+        <a href="contact.html" class="roi-popup__sub">または、無料で相談する →</a>
+      </div>
     </div>
   </body>
 </html>

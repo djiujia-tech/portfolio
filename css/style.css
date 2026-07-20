@@ -2416,3 +2416,86 @@ body {
     padding-bottom: 80px;
   }
 }
+
+/*---------- PC限定・離脱ポップアップ ----------*/
+.roi-popup {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-index-modal);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.roi-popup.is-open {
+  display: flex;
+}
+.roi-popup__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 20, 35, 0.6);
+}
+.roi-popup__card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 440px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 44px 32px 32px;
+  text-align: center;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+  animation: roi-popup-in 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes roi-popup-in {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+.roi-popup__close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--gray-color04);
+  cursor: pointer;
+}
+.roi-popup__eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--primary-color);
+}
+.roi-popup__title {
+  margin-top: 8px;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+.roi-popup__text {
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 1.9;
+  color: #555;
+}
+.roi-popup__cta {
+  margin-top: 24px;
+}
+.roi-popup__sub {
+  display: inline-block;
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--gray-color04);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+/* モバイルでは絶対に出さない（インタースティシャル対策） */
+@media (max-width: 767px) {
+  .roi-popup {
+    display: none !important;
+  }
+}

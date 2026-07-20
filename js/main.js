@@ -140,3 +140,25 @@ if (spCtaBar) {
   toggleSpCta();
   window.addEventListener("scroll", toggleSpCta, { passive: true });
 }
+
+/*---------- PC限定・離脱時ポップアップ（1セッション1回） ----------*/
+const roiPopup = document.getElementById("roiPopup");
+if (roiPopup && window.matchMedia("(min-width: 768px)").matches) {
+  const SEEN_KEY = "roiPopupSeen";
+  const closePopup = () => roiPopup.classList.remove("is-open");
+  const openPopup = () => {
+    if (sessionStorage.getItem(SEEN_KEY)) return;
+    roiPopup.classList.add("is-open");
+    sessionStorage.setItem(SEEN_KEY, "1");
+  };
+  // 離脱意図（マウスが画面上端から外れたら）
+  document.addEventListener("mouseout", (e) => {
+    if (!e.relatedTarget && e.clientY <= 0) openPopup();
+  });
+  roiPopup.querySelectorAll("[data-close]").forEach((el) => {
+    el.addEventListener("click", closePopup);
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closePopup();
+  });
+}
