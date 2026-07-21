@@ -111,7 +111,7 @@ body {
 }
 @media (min-width: 768px) {
   .l-header {
-    height: 140px;
+    height: 96px;
     padding-inline: 40px;
   }
 }
@@ -126,7 +126,7 @@ body {
 }
 @media (min-width: 768px) {
   .header-logo-img-box {
-    width: 150px;
+    width: 120px;
   }
 }
 
@@ -191,6 +191,7 @@ body {
 }
 @media (min-width: 768px) {
   .l-header__nav-list a {
+    font-size: 16px;
     color: var(--primary-color);
     transition: color 0.3s ease;
   }
@@ -493,7 +494,7 @@ body {
     align-items: center;
     justify-content: space-between;
     gap: 40px;
-    padding: calc(140px + 16px) 40px 64px;
+    padding: calc(96px + 24px) 40px 64px;
   }
 }
 
@@ -862,6 +863,11 @@ body {
 
 /*---------- works ----------*/
 
+/* 制作事例セクションを帯色にして、白カードを背景から分離する */
+.top-works {
+  background-color: var(--band-color);
+}
+
 .top-works__list {
   display: flex;
   flex-direction: column;
@@ -1200,7 +1206,7 @@ body {
 }
 @media (min-width: 768px) {
   .about-profile {
-    padding-block: 140px 64px;
+    padding-block: 120px 64px;
   }
 }
 
@@ -1720,7 +1726,7 @@ body {
 }
 @media (min-width: 768px) {
   .works-detail__kv--full {
-    padding: 168px 24px 0;
+    padding: 128px 24px 0;
   }
 }
 .works-detail__kv--full .works-detail__kv-img {
