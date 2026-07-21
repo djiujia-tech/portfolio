@@ -988,7 +988,8 @@ body {
 .top-works__button-wrapper {
   display: flex;
   justify-content: center;
-  margin-bottom: 60px;
+  /* margin だとセクション(帯色)の外に抜けて隙間になるため padding で内側に確保 */
+  padding-bottom: 60px;
 }
 
 .top-works__button-wrapper .m_button {
