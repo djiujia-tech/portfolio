@@ -5,7 +5,7 @@
   /* 色管理用の変数 */
   --white-color: #fff;
   --black-color: #001c2b;
-  --gray-color: #fafafa;
+  --gray-color: #eaeef3;
   --gray-color02: #ccc;
   --gray-color03: #f2f2f2;
   --gray-color04: #565656;
@@ -40,6 +40,7 @@
 /* ---------- base ---------- */
 body {
   color: var(--black-color);
+  background-color: #f4f6f9;
   font-family: "Noto Sans JP", sans-serif;
   font-size: 16px;
   line-height: 2;
