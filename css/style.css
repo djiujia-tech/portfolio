@@ -2064,7 +2064,8 @@ body {
   line-height: 1.7;
 }
 .monitor__offer strong {
-  color: var(--accent-color);
+  /* オレンジは薄背景で読みにくいので、濃いめの焼きオレンジで可読性を確保 */
+  color: #b34d1c;
 }
 .monitor__note {
   margin-top: 18px;
