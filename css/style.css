@@ -2,15 +2,29 @@
 
 /* ---------- root ---------- */
 :root {
-  /* 色管理用の変数 */
-  --white-color: #fff;
-  --black-color: #001c2b;
-  --gray-color: #eaeef3;
-  --gray-color02: #ccc;
-  --gray-color03: #f2f2f2;
-  --gray-color04: #565656;
-  --primary-color: #0088ff;
-  --accent-color: #ff9158;
+  /* ===== ブランド ===== */
+  --primary-color: #0088ff;   /* メインの青 */
+  --accent-color:  #ff9158;   /* アクセントのオレンジ */
+  --line-color:    #06c755;   /* LINE緑 */
+  --line-color-dk: #05b04c;   /* LINE緑・ホバー */
+
+  /* ===== テキスト（濃 → 淡） ===== */
+  --black-color:   #001c2b;   /* 見出し・本文メイン */
+  --text-sub:      #4b4b4b;   /* 補足・説明文（唯一のサブグレー） */
+
+  /* ===== 背景 ===== */
+  --white-color:   #fff;      /* カード */
+  --bg-color:      #f4f6f9;   /* ページ背景（薄い寒色オフホワイト） */
+  --band-color:    #e9edf2;   /* セクション帯 */
+
+  /* ===== 罫線 ===== */
+  --border-color:  #d6dbe1;   /* カード枠・区切り線 */
+
+  /* ===== 後方互換エイリアス（旧変数名を新色に集約） ===== */
+  --gray-color:    var(--band-color);
+  --gray-color02:  var(--border-color);
+  --gray-color03:  var(--band-color);
+  --gray-color04:  var(--text-sub);
 }
 
 :root {
@@ -40,7 +54,7 @@
 /* ---------- base ---------- */
 body {
   color: var(--black-color);
-  background-color: #f4f6f9;
+  background-color: var(--bg-color);
   font-family: "Noto Sans JP", sans-serif;
   font-size: 16px;
   line-height: 2;
@@ -986,7 +1000,7 @@ body {
 /* top-about */
 
 .top-about {
-  background-color: #f2f2f2;
+  background-color: var(--band-color);
 }
 
 .top-about__content {
@@ -1066,7 +1080,7 @@ body {
 .top-service__text {
   font-size: 14px;
   line-height: 1.8;
-  color: #444;
+  color: var(--text-sub);
   margin-bottom: 16px;
 }
 
@@ -1611,12 +1625,12 @@ body {
   gap: 16px;
   margin-top: 48px;
   padding-top: 40px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--border-color);
 }
 
 .contact__line-text {
   font-size: 14px;
-  color: #666;
+  color: var(--text-sub);
 }
 
 /* LINEを優先で見せる版（フォームの上に配置） */
@@ -1630,7 +1644,7 @@ body {
 }
 .contact__line--primary .contact__line-text {
   font-size: 15px;
-  color: #333;
+  color: var(--text-sub);
   line-height: 1.8;
 }
 .contact__or {
@@ -1791,7 +1805,7 @@ body {
 .works-detail__text {
   font-size: 14px;
   line-height: 1.9;
-  color: #444;
+  color: var(--text-sub);
 }
 
 .works-detail__bullet {
@@ -2011,7 +2025,7 @@ body {
   margin-top: 14px;
   font-size: 14px;
   line-height: 1.9;
-  color: #555;
+  color: var(--text-sub);
 }
 .monitor__offer {
   display: flex;
@@ -2096,7 +2110,7 @@ body {
   padding: 0 20px 18px;
   font-size: 14px;
   line-height: 1.9;
-  color: #555;
+  color: var(--text-sub);
 }
 
 /*---------- top: 制作の流れ ----------*/
@@ -2515,7 +2529,7 @@ body {
   margin-top: 12px;
   font-size: 14px;
   line-height: 1.9;
-  color: #555;
+  color: var(--text-sub);
 }
 .roi-popup__cta {
   margin-top: 24px;
