@@ -1152,6 +1152,9 @@ body {
 
 /* top-contact */
 
+.top-contact {
+  background-color: var(--band-color);
+}
 .top-contact__content {
   display: flex;
   flex-direction: column;
@@ -1866,6 +1869,9 @@ body {
 }
 
 /*---------- top: できること・料金 ----------*/
+.top-plans {
+  background-color: var(--band-color);
+}
 .top-plans__list {
   display: grid;
   gap: 24px;
@@ -2086,7 +2092,7 @@ body {
 
 /*---------- FAQ ----------*/
 .faq {
-  background: var(--gray-color03);
+  background: var(--white-color);
 }
 .faq__list {
   max-width: calc(var(--content-width-sm) + 32px);
@@ -2134,7 +2140,7 @@ body {
 
 /*---------- top: 制作の流れ ----------*/
 .top-flow {
-  background: var(--gray-color03);
+  background: var(--white-color);
 }
 
 .top-flow__list {
